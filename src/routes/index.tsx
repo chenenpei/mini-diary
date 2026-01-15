@@ -34,19 +34,20 @@ function HomePage() {
   // Fetch all images for entries
   const { data: images } = useImagesByIds(allImageIds)
 
-  // Build image URLs map
-  const imageUrlsMap = useMemo(() => {
-    const map = new Map<string, string[]>()
-    if (!entries || !images) return map
+  // Build image URLs maps (thumbnails for display, full for lightbox)
+  const { thumbnailUrlsMap, fullImageUrlsMap } = useMemo(() => {
+    const thumbnailMap = new Map<string, string[]>()
+    const fullMap = new Map<string, string[]>()
+    if (!entries || !images) return { thumbnailUrlsMap: thumbnailMap, fullImageUrlsMap: fullMap }
 
     for (const entry of entries) {
       const entryImages = images.filter((img) => entry.imageIds.includes(img.id))
       if (entryImages.length > 0) {
-        const urls = entryImages.map((img) => URL.createObjectURL(img.thumbnail))
-        map.set(entry.id, urls)
+        thumbnailMap.set(entry.id, entryImages.map((img) => URL.createObjectURL(img.thumbnail)))
+        fullMap.set(entry.id, entryImages.map((img) => URL.createObjectURL(img.blob)))
       }
     }
-    return map
+    return { thumbnailUrlsMap: thumbnailMap, fullImageUrlsMap: fullMap }
   }, [entries, images])
 
   const isToday = dateUtils.isToday(currentDate)
@@ -95,7 +96,7 @@ function HomePage() {
           <EmptyState />
         ) : (
           <>
-            <DiaryList entries={entries} onCardClick={handleEditEntry} imageUrlsMap={imageUrlsMap} />
+            <DiaryList entries={entries} onCardClick={handleEditEntry} thumbnailUrlsMap={thumbnailUrlsMap} fullImageUrlsMap={fullImageUrlsMap} />
             {entries.length < 3 && <SparseHint />}
           </>
         )}

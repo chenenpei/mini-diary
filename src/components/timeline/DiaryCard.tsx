@@ -12,6 +12,8 @@ interface DiaryCardProps {
   onClick?: (entry: DiaryEntry) => void
   /** Image URLs (resolved from imageIds) */
   imageUrls?: string[]
+  /** Image click handler (index of clicked image) */
+  onImageClick?: (index: number) => void
   /** Additional CSS classes */
   className?: string
 }
@@ -27,7 +29,7 @@ interface DiaryCardProps {
  * - 正文: Primary, 标准字号，完整展示
  * - 图片: 圆角 sm
  */
-export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCardProps) {
+export function DiaryCard({ entry, onClick, imageUrls = [], onImageClick, className }: DiaryCardProps) {
   const formattedTime = formatTime(entry.createdAt)
 
   return (
@@ -54,9 +56,14 @@ export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCa
       {imageUrls.length > 0 && (
         <div className="mt-3 flex gap-2">
           {imageUrls.slice(0, 3).map((url, index) => (
-            <div
+            <button
+              type="button"
               key={`${entry.id}-img-${index}`}
               className="relative aspect-square w-20 overflow-hidden rounded-sm bg-muted"
+              onClick={(e) => {
+                e.stopPropagation()
+                onImageClick?.(index)
+              }}
             >
               <img
                 src={url}
@@ -64,7 +71,7 @@ export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCa
                 className="h-full w-full object-cover"
                 loading="lazy"
               />
-            </div>
+            </button>
           ))}
         </div>
       )}
