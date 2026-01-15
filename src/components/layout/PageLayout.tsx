@@ -29,7 +29,7 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
   const content = (
     <main
       className={cn(
-        'min-h-screen bg-background px-4 pb-24 pt-4 sm:px-6 lg:px-8',
+        'flex-1 bg-background px-4 pb-24 pt-4 sm:px-6 lg:px-8',
         'mx-auto max-w-[600px]',
         className
       )}

@@ -19,7 +19,7 @@ interface ImageUploaderProps {
   /** Existing image IDs (for edit mode) */
   existingImageIds?: string[]
   /** Callback when images change */
-  onImagesChange?: (images: { file: File; blob: Blob; thumbnail: Blob }[]) => void
+  onImagesChange?: ((images: { file: File; blob: Blob; thumbnail: Blob }[]) => void) | undefined
   /** Additional CSS classes */
   className?: string
 }

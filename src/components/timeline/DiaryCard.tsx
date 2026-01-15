@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
 import { motion } from 'motion/react'
+import { MarkdownContent } from './MarkdownContent'
 
 interface DiaryCardProps {
   /** Diary entry data */
@@ -28,7 +29,8 @@ interface DiaryCardProps {
  */
 export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCardProps) {
   const formattedTime = formatTime(entry.createdAt)
-  const previewContent = getPreviewContent(entry.content)
+  // Truncate content for preview, but keep markdown syntax for rendering
+  const previewContent = truncateContent(entry.content)
 
   return (
     <motion.article
@@ -46,9 +48,9 @@ export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCa
       </time>
 
       {/* Content Preview */}
-      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-foreground sm:text-base">
-        {previewContent}
-      </p>
+      <div className="mt-2 line-clamp-3 text-sm leading-relaxed sm:text-base">
+        <MarkdownContent content={previewContent} />
+      </div>
 
       {/* Images */}
       {imageUrls.length > 0 && (
@@ -84,17 +86,14 @@ function formatTime(timestamp: number): string {
 }
 
 /**
- * Get preview content from markdown
- * Strips markdown syntax and truncates
+ * Truncate content for preview while preserving markdown
  */
-function getPreviewContent(content: string): string {
-  // Remove markdown syntax for preview
-  return content
-    .replace(/\*\*(.*?)\*\*/g, '$1') // Bold
-    .replace(/\*(.*?)\*/g, '$1') // Italic
-    .replace(/^[-*+]\s+/gm, '') // List items
-    .replace(/^\d+\.\s+/gm, '') // Numbered list
-    .trim()
+function truncateContent(content: string, maxLength = 200): string {
+  const trimmed = content.trim()
+  if (trimmed.length <= maxLength) {
+    return trimmed
+  }
+  return trimmed.slice(0, maxLength).trim() + '...'
 }
 
 // Animation variants for list

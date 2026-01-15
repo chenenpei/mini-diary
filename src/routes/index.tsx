@@ -53,7 +53,7 @@ function HomePage() {
   }
 
   return (
-    <>
+    <div className="flex min-h-screen flex-col bg-background">
       <TopBar onMenuClick={() => {}} onSearchClick={() => {}}>
         <DateNavigator
           date={currentDate}
@@ -77,6 +77,6 @@ function HomePage() {
       </PageLayout>
 
       <FAB icon={<Plus className="h-6 w-6" />} onClick={handleCreateEntry} />
-    </>
+    </div>
   )
 }

@@ -2,14 +2,25 @@
 
 import { cn } from '@/lib/utils'
 import { useState, useCallback, useEffect } from 'react'
+import { ImageUploader } from './ImageUploader'
 
 const MAX_CONTENT_LENGTH = 10000
+
+interface ProcessedImage {
+  file: File
+  blob: Blob
+  thumbnail: Blob
+}
 
 interface DiaryEditorProps {
   /** Initial content */
   initialContent?: string
   /** Content change handler */
   onChange?: (content: string) => void
+  /** Image change handler */
+  onImagesChange?: (images: ProcessedImage[]) => void
+  /** Existing image IDs (for edit mode) */
+  existingImageIds?: string[]
   /** Placeholder text */
   placeholder?: string
   /** Auto focus on mount */
@@ -31,6 +42,8 @@ interface DiaryEditorProps {
 export function DiaryEditor({
   initialContent = '',
   onChange,
+  onImagesChange,
+  existingImageIds = [],
   placeholder = '写点什么...',
   autoFocus = false,
   className,
@@ -78,6 +91,13 @@ export function DiaryEditor({
           {charCount.toLocaleString()} / {MAX_CONTENT_LENGTH.toLocaleString()}
         </span>
       </div>
+
+      {/* Image uploader */}
+      <ImageUploader
+        existingImageIds={existingImageIds}
+        onImagesChange={onImagesChange}
+        className="mt-4"
+      />
     </div>
   )
 }
