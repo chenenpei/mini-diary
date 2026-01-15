@@ -88,6 +88,7 @@ function NewEntryPage() {
     }
   }, [content, entryDate, createEntry, updateEntry, createImages, navigate])
 
+  // 新建日记必须有内容才能保存
   const saveDisabled = !content.trim()
 
   return (

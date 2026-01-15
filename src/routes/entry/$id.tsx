@@ -78,7 +78,13 @@ function EditEntryPage() {
   }, [isDirty, navigate])
 
   const handleSave = useCallback(async () => {
-    if (!entry || !content.trim()) return
+    if (!entry) return
+
+    // 没有内容时直接返回（相当于取消）
+    if (!content.trim()) {
+      navigate({ to: '/' })
+      return
+    }
 
     try {
       // Delete removed images
@@ -161,9 +167,8 @@ function EditEntryPage() {
     )
   }
 
-  const contentUnchanged = content === entry.content
-  const imagesUnchanged = removedImageIds.length === 0 && newImagesRef.current.length === 0
-  const saveDisabled = !content.trim() || (contentUnchanged && imagesUnchanged)
+  // 允许保存空内容（相当于取消）
+  const saveDisabled = false
 
   return (
     <div className="min-h-screen bg-background">

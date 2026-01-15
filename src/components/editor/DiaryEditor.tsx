@@ -162,10 +162,10 @@ export function EditorHeader({
         onClick={onSave}
         disabled={saveDisabled || isSaving}
         className={cn(
-          'touch-target flex items-center justify-center rounded-sm px-3 py-1 text-sm font-medium transition-colors',
+          'touch-target flex items-center justify-center rounded-sm bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors',
           saveDisabled || isSaving
-            ? 'cursor-not-allowed text-muted-foreground'
-            : 'text-primary hover:bg-surface active:opacity-60'
+            ? 'cursor-not-allowed opacity-50'
+            : 'hover:bg-primary/90 active:opacity-80'
         )}
       >
         {isSaving ? '保存中...' : '保存'}
