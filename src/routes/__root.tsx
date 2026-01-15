@@ -1,5 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { ToastProvider } from '@/components/ui'
 import appCss from '../styles.css?url'
 
 interface RouterContext {
@@ -46,7 +47,9 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body className="antialiased">
-        <Outlet />
+        <ToastProvider>
+          <Outlet />
+        </ToastProvider>
         <Scripts />
       </body>
     </html>
