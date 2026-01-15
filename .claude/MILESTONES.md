@@ -6,7 +6,7 @@
 |--------|------|----------|
 | M1: 项目初始化与基础架构 | ✅ 已完成 | 2025-01-15 |
 | M2: 数据层与核心类型 | ✅ 已完成 | 2025-01-15 |
-| M3: 核心 UI 组件与布局 | 🔲 待开始 | - |
+| M3: 核心 UI 组件与布局 | ✅ 已完成 | 2026-01-15 |
 | M4: P0 功能 - 时间线与编辑器 | 🔲 待开始 | - |
 | M5: P1 功能与 PWA | 🔲 待开始 | - |
 
@@ -63,12 +63,12 @@
 
 | 任务 | 状态 | 提交 |
 |------|------|------|
-| 3.1 配置设计 Token | 🔲 | - |
-| 3.2 实现布局组件 (TopBar, FAB) | 🔲 | - |
-| 3.3 实现日记卡片组件 | 🔲 | - |
-| 3.4 实现日期导航组件 | 🔲 | - |
-| 3.5 实现空状态组件 | 🔲 | - |
-| 3.6 实现加载骨架屏组件 | 🔲 | - |
+| 3.1 配置设计 Token | ✅ | (已在 M1 中配置) |
+| 3.2 实现布局组件 (TopBar, FAB, PageLayout) | ✅ | - |
+| 3.3 实现日记卡片组件 (DiaryCard, DiaryList) | ✅ | - |
+| 3.4 实现日期导航组件 (DateNavigator) | ✅ | - |
+| 3.5 实现空状态组件 (EmptyState, SparseHint) | ✅ | - |
+| 3.6 实现加载骨架屏组件 (Skeleton, DiaryCardSkeleton) | ✅ | - |
 
 ---
 
@@ -133,6 +133,15 @@
   - 配置 TanStack Query hooks
   - 编写 32 个单元测试
 - 规范化项目结构（测试文件移动到 src/test/）
+
+### 2026-01-15
+- 完成里程碑 3：核心 UI 组件与布局
+  - 安装 motion 动画库
+  - 实现布局组件：TopBar, FAB, PageLayout, PageTransition
+  - 实现时间线组件：DiaryCard, DiaryList, DateNavigator
+  - 实现状态组件：EmptyState, SparseHint, Skeleton, DiaryCardSkeleton
+  - 修复 TypeScript 严格模式下的类型错误
+  - 更新 CLAUDE.md 添加类型断言规范
 
 ---
 

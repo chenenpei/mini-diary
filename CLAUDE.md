@@ -87,12 +87,13 @@ interface ImageRecord {
 ## 开发规范
 
 1. **TypeScript 严格模式**，避免 `any`
-2. **Repository 模式**：IndexedDB 访问通过 `lib/repositories/*`
-3. **TanStack Query**：数据库状态管理，5 分钟 staleTime
-4. **图片必须压缩**：存储前压缩 + 生成缩略图 (Canvas API)
-5. **Markdown 受限**：仅支持加粗、斜体、列表
-6. **测试文件**：放在 `src/test/` 目录，按源码结构组织
-7. **Commit 信息**：使用中文
+2. **谨慎使用类型断言**：除 `as const` 外，避免使用 `as` 断言；优先使用运行时检查或类型守卫
+3. **Repository 模式**：IndexedDB 访问通过 `lib/repositories/*`
+4. **TanStack Query**：数据库状态管理，5 分钟 staleTime
+5. **图片必须压缩**：存储前压缩 + 生成缩略图 (Canvas API)
+6. **Markdown 受限**：仅支持加粗、斜体、列表
+7. **测试文件**：放在 `src/test/` 目录，按源码结构组织
+8. **Commit 信息**：使用中文
 
 ## 功能优先级
 
