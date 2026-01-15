@@ -20,22 +20,20 @@ interface DiaryCardProps {
  * DiaryCard - 日记卡片组件
  *
  * 设计规范:
- * - 背景: Surface
- * - 边框: 1px Border (可选)
+ * - 背景: 白色/Surface
+ * - 阴影: 微妙的投影效果
  * - 内边距: 16px (移动) / 20px (桌面)
  * - 时间文字: Tertiary, 小字号
- * - 正文: Primary, 标准字号
+ * - 正文: Primary, 标准字号，完整展示
  * - 图片: 圆角 sm
  */
 export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCardProps) {
   const formattedTime = formatTime(entry.createdAt)
-  // Truncate content for preview, but keep markdown syntax for rendering
-  const previewContent = truncateContent(entry.content)
 
   return (
     <motion.article
       className={cn(
-        'cursor-pointer rounded-md border border-border bg-surface p-4 transition-colors hover:bg-surface/80 sm:p-5',
+        'cursor-pointer rounded-lg bg-white p-4 shadow-sm ring-1 ring-black/5 transition-all hover:shadow-md sm:p-5',
         className
       )}
       onClick={() => onClick?.(entry)}
@@ -43,13 +41,13 @@ export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCa
       layout
     >
       {/* Time */}
-      <time className="text-xs tracking-relaxed text-muted-foreground" dateTime={entry.date}>
+      <time className="text-xs tracking-wide text-muted-foreground" dateTime={entry.date}>
         {formattedTime}
       </time>
 
-      {/* Content Preview */}
-      <div className="mt-2 line-clamp-3 text-sm leading-relaxed sm:text-base [&_p]:m-0 [&_ul]:m-0 [&_ol]:m-0 [&_li]:m-0">
-        <MarkdownContent content={previewContent} className="prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0" />
+      {/* Full Content */}
+      <div className="mt-2 text-sm leading-relaxed text-foreground sm:text-base [&_p]:m-0 [&_ul]:m-0 [&_ol]:m-0 [&_li]:m-0 [&_p]:mb-2 [&_p:last-child]:mb-0">
+        <MarkdownContent content={entry.content} className="prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0" />
       </div>
 
       {/* Images */}
@@ -83,17 +81,6 @@ function formatTime(timestamp: number): string {
     hour: '2-digit',
     minute: '2-digit',
   })
-}
-
-/**
- * Truncate content for preview while preserving markdown
- */
-function truncateContent(content: string, maxLength = 200): string {
-  const trimmed = content.trim()
-  if (trimmed.length <= maxLength) {
-    return trimmed
-  }
-  return trimmed.slice(0, maxLength).trim() + '...'
 }
 
 // Animation variants for list
