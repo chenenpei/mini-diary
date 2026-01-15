@@ -13,6 +13,15 @@ const config = defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  ssr: {
+    // 这些客户端库在 SSR 构建时不需要打包
+    external: [
+      'motion',
+      'framer-motion',
+      '@tanstack/react-query-devtools',
+      '@tanstack/react-devtools',
+    ],
+  },
   plugins: [
     devtools(),
     nitro({

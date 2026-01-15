@@ -1,17 +1,10 @@
 [build]
   command = "pnpm build"
-  publish = ".output/public"
-  functions = ".output/server"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
   NITRO_PRESET = "netlify"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
 
 # Headers for PWA
 [[headers]]
