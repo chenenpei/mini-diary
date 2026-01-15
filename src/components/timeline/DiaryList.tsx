@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
 import { motion } from 'motion/react'
-import { DiaryCard, cardItemVariants, cardListVariants } from './DiaryCard'
+import { DiaryCard, cardListVariants } from './DiaryCard'
 import { Lightbox } from '@/components/ui'
 
 interface DiaryListProps {
@@ -55,11 +55,16 @@ export function DiaryList({
       <motion.div
         className={cn('flex flex-col gap-2', className)}
         variants={cardListVariants}
-        initial="hidden"
+        initial={false}
         animate="show"
       >
         {entries.map((entry) => (
-          <motion.div key={entry.id} variants={cardItemVariants}>
+          <motion.div
+            key={entry.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             <DiaryCard
               entry={entry}
               onClick={handleCardClick}

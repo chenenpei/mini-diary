@@ -138,21 +138,21 @@ export function EditorHeader({
   isSaving = false,
 }: EditorHeaderProps) {
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-4">
+    <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-border bg-background px-4">
       {/* Back button */}
       <button
         type="button"
         onClick={onBack}
-        className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface active:opacity-60"
+        className="text-sm text-foreground transition-colors hover:text-foreground/70 active:opacity-60"
       >
-        <span className="text-sm">取消</span>
+        取消
       </button>
 
       {/* Title with dirty indicator */}
       <div className="flex items-center gap-2">
-        <span className="font-medium text-foreground">{title}</span>
+        <span className="text-sm font-medium text-foreground">{title}</span>
         {isDirty && (
-          <span className="h-2 w-2 rounded-full bg-primary" aria-label="有未保存的修改" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-label="有未保存的修改" />
         )}
       </div>
 
@@ -162,7 +162,7 @@ export function EditorHeader({
         onClick={onSave}
         disabled={saveDisabled || isSaving}
         className={cn(
-          'touch-target flex items-center justify-center rounded-sm bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors',
+          'rounded-md bg-primary px-3 py-1 text-sm font-medium text-primary-foreground transition-colors',
           saveDisabled || isSaving
             ? 'cursor-not-allowed opacity-50'
             : 'hover:bg-primary/90 active:opacity-80'
