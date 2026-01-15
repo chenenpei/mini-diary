@@ -12,7 +12,7 @@ import {
   SparseHint,
   dateUtils,
 } from '@/components/timeline'
-import { ConfirmDialog } from '@/components/ui'
+import { ConfirmDialog, DatePicker } from '@/components/ui'
 import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry } from '@/hooks/useEntries'
 import { useImagesByIds, useDeleteImagesByEntry } from '@/hooks/useImages'
 import type { DiaryEntry } from '@/types'
@@ -80,6 +80,17 @@ function HomePage() {
     navigate({ to: '/entry/$id', params: { id: entry.id } })
   }
 
+  // Date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false)
+
+  const handleDateClick = useCallback(() => {
+    setShowDatePicker(true)
+  }, [])
+
+  const handleDateSelect = useCallback((date: string) => {
+    setCurrentDate(date)
+  }, [])
+
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState<DiaryEntry | null>(null)
   const deleteEntry = useDeleteEntry()
@@ -112,6 +123,7 @@ function HomePage() {
           date={currentDate}
           onPrevious={handlePreviousDay}
           onNext={handleNextDay}
+          onDateClick={handleDateClick}
           disableNext={isToday}
         />
       </TopBar>
@@ -146,6 +158,13 @@ function HomePage() {
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
         isLoading={deleteEntry.isPending || deleteImages.isPending}
+      />
+
+      <DatePicker
+        isOpen={showDatePicker}
+        selectedDate={currentDate}
+        onSelect={handleDateSelect}
+        onClose={() => setShowDatePicker(false)}
       />
     </div>
   )
