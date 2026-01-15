@@ -15,11 +15,18 @@ interface ImageItem {
   error: string | undefined
 }
 
+interface ExistingImage {
+  id: string
+  url: string
+}
+
 interface ImageUploaderProps {
-  /** Existing image IDs (for edit mode) */
-  existingImageIds?: string[]
-  /** Callback when images change */
+  /** Existing images with URLs (for edit mode) */
+  existingImages?: ExistingImage[]
+  /** Callback when new images change */
   onImagesChange?: ((images: { file: File; blob: Blob; thumbnail: Blob }[]) => void) | undefined
+  /** Callback when existing image is removed */
+  onExistingImageRemove?: ((id: string) => void) | undefined
   /** Additional CSS classes */
   className?: string
 }
@@ -34,8 +41,9 @@ interface ImageUploaderProps {
  * - 显示压缩进度
  */
 export function ImageUploader({
-  existingImageIds = [],
+  existingImages = [],
   onImagesChange,
+  onExistingImageRemove,
   className,
 }: ImageUploaderProps) {
   const [images, setImages] = useState<ImageItem[]>([])
@@ -44,7 +52,7 @@ export function ImageUploader({
   >(new Map())
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const remainingSlots = MAX_IMAGES - existingImageIds.length - images.length
+  const remainingSlots = MAX_IMAGES - existingImages.length - images.length
 
   const handleFileSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +146,29 @@ export function ImageUploader({
     <div className={cn('flex flex-col gap-3', className)}>
       {/* Image grid */}
       <div className="flex flex-wrap gap-2">
+        {/* Existing images */}
+        {existingImages.map((existing) => (
+          <div
+            key={existing.id}
+            className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted"
+          >
+            <img
+              src={existing.url}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => onExistingImageRemove?.(existing.id)}
+              className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+              aria-label="移除图片"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        ))}
+
+        {/* New images */}
         {images.map((image) => (
           <div
             key={image.id}

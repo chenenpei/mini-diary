@@ -1,11 +1,18 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Trash2 } from 'lucide-react'
 import { DiaryEditor, EditorHeader } from '@/components/editor'
 import { Skeleton } from '@/components/timeline'
 import { useEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries'
+import { useImagesByIds, useCreateImages, useDeleteImage } from '@/hooks/useImages'
+
+interface ProcessedImage {
+  file: File
+  blob: Blob
+  thumbnail: Blob
+}
 
 export const Route = createFileRoute('/entry/$id')({
   component: EditEntryPage,
@@ -18,9 +25,27 @@ function EditEntryPage() {
   const { data: entry, isLoading, error } = useEntry(id)
   const updateEntry = useUpdateEntry()
   const deleteEntry = useDeleteEntry()
+  const createImages = useCreateImages()
+  const deleteImage = useDeleteImage()
 
   const [content, setContent] = useState('')
   const [isDirty, setIsDirty] = useState(false)
+  const [removedImageIds, setRemovedImageIds] = useState<string[]>([])
+  const newImagesRef = useRef<ProcessedImage[]>([])
+
+  // Fetch existing images
+  const { data: existingImagesData } = useImagesByIds(entry?.imageIds ?? [])
+
+  // Build existing images with URLs (excluding removed ones)
+  const existingImages = useMemo(() => {
+    if (!existingImagesData) return []
+    return existingImagesData
+      .filter((img) => !removedImageIds.includes(img.id))
+      .map((img) => ({
+        id: img.id,
+        url: URL.createObjectURL(img.thumbnail),
+      }))
+  }, [existingImagesData, removedImageIds])
 
   // Sync content when entry loads
   useEffect(() => {
@@ -31,6 +56,16 @@ function EditEntryPage() {
 
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
+    setIsDirty(true)
+  }, [])
+
+  const handleImagesChange = useCallback((images: ProcessedImage[]) => {
+    newImagesRef.current = images
+    setIsDirty(true)
+  }, [])
+
+  const handleExistingImageRemove = useCallback((imageId: string) => {
+    setRemovedImageIds((prev) => [...prev, imageId])
     setIsDirty(true)
   }, [])
 
@@ -46,16 +81,40 @@ function EditEntryPage() {
     if (!entry || !content.trim()) return
 
     try {
+      // Delete removed images
+      for (const imageId of removedImageIds) {
+        await deleteImage.mutateAsync({ id: imageId, entryId: entry.id })
+      }
+
+      // Save new images
+      let newImageIds: string[] = []
+      if (newImagesRef.current.length > 0) {
+        const imageInputs = newImagesRef.current.map((img) => ({
+          entryId: entry.id,
+          blob: img.blob,
+          thumbnail: img.thumbnail,
+        }))
+        const savedImages = await createImages.mutateAsync(imageInputs)
+        newImageIds = savedImages.map((img) => img.id)
+      }
+
+      // Calculate final imageIds
+      const remainingImageIds = entry.imageIds.filter((id) => !removedImageIds.includes(id))
+      const finalImageIds = [...remainingImageIds, ...newImageIds]
+
+      // Update entry
       await updateEntry.mutateAsync({
         id: entry.id,
         content: content.trim(),
+        imageIds: finalImageIds,
       })
+
       setIsDirty(false)
       navigate({ to: '/' })
     } catch {
       alert('保存失败，请重试')
     }
-  }, [entry, content, updateEntry, navigate])
+  }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate])
 
   const handleDelete = useCallback(async () => {
     if (!entry) return
@@ -102,7 +161,9 @@ function EditEntryPage() {
     )
   }
 
-  const saveDisabled = !content.trim() || content === entry.content
+  const contentUnchanged = content === entry.content
+  const imagesUnchanged = removedImageIds.length === 0 && newImagesRef.current.length === 0
+  const saveDisabled = !content.trim() || (contentUnchanged && imagesUnchanged)
 
   return (
     <div className="min-h-screen bg-background">
@@ -119,6 +180,9 @@ function EditEntryPage() {
         <DiaryEditor
           initialContent={entry.content}
           onChange={handleContentChange}
+          existingImages={existingImages}
+          onImagesChange={handleImagesChange}
+          onExistingImageRemove={handleExistingImageRemove}
         />
 
         {/* Delete button */}

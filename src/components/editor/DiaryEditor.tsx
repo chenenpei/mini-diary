@@ -12,6 +12,11 @@ interface ProcessedImage {
   thumbnail: Blob
 }
 
+interface ExistingImage {
+  id: string
+  url: string
+}
+
 interface DiaryEditorProps {
   /** Initial content */
   initialContent?: string
@@ -19,8 +24,10 @@ interface DiaryEditorProps {
   onChange?: (content: string) => void
   /** Image change handler */
   onImagesChange?: (images: ProcessedImage[]) => void
-  /** Existing image IDs (for edit mode) */
-  existingImageIds?: string[]
+  /** Existing images with URLs (for edit mode) */
+  existingImages?: ExistingImage[]
+  /** Callback when existing image is removed */
+  onExistingImageRemove?: (id: string) => void
   /** Placeholder text */
   placeholder?: string
   /** Auto focus on mount */
@@ -43,7 +50,8 @@ export function DiaryEditor({
   initialContent = '',
   onChange,
   onImagesChange,
-  existingImageIds = [],
+  existingImages = [],
+  onExistingImageRemove,
   placeholder = '写点什么...',
   autoFocus = false,
   className,
@@ -94,8 +102,9 @@ export function DiaryEditor({
 
       {/* Image uploader */}
       <ImageUploader
-        existingImageIds={existingImageIds}
+        existingImages={existingImages}
         onImagesChange={onImagesChange}
+        onExistingImageRemove={onExistingImageRemove}
         className="mt-4"
       />
     </div>
