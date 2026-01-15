@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DiaryEditor, EditorHeader } from '@/components/editor'
+import { ConfirmDialog } from '@/components/ui'
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries'
 import { useCreateImages } from '@/hooks/useImages'
 import { dateUtils } from '@/components/timeline'
@@ -47,14 +48,25 @@ function NewEntryPage() {
     setIsDirty(true)
   }, [])
 
+  // Cancel confirmation dialog state
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+
   const handleBack = useCallback(() => {
     if (isDirty && content.trim()) {
-      // TODO: 添加确认对话框
-      const confirmed = window.confirm('有未保存的内容，确定要离开吗？')
-      if (!confirmed) return
+      setShowCancelConfirm(true)
+      return
     }
     navigate({ to: '/' })
   }, [isDirty, content, navigate])
+
+  const handleCancelConfirm = useCallback(() => {
+    setShowCancelConfirm(false)
+    navigate({ to: '/' })
+  }, [navigate])
+
+  const handleCancelCancel = useCallback(() => {
+    setShowCancelConfirm(false)
+  }, [])
 
   const handleSave = useCallback(async () => {
     if (!content.trim()) return
@@ -110,6 +122,17 @@ function NewEntryPage() {
           autoFocus
         />
       </main>
+
+      <ConfirmDialog
+        isOpen={showCancelConfirm}
+        title="放弃新建"
+        message="有未保存的内容，确定要离开吗？"
+        confirmText="离开"
+        cancelText="继续编辑"
+        destructive
+        onConfirm={handleCancelConfirm}
+        onCancel={handleCancelCancel}
+      />
     </div>
   )
 }

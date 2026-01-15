@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { TopBar, FAB, PageLayout } from '@/components/layout'
@@ -12,8 +12,10 @@ import {
   SparseHint,
   dateUtils,
 } from '@/components/timeline'
-import { useEntriesByDate, usePrefetchEntriesByDate } from '@/hooks/useEntries'
-import { useImagesByIds } from '@/hooks/useImages'
+import { ConfirmDialog } from '@/components/ui'
+import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry } from '@/hooks/useEntries'
+import { useImagesByIds, useDeleteImagesByEntry } from '@/hooks/useImages'
+import type { DiaryEntry } from '@/types'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -74,9 +76,34 @@ function HomePage() {
     navigate({ to: '/entry/new', search: { date: currentDate } })
   }
 
-  const handleEditEntry = (entry: { id: string }) => {
+  const handleEditEntry = (entry: DiaryEntry) => {
     navigate({ to: '/entry/$id', params: { id: entry.id } })
   }
+
+  // Delete confirmation state
+  const [deleteTarget, setDeleteTarget] = useState<DiaryEntry | null>(null)
+  const deleteEntry = useDeleteEntry()
+  const deleteImages = useDeleteImagesByEntry()
+
+  const handleDeleteClick = useCallback((entry: DiaryEntry) => {
+    setDeleteTarget(entry)
+  }, [])
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return
+
+    // Delete images first
+    if (deleteTarget.imageIds.length > 0) {
+      await deleteImages.mutateAsync(deleteTarget.id)
+    }
+    // Delete entry
+    await deleteEntry.mutateAsync({ id: deleteTarget.id, date: deleteTarget.date })
+    setDeleteTarget(null)
+  }, [deleteTarget, deleteEntry, deleteImages])
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteTarget(null)
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -96,13 +123,30 @@ function HomePage() {
           <EmptyState />
         ) : (
           <>
-            <DiaryList entries={entries} onCardClick={handleEditEntry} thumbnailUrlsMap={thumbnailUrlsMap} fullImageUrlsMap={fullImageUrlsMap} />
+            <DiaryList
+                entries={entries}
+                onEdit={handleEditEntry}
+                onDelete={handleDeleteClick}
+                thumbnailUrlsMap={thumbnailUrlsMap}
+                fullImageUrlsMap={fullImageUrlsMap}
+              />
             {entries.length < 3 && <SparseHint />}
           </>
         )}
       </PageLayout>
 
       <FAB icon={<Plus className="h-6 w-6" />} onClick={handleCreateEntry} />
+
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        title="删除日记"
+        message="确定要删除这条日记吗？此操作无法撤销。"
+        confirmText="删除"
+        destructive
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        isLoading={deleteEntry.isPending || deleteImages.isPending}
+      />
     </div>
   )
 }

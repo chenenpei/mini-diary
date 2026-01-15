@@ -2,20 +2,23 @@
 
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
-import { motion } from 'motion/react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { MarkdownContent } from './MarkdownContent'
+import { Dropdown } from '@/components/ui'
 
 interface DiaryCardProps {
   /** Diary entry data */
   entry: DiaryEntry
-  /** Card click handler */
-  onClick?: (entry: DiaryEntry) => void
   /** Image URLs (resolved from imageIds) */
-  imageUrls?: string[]
+  imageUrls?: string[] | undefined
   /** Image click handler (index of clicked image) */
-  onImageClick?: (index: number) => void
+  onImageClick?: ((index: number) => void) | undefined
+  /** Edit button click handler */
+  onEdit?: ((entry: DiaryEntry) => void) | undefined
+  /** Delete button click handler */
+  onDelete?: ((entry: DiaryEntry) => void) | undefined
   /** Additional CSS classes */
-  className?: string
+  className?: string | undefined
 }
 
 /**
@@ -29,19 +32,37 @@ interface DiaryCardProps {
  * - 正文: Primary, 标准字号，完整展示
  * - 图片: 圆角 sm
  */
-export function DiaryCard({ entry, onClick, imageUrls = [], onImageClick, className }: DiaryCardProps) {
+export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelete, className }: DiaryCardProps) {
   const formattedTime = formatTime(entry.createdAt)
 
+  const dropdownItems = [
+    {
+      key: 'edit',
+      label: '编辑',
+      icon: <Pencil className="h-4 w-4" />,
+      onClick: () => onEdit?.(entry),
+    },
+    {
+      key: 'delete',
+      label: '删除',
+      icon: <Trash2 className="h-4 w-4" />,
+      destructive: true,
+      onClick: () => onDelete?.(entry),
+    },
+  ]
+
   return (
-    <motion.article
+    <article
       className={cn(
-        'cursor-pointer rounded-lg bg-white p-4 shadow-sm ring-1 ring-black/5 transition-all hover:shadow-md sm:p-5',
+        'relative rounded-lg bg-white p-4 shadow-sm ring-1 ring-black/5 sm:p-5',
         className
       )}
-      onClick={() => onClick?.(entry)}
-      whileTap={{ scale: 0.98 }}
-      layout
     >
+      {/* Dropdown menu */}
+      <div className="absolute right-3 top-3 sm:right-4 sm:top-4">
+        <Dropdown items={dropdownItems} />
+      </div>
+
       {/* Time */}
       <time className="text-xs tracking-wide text-muted-foreground" dateTime={entry.date}>
         {formattedTime}
@@ -75,7 +96,7 @@ export function DiaryCard({ entry, onClick, imageUrls = [], onImageClick, classN
           ))}
         </div>
       )}
-    </motion.article>
+    </article>
   )
 }
 

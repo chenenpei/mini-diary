@@ -2,10 +2,10 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Trash2 } from 'lucide-react'
 import { DiaryEditor, EditorHeader } from '@/components/editor'
 import { Skeleton } from '@/components/timeline'
-import { useEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries'
+import { ConfirmDialog } from '@/components/ui'
+import { useEntry, useUpdateEntry } from '@/hooks/useEntries'
 import { useImagesByIds, useCreateImages, useDeleteImage } from '@/hooks/useImages'
 
 interface ProcessedImage {
@@ -24,7 +24,6 @@ function EditEntryPage() {
 
   const { data: entry, isLoading, error } = useEntry(id)
   const updateEntry = useUpdateEntry()
-  const deleteEntry = useDeleteEntry()
   const createImages = useCreateImages()
   const deleteImage = useDeleteImage()
 
@@ -69,13 +68,25 @@ function EditEntryPage() {
     setIsDirty(true)
   }, [])
 
+  // Cancel confirmation dialog state
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+
   const handleBack = useCallback(() => {
     if (isDirty) {
-      const confirmed = window.confirm('有未保存的修改，确定要离开吗？')
-      if (!confirmed) return
+      setShowCancelConfirm(true)
+      return
     }
     navigate({ to: '/' })
   }, [isDirty, navigate])
+
+  const handleCancelConfirm = useCallback(() => {
+    setShowCancelConfirm(false)
+    navigate({ to: '/' })
+  }, [navigate])
+
+  const handleCancelCancel = useCallback(() => {
+    setShowCancelConfirm(false)
+  }, [])
 
   const handleSave = useCallback(async () => {
     if (!entry) return
@@ -121,20 +132,6 @@ function EditEntryPage() {
       alert('保存失败，请重试')
     }
   }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate])
-
-  const handleDelete = useCallback(async () => {
-    if (!entry) return
-
-    const confirmed = window.confirm('确定要删除这条日记吗？此操作不可撤销。')
-    if (!confirmed) return
-
-    try {
-      await deleteEntry.mutateAsync({ id: entry.id, date: entry.date })
-      navigate({ to: '/' })
-    } catch {
-      alert('删除失败，请重试')
-    }
-  }, [entry, deleteEntry, navigate])
 
   if (isLoading) {
     return (
@@ -189,20 +186,18 @@ function EditEntryPage() {
           onImagesChange={handleImagesChange}
           onExistingImageRemove={handleExistingImageRemove}
         />
-
-        {/* Delete button */}
-        <div className="mt-8 border-t border-border pt-8">
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={deleteEntry.isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-md border border-destructive py-3 text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Trash2 className="h-4 w-4" />
-            <span>{deleteEntry.isPending ? '删除中...' : '删除日记'}</span>
-          </button>
-        </div>
       </main>
+
+      <ConfirmDialog
+        isOpen={showCancelConfirm}
+        title="放弃修改"
+        message="有未保存的修改，确定要离开吗？"
+        confirmText="离开"
+        cancelText="继续编辑"
+        destructive
+        onConfirm={handleCancelConfirm}
+        onCancel={handleCancelCancel}
+      />
     </div>
   )
 }

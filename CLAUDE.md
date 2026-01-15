@@ -95,6 +95,7 @@ interface ImageRecord {
 7. **测试文件**：放在 `src/test/` 目录，按源码结构组织
 8. **Commit 信息**：使用中文
 9. **小步提交**：每完成一个独立任务立即提交，不要积攒多个任务一起提交
+10. **动画性能**：仅对合成器属性 (`transform`, `opacity`) 进行动画，禁止对布局属性 (`width`, `height`, `margin`, `padding`) 进行动画
 
 ## 功能优先级
 
