@@ -77,11 +77,11 @@
   --input: #1F2937;
   --ring: #FFFFFF;
 
-  /* === Shadows (Dark Mode) === */
-  --shadow-xs: 0 1px 2px rgba(255, 255, 255, 0.04);
-  --shadow-sm: 0 1px 3px rgba(255, 255, 255, 0.08);
-  --shadow-md: 0 2px 8px rgba(255, 255, 255, 0.12);
-  --shadow-lg: 0 4px 16px rgba(255, 255, 255, 0.16);
+  /* === Shadows (Dark Mode - deeper black for natural "lift" effect) === */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.20);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.40);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.50);
 }
 
 /* === Tailwind Theme Integration === */
@@ -124,7 +124,8 @@
 
   body {
     @apply m-0 bg-background text-foreground;
-    font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
