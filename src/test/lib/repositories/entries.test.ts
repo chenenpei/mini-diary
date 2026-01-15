@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { db } from '@/lib/db'
-import { entriesRepository } from './entries'
+import { entriesRepository } from '@/lib/repositories/entries'
 
 describe('entriesRepository', () => {
   beforeEach(async () => {

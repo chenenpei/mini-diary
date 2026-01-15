@@ -1,13 +1,36 @@
+# Dependencies
 node_modules
-.DS_Store
+
+# Build outputs
 dist
 dist-ssr
-*.local
-count.txt
-.env
+.output
 .nitro
+.vinxi
 .tanstack
 .wrangler
-.output
-.vinxi
+
+# Environment
+.env
+.env.*
+*.local
+
+# IDE & OS
+.DS_Store
+.idea
+.vscode
+*.swp
+*.swo
+
+# Test & Coverage
+coverage
+*.lcov
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Misc
+count.txt
 todos.json

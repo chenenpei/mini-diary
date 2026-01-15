@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { db } from '@/lib/db'
-import { imagesRepository } from './images'
+import { imagesRepository } from '@/lib/repositories/images'
 
 // Helper to create a mock Blob
 function createMockBlob(size = 1000): Blob {
