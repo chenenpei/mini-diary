@@ -53,9 +53,14 @@ export const entriesRepository = {
 
   /**
    * Get all entries for a specific date
+   * @param order - 'asc' for oldest first, 'desc' for newest first (default)
    */
-  async getByDate(date: string): Promise<DiaryEntry[]> {
-    return db.entries.where('date').equals(date).sortBy('createdAt')
+  async getByDate(date: string, order: 'asc' | 'desc' = 'desc'): Promise<DiaryEntry[]> {
+    const collection = db.entries.where('date').equals(date)
+    if (order === 'desc') {
+      return collection.reverse().sortBy('createdAt')
+    }
+    return collection.sortBy('createdAt')
   },
 
   /**

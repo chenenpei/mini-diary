@@ -86,12 +86,14 @@ export function useCreateEntry() {
 
   return useMutation({
     mutationFn: (input: CreateEntryInput) => entriesRepository.create(input),
-    onSuccess: (entry) => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: entriesKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: entriesKeys.byDate(entry.date) })
-      // Set the new entry in cache
+    onSuccess: async (entry) => {
+      // Set the new entry in cache first
       queryClient.setQueryData(entriesKeys.detail(entry.id), entry)
+      // Invalidate and wait for refetch
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: entriesKeys.lists() }),
+        queryClient.invalidateQueries({ queryKey: entriesKeys.byDate(entry.date) }),
+      ])
     },
   })
 }
