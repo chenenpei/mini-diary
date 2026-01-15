@@ -48,7 +48,8 @@
 
 ### 字体栈
 ```css
-font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+  "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 ```
 
 ### 字号规范
@@ -71,6 +72,13 @@ font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
 - 正文：1.6 - 1.8
 - 标题：1.2 - 1.4
 
+### 字间距 (Letter-spacing)
+| 类型 | 值 | 用途 |
+|------|-----|------|
+| tight | -0.02em | 标题 |
+| normal | 0 | 正文 |
+| relaxed | 0.01em | 辅助文字 |
+
 ---
 
 ## 4. 间距系统
@@ -85,6 +93,15 @@ font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
 | lg | 24px | 区块间距 |
 | xl | 32px | 大区块间距 |
 | 2xl | 48px | 页面级间距 |
+
+### 组件间距模块
+| 组件 | 属性 | 值 |
+|------|------|-----|
+| 按钮 | 水平内边距 | 12px |
+| 按钮 | 垂直内边距 | 8px |
+| 卡片 | 内边距 | 16px (移动) / 20px (桌面) |
+| 卡片 | 元素间距 | 12px |
+| 列表 | 项目间距 | 8px |
 
 ---
 
@@ -116,12 +133,14 @@ font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
 | lg | `0 4px 16px rgba(0, 0, 0, 0.16)` |
 
 ### 暗色模式
+暗色模式使用更深的黑色阴影（而非白色），产生自然的"浮起"效果：
+
 | 级别 | 值 |
 |------|-----|
-| xs | `0 1px 2px rgba(255, 255, 255, 0.04)` |
-| sm | `0 1px 3px rgba(255, 255, 255, 0.08)` |
-| md | `0 2px 8px rgba(255, 255, 255, 0.12)` |
-| lg | `0 4px 16px rgba(255, 255, 255, 0.16)` |
+| xs | `0 1px 2px rgba(0, 0, 0, 0.20)` |
+| sm | `0 1px 3px rgba(0, 0, 0, 0.30)` |
+| md | `0 2px 8px rgba(0, 0, 0, 0.40)` |
+| lg | `0 4px 16px rgba(0, 0, 0, 0.50)` |
 
 ---
 
@@ -174,6 +193,12 @@ font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
 
 使用 Motion (motion.dev) 实现。
 
+### SSR 兼容性
+由于使用 TanStack Start（SSR 框架），动画组件需注意：
+- 使用 `'use client'` 指令确保客户端渲染
+- 初始状态使用 CSS 而非 JS 避免闪烁
+- 复杂动画组件延迟加载（lazy loading）
+
 ### 设计原则
 - 微妙精致，不喧宾夺主
 - 仅用 `transform` / `opacity`（GPU 加速）
@@ -190,9 +215,10 @@ font-family: system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
 ### 缓动函数
 ```typescript
 const easing = {
-  smooth: [0.4, 0, 0.2, 1],       // 默认
-  snappy: [0.68, -0.55, 0.27, 1.55], // 弹性
-  exit: [0.4, 0, 1, 1]           // 退出
+  smooth: [0.4, 0, 0.2, 1],       // 默认，平滑过渡
+  snappy: [0.34, 1.56, 0.64, 1],  // 弹性，有轻微回弹
+  exit: [0.4, 0, 1, 1],           // 退出，加速离开
+  bounce: [0.68, -0.55, 0.265, 1.55], // 反弹效果（慎用）
 };
 ```
 
@@ -221,7 +247,7 @@ whileTap={{ scale: 0.95 }}
 ```typescript
 // 父容器
 variants={{
-  show: { transition: { staggerChildren: 0.05 } }
+  show: { transition: { staggerChildren: 0.03 } } // 0.03s 更流畅
 }}
 
 // 子项
@@ -259,8 +285,15 @@ exit={{ y: -100, opacity: 0 }}
 
 ### 布局原则
 - **Mobile First**：优先设计移动端
-- **最大宽度**：桌面端内容区 max-w-md 居中
+- **最大宽度**：桌面端内容区 max-w-md (448px) 居中
 - **触摸友好**：最小点击区域 48×48px
+
+### 具体响应式规则
+| 断点 | 内容最大宽度 | 页面内边距 | 卡片内边距 |
+|------|-------------|-----------|-----------|
+| mobile (<640px) | 100% | 16px | 16px |
+| tablet (640-1024px) | 600px | 24px | 20px |
+| desktop (>1024px) | 600px | 32px | 20px |
 
 ---
 
@@ -274,7 +307,7 @@ exit={{ y: -100, opacity: 0 }}
 | 键盘导航 | `←` `→` 切换日期，Tab 焦点 |
 | ARIA 标签 | 所有交互元素 |
 | 触摸目标 | 最小 48×48px |
-| 焦点指示器 | 2px 高对比度边框 |
+| 焦点指示器 | 2px 高对比度边框 + 外环光晕 |
 | 语义化 HTML | `<article>`, `role="navigation"` |
 
 ---
@@ -373,7 +406,7 @@ exit={{ y: -100, opacity: 0 }}
 
 | 元素 | 规格 |
 |------|------|
-| 骨架屏 | Surface 背景，pulse 动画 1.5s |
+| 骨架屏 | Surface 背景，pulse 动画 1s（最小显示 300ms） |
 | Spinner | Primary 色，24px，1s 循环 |
 | 进度环 | Primary 色，stroke 2px |
 | 空状态插画 | 黑白线条，简洁几何形状 |

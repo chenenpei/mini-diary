@@ -31,8 +31,10 @@
 ### 媒体处理
 | 技术 | 用途 |
 |------|------|
-| browser-image-compression | 客户端图片压缩 |
+| Canvas API | 客户端图片压缩（轻量级方案） |
 | react-markdown + remark-gfm | Markdown 渲染 |
+
+> **备注**：使用原生 Canvas API 进行图片压缩，避免依赖已停止维护的 browser-image-compression。如需更高级功能，可考虑 @aspect-dev/image-compressor 或 Squoosh WASM。
 
 ### 测试工具
 | 技术 | 用途 |
@@ -107,14 +109,13 @@ interface DiaryEntry {
 interface ImageRecord {
   id: string;              // UUID v4
   entryId: string;         // 外键 → DiaryEntry.id
-  blob: Blob;              // 压缩后图片
+  blob: Blob;              // 压缩后图片（类型由 blob.type 推导）
   thumbnail: Blob;         // 缩略图
-  originalName: string;    // 原始文件名
-  mimeType: string;        // MIME 类型
-  size: number;            // 字节数
   createdAt: number;       // 创建时间戳
 }
 ```
+
+> **简化说明**：移除 `originalName`、`mimeType`、`size` 字段，这些可从 Blob 对象推导获取。
 
 ### AppSettings
 ```typescript
@@ -196,29 +197,44 @@ const queryClient = new QueryClient({
 
 ### 压缩配置
 ```typescript
-// 原图压缩
-const imageOptions = {
-  maxSizeMB: 1,
-  maxWidthOrHeight: 1920,
-  useWebWorker: true,
-  fileType: 'image/jpeg',
-  initialQuality: 0.8
+// 使用 Canvas API 进行压缩
+const imageConfig = {
+  maxWidth: 1920,
+  maxHeight: 1920,
+  quality: 0.8,          // JPEG 质量
+  outputFormat: 'image/jpeg'
 };
 
-// 缩略图生成
-const thumbnailOptions = {
-  maxSizeMB: 0.1,
-  maxWidthOrHeight: 400,
-  initialQuality: 0.7
+const thumbnailConfig = {
+  maxWidth: 400,
+  maxHeight: 400,
+  quality: 0.7
 };
 ```
 
 ### 处理流程
 1. 用户选择图片
 2. 验证格式（JPG/PNG/WebP）和大小（<10MB）
-3. 使用 `browser-image-compression` 压缩
+3. 使用 Canvas API 压缩（createImageBitmap + canvas.toBlob）
 4. 同时生成缩略图
 5. 存入 `images` 表
+
+### 压缩实现示例
+```typescript
+async function compressImage(file: File, config: ImageConfig): Promise<Blob> {
+  const bitmap = await createImageBitmap(file);
+  const { width, height } = calculateDimensions(bitmap, config);
+
+  const canvas = new OffscreenCanvas(width, height);
+  const ctx = canvas.getContext('2d')!;
+  ctx.drawImage(bitmap, 0, 0, width, height);
+
+  return canvas.convertToBlob({
+    type: config.outputFormat,
+    quality: config.quality
+  });
+}
+```
 
 ---
 
@@ -274,15 +290,22 @@ queryClient.prefetchQuery({
 ### Manifest
 ```json
 {
-  "name": "MiniDiary",
+  "name": "MiniDiary - 隐私日记应用",
   "short_name": "日记",
+  "description": "本地存储的极简日记应用，完全隐私，无需注册",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "theme_color": "#000000",
   "background_color": "#ffffff",
+  "categories": ["productivity", "lifestyle"],
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "screenshots": [
+    { "src": "/screenshot-mobile.png", "sizes": "540x720", "form_factor": "narrow" }
   ]
 }
 ```
@@ -318,14 +341,54 @@ queryClient.prefetchQuery({
 
 ---
 
-## 10. 测试策略
+## 10. 并发安全
+
+### 多标签页同步
+使用 BroadcastChannel API 同步标签页状态：
+
+```typescript
+// lib/sync.ts
+const channel = new BroadcastChannel('mini-diary-sync');
+
+// 发送更新通知
+export function notifyChange(type: 'entry' | 'image', id: string) {
+  channel.postMessage({ type, id, timestamp: Date.now() });
+}
+
+// 监听更新
+channel.onmessage = (event) => {
+  queryClient.invalidateQueries({ queryKey: [event.data.type] });
+};
+```
+
+### 错误恢复策略
+```typescript
+// IndexedDB 配额超出处理
+async function saveWithRetry(entry: DiaryEntry) {
+  try {
+    await db.entries.add(entry);
+  } catch (error) {
+    if (error.name === 'QuotaExceededError') {
+      // 清理旧图片缩略图
+      await cleanupOldThumbnails();
+      // 重试保存
+      return db.entries.add(entry);
+    }
+    throw error;
+  }
+}
+```
+
+---
+
+## 11. 测试策略
 
 | 类型 | 工具 | 覆盖范围 |
 |------|------|----------|
 | 单元测试 | Vitest | utils、repositories、image 处理 |
 | 组件测试 | Testing Library | UI 组件 |
 | 集成测试 | Vitest + fake-indexeddb | 完整用户流程 |
-| E2E 测试 | Playwright（可选） | 关键路径 |
+| E2E 测试 | Playwright | 关键路径（PWA 离线测试必需）|
 
 ### 模拟 IndexedDB
 ```typescript
@@ -334,7 +397,7 @@ import 'fake-indexeddb/auto';
 
 ---
 
-## 11. 开发命令
+## 12. 开发命令
 
 ```bash
 pnpm install          # 安装依赖
@@ -349,7 +412,7 @@ pnpm test:watch       # 监听模式
 
 ---
 
-## 12. 部署
+## 13. 部署
 
 - **构建产物**：静态文件（SPA）
 - **托管选项**：Vercel / Netlify / Cloudflare Pages
