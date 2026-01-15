@@ -9,9 +9,9 @@
 **设计哲学**：黑白灰极简主义，大量留白，微妙动效。
 
 **详细文档**：
-- [PRD.md](.claude/spec/PRD.md) - 产品需求
-- [TECH.md](.claude/spec/TECH.md) - 技术架构
-- [DESIGN.md](.claude/spec/DESIGN.md) - 设计规范
+- [PRD.md](spec/PRD.md) - 产品需求
+- [TECH.md](spec/TECH.md) - 技术架构
+- [DESIGN.md](spec/DESIGN.md) - 设计规范
 - [MILESTONES.md](.claude/MILESTONES.md) - 开发进度跟踪
 
 ## 技术栈
