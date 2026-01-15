@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { TopBar, FAB, PageLayout } from '@/components/layout'
@@ -13,6 +13,7 @@ import {
   dateUtils,
 } from '@/components/timeline'
 import { useEntriesByDate, usePrefetchEntriesByDate } from '@/hooks/useEntries'
+import { useImagesByIds } from '@/hooks/useImages'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -23,6 +24,30 @@ function HomePage() {
   const [currentDate, setCurrentDate] = useState(dateUtils.getToday)
   const { data: entries, isLoading } = useEntriesByDate(currentDate)
   const prefetchEntries = usePrefetchEntriesByDate()
+
+  // Collect all image IDs from entries
+  const allImageIds = useMemo(() => {
+    if (!entries) return []
+    return entries.flatMap((entry) => entry.imageIds)
+  }, [entries])
+
+  // Fetch all images for entries
+  const { data: images } = useImagesByIds(allImageIds)
+
+  // Build image URLs map
+  const imageUrlsMap = useMemo(() => {
+    const map = new Map<string, string[]>()
+    if (!entries || !images) return map
+
+    for (const entry of entries) {
+      const entryImages = images.filter((img) => entry.imageIds.includes(img.id))
+      if (entryImages.length > 0) {
+        const urls = entryImages.map((img) => URL.createObjectURL(img.thumbnail))
+        map.set(entry.id, urls)
+      }
+    }
+    return map
+  }, [entries, images])
 
   const isToday = dateUtils.isToday(currentDate)
 
@@ -70,7 +95,7 @@ function HomePage() {
           <EmptyState />
         ) : (
           <>
-            <DiaryList entries={entries} onCardClick={handleEditEntry} />
+            <DiaryList entries={entries} onCardClick={handleEditEntry} imageUrlsMap={imageUrlsMap} />
             {entries.length < 3 && <SparseHint />}
           </>
         )}

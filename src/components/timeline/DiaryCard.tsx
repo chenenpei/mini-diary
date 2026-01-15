@@ -48,8 +48,8 @@ export function DiaryCard({ entry, onClick, imageUrls = [], className }: DiaryCa
       </time>
 
       {/* Content Preview */}
-      <div className="mt-2 line-clamp-3 text-sm leading-relaxed sm:text-base">
-        <MarkdownContent content={previewContent} />
+      <div className="mt-2 line-clamp-3 text-sm leading-relaxed sm:text-base [&_p]:m-0 [&_ul]:m-0 [&_ol]:m-0 [&_li]:m-0">
+        <MarkdownContent content={previewContent} className="prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0" />
       </div>
 
       {/* Images */}

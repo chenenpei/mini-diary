@@ -1,10 +1,17 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DiaryEditor, EditorHeader } from '@/components/editor'
-import { useCreateEntry } from '@/hooks/useEntries'
+import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries'
+import { useCreateImages } from '@/hooks/useImages'
 import { dateUtils } from '@/components/timeline'
+
+interface ProcessedImage {
+  file: File
+  blob: Blob
+  thumbnail: Blob
+}
 
 interface NewEntrySearch {
   date: string | undefined
@@ -24,11 +31,19 @@ function NewEntryPage() {
 
   const [content, setContent] = useState('')
   const [isDirty, setIsDirty] = useState(false)
+  const imagesRef = useRef<ProcessedImage[]>([])
 
   const createEntry = useCreateEntry()
+  const updateEntry = useUpdateEntry()
+  const createImages = useCreateImages()
 
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent)
+    setIsDirty(true)
+  }, [])
+
+  const handleImagesChange = useCallback((images: ProcessedImage[]) => {
+    imagesRef.current = images
     setIsDirty(true)
   }, [])
 
@@ -45,16 +60,33 @@ function NewEntryPage() {
     if (!content.trim()) return
 
     try {
-      await createEntry.mutateAsync({
+      // Create entry first
+      const entry = await createEntry.mutateAsync({
         content: content.trim(),
         date: entryDate,
       })
+
+      // Save images if any
+      if (imagesRef.current.length > 0) {
+        const imageInputs = imagesRef.current.map((img) => ({
+          entryId: entry.id,
+          blob: img.blob,
+          thumbnail: img.thumbnail,
+        }))
+        const savedImages = await createImages.mutateAsync(imageInputs)
+
+        // Update entry with image IDs
+        await updateEntry.mutateAsync({
+          id: entry.id,
+          imageIds: savedImages.map((img) => img.id),
+        })
+      }
+
       navigate({ to: '/' })
     } catch {
-      // TODO: 添加 Toast 提示
       alert('保存失败，请重试')
     }
-  }, [content, entryDate, createEntry, navigate])
+  }, [content, entryDate, createEntry, updateEntry, createImages, navigate])
 
   const saveDisabled = !content.trim()
 
@@ -73,6 +105,7 @@ function NewEntryPage() {
         <DiaryEditor
           initialContent=""
           onChange={handleContentChange}
+          onImagesChange={handleImagesChange}
           autoFocus
         />
       </main>
