@@ -1,7 +1,7 @@
-import { defineConfig } from 'vitest/config'
+import { fileURLToPath, URL } from 'node:url'
 import viteReact from '@vitejs/plugin-react'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
-import { fileURLToPath, URL } from 'url'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   resolve: {

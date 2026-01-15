@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -12,28 +12,28 @@
   /* === Color System (Light Mode) === */
   --color-primary: #000000;
   --color-secondary: #111827;
-  --color-tertiary: #6B7280;
-  --background: #FFFFFF;
-  --surface: #F9FAFB;
-  --border: #E5E7EB;
+  --color-tertiary: #6b7280;
+  --background: #ffffff;
+  --surface: #f9fafb;
+  --border: #e5e7eb;
 
   /* === shadcn/ui Variables === */
   --foreground: #000000;
-  --card: #F9FAFB;
+  --card: #f9fafb;
   --card-foreground: #000000;
-  --popover: #FFFFFF;
+  --popover: #ffffff;
   --popover-foreground: #000000;
   --primary: #000000;
-  --primary-foreground: #FFFFFF;
-  --secondary: #F9FAFB;
+  --primary-foreground: #ffffff;
+  --secondary: #f9fafb;
   --secondary-foreground: #111827;
-  --muted: #F9FAFB;
-  --muted-foreground: #6B7280;
-  --accent: #F9FAFB;
+  --muted: #f9fafb;
+  --muted-foreground: #6b7280;
+  --accent: #f9fafb;
   --accent-foreground: #111827;
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
-  --input: #E5E7EB;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --input: #e5e7eb;
   --ring: #000000;
 
   /* === Radius (Geometric Minimalism) === */
@@ -51,37 +51,37 @@
 
 .dark {
   /* === Color System (Dark Mode) === */
-  --color-primary: #FFFFFF;
-  --color-secondary: #F3F4F6;
-  --color-tertiary: #9CA3AF;
+  --color-primary: #ffffff;
+  --color-secondary: #f3f4f6;
+  --color-tertiary: #9ca3af;
   --background: #000000;
   --surface: #111827;
-  --border: #1F2937;
+  --border: #1f2937;
 
   /* === shadcn/ui Variables === */
-  --foreground: #FFFFFF;
+  --foreground: #ffffff;
   --card: #111827;
-  --card-foreground: #FFFFFF;
+  --card-foreground: #ffffff;
   --popover: #111827;
-  --popover-foreground: #FFFFFF;
-  --primary: #FFFFFF;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
   --primary-foreground: #000000;
   --secondary: #111827;
-  --secondary-foreground: #F3F4F6;
+  --secondary-foreground: #f3f4f6;
   --muted: #111827;
-  --muted-foreground: #9CA3AF;
+  --muted-foreground: #9ca3af;
   --accent: #111827;
-  --accent-foreground: #F3F4F6;
-  --destructive: #DC2626;
-  --destructive-foreground: #FFFFFF;
-  --input: #1F2937;
-  --ring: #FFFFFF;
+  --accent-foreground: #f3f4f6;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --input: #1f2937;
+  --ring: #ffffff;
 
   /* === Shadows (Dark Mode - deeper black for natural "lift" effect) === */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.20);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.30);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.40);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.50);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 /* === Tailwind Theme Integration === */
@@ -124,8 +124,9 @@
 
   body {
     @apply m-0 bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
-      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;

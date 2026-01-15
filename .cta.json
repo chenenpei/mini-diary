@@ -9,11 +9,5 @@
   "addOnOptions": {},
   "version": 1,
   "framework": "react-cra",
-  "chosenAddOns": [
-    "start",
-    "shadcn",
-    "tanstack-query",
-    "eslint",
-    "nitro"
-  ]
+  "chosenAddOns": ["start", "shadcn", "tanstack-query", "eslint", "nitro"]
 }
