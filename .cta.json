@@ -1,0 +1,19 @@
+{
+  "projectName": "mini-diary-app",
+  "mode": "file-router",
+  "typescript": true,
+  "tailwind": true,
+  "packageManager": "pnpm",
+  "git": false,
+  "install": true,
+  "addOnOptions": {},
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "start",
+    "shadcn",
+    "tanstack-query",
+    "eslint",
+    "nitro"
+  ]
+}
