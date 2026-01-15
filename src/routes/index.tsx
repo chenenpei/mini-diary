@@ -76,6 +76,10 @@ function HomePage() {
     navigate({ to: '/entry/new', search: { date: currentDate } })
   }
 
+  const handleSearchClick = () => {
+    navigate({ to: '/search' })
+  }
+
   const handleEditEntry = (entry: DiaryEntry) => {
     navigate({ to: '/entry/$id', params: { id: entry.id } })
   }
@@ -118,7 +122,7 @@ function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <TopBar onMenuClick={() => {}} onSearchClick={() => {}}>
+      <TopBar onMenuClick={() => {}} onSearchClick={handleSearchClick}>
         <DateNavigator
           date={currentDate}
           onPrevious={handlePreviousDay}
