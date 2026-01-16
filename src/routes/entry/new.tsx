@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { DiaryEditor, EditorHeader, EditorToolbar } from '@/components/editor'
 import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
@@ -151,6 +151,31 @@ function NewEntryPage() {
   // 新建日记必须有内容才能保存
   const saveDisabled = !content.trim()
   const imageCount = images.length
+
+  // 键盘快捷键
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 如果确认弹窗已打开，让弹窗处理 ESC
+      if (showCancelConfirm) return
+
+      // Cmd/Ctrl + Enter: 保存
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        if (!saveDisabled && !createEntry.isPending) {
+          handleSave()
+        }
+        return
+      }
+      // Esc: 取消
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        handleBack()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showCancelConfirm, saveDisabled, createEntry.isPending, handleSave, handleBack])
 
   return (
     <div className="flex h-dvh flex-col bg-background">

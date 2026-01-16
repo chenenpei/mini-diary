@@ -51,12 +51,14 @@ export function ConfirmDialog({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        e.stopPropagation()
         onCancel()
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    // 使用 capture 阶段来确保弹窗先处理事件
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
   }, [isOpen, onCancel])
 
   // Prevent body scroll when open

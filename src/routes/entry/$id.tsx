@@ -185,6 +185,31 @@ function EditEntryPage() {
 
   const imageCount = existingImages.length + newImages.length
 
+  // 键盘快捷键
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 如果确认弹窗已打开，让弹窗处理 ESC
+      if (showCancelConfirm) return
+
+      // Cmd/Ctrl + Enter: 保存
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        if (!updateEntry.isPending) {
+          handleSave()
+        }
+        return
+      }
+      // Esc: 取消
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        handleBack()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showCancelConfirm, updateEntry.isPending, handleSave, handleBack])
+
   if (isLoading) {
     return (
       <div className="flex h-dvh flex-col bg-background">
