@@ -53,9 +53,10 @@ src/
 │   │   ├── entries.ts  # 日记条目 CRUD
 │   │   └── images.ts   # 图片记录 CRUD
 │   └── utils.ts        # 工具函数 (cn)
-├── hooks/              # TanStack Query Hooks
-│   ├── useEntries.ts   # 日记条目 hooks
-│   └── useImages.ts    # 图片 hooks
+├── hooks/              # React Hooks
+│   ├── useEntries.ts   # 日记条目 hooks (TanStack Query)
+│   ├── useImages.ts    # 图片 hooks (TanStack Query)
+│   └── useKeyboardHeight.ts  # 键盘高度监听 (移动端适配)
 ├── types/              # TypeScript 类型定义
 │   └── index.ts        # 核心类型
 └── test/               # 测试文件
