@@ -1,20 +1,26 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { useState, useCallback, useEffect } from 'react'
-import { ImageUploader } from './ImageUploader'
+import { useState, useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
+import { ImagePreview } from './ImagePreview'
 
 const MAX_CONTENT_LENGTH = 10000
-
-interface ProcessedImage {
-  file: File
-  blob: Blob
-  thumbnail: Blob
-}
 
 interface ExistingImage {
   id: string
   url: string
+}
+
+interface NewImage {
+  id: string
+  previewUrl: string
+  isProcessing: boolean
+  error?: string | undefined
+}
+
+export interface DiaryEditorRef {
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  setContent: (content: string) => void
 }
 
 interface DiaryEditorProps {
@@ -22,12 +28,14 @@ interface DiaryEditorProps {
   initialContent?: string
   /** Content change handler */
   onChange?: (content: string) => void
-  /** Image change handler */
-  onImagesChange?: (images: ProcessedImage[]) => void
   /** Existing images with URLs (for edit mode) */
   existingImages?: ExistingImage[]
+  /** New images being added */
+  newImages?: NewImage[]
   /** Callback when existing image is removed */
   onExistingImageRemove?: (id: string) => void
+  /** Callback when new image is removed */
+  onNewImageRemove?: (id: string) => void
   /** Placeholder text */
   placeholder?: string
   /** Auto focus on mount */
@@ -37,79 +45,102 @@ interface DiaryEditorProps {
 }
 
 /**
- * DiaryEditor - 日记编辑器组件
+ * DiaryEditor - 日记编辑器组件（沉浸式设计）
  *
  * 设计规范:
- * - 背景: Surface
- * - 边框: 1px Border
- * - Focus: 2px Primary 边框
- * - Placeholder: Tertiary
- * - 支持受限 Markdown (加粗、斜体、列表)
+ * - 无边框、透明背景
+ * - 图片展示在文字下方
+ * - 字数统计在底部
  */
-export function DiaryEditor({
-  initialContent = '',
-  onChange,
-  onImagesChange,
-  existingImages = [],
-  onExistingImageRemove,
-  placeholder = '写点什么...',
-  autoFocus = false,
-  className,
-}: DiaryEditorProps) {
-  const [content, setContent] = useState(initialContent)
-
-  useEffect(() => {
-    setContent(initialContent)
-  }, [initialContent])
-
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newContent = e.target.value
-      setContent(newContent)
-      onChange?.(newContent)
+export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
+  function DiaryEditor(
+    {
+      initialContent = '',
+      onChange,
+      existingImages = [],
+      newImages = [],
+      onExistingImageRemove,
+      onNewImageRemove,
+      placeholder = '写点什么...',
+      autoFocus = false,
+      className,
     },
-    [onChange]
-  )
+    ref
+  ) {
+    const [content, setContent] = useState(initialContent)
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const isOverLimit = content.length > MAX_CONTENT_LENGTH
-  const charCount = content.length
+    // 暴露 ref 给父组件
+    useImperativeHandle(ref, () => ({
+      textareaRef,
+      setContent: (newContent: string) => {
+        setContent(newContent)
+        onChange?.(newContent)
+      },
+    }))
 
-  return (
-    <div className={cn('flex flex-col', className)}>
-      <textarea
-        value={content}
-        onChange={handleChange}
-        placeholder={placeholder}
-        autoFocus={autoFocus}
-        className={cn(
-          'min-h-[300px] w-full resize-none rounded-md border border-border bg-surface p-4 text-base leading-relaxed text-foreground placeholder:text-muted-foreground',
-          'focus:outline-none',
-          'sm:min-h-[400px] sm:p-5'
-        )}
-      />
+    useEffect(() => {
+      setContent(initialContent)
+    }, [initialContent])
 
-      {/* Character count */}
-      <div className="mt-2 flex justify-end">
-        <span
+
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newContent = e.target.value
+        setContent(newContent)
+        onChange?.(newContent)
+      },
+      [onChange]
+    )
+
+    const isOverLimit = content.length > MAX_CONTENT_LENGTH
+    const charCount = content.length
+    const hasImages = existingImages.length > 0 || newImages.length > 0
+
+    return (
+      <div className={cn('flex min-h-0 flex-1 flex-col', className)}>
+        {/* Textarea - 占据剩余空间，内容超出时滚动 */}
+        <textarea
+          ref={textareaRef}
+          value={content}
+          onChange={handleChange}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
           className={cn(
-            'text-xs',
-            isOverLimit ? 'text-destructive' : 'text-muted-foreground'
+            'min-h-0 w-full flex-1 resize-none border-none bg-transparent p-0 text-base leading-relaxed text-foreground placeholder:text-muted-foreground',
+            'focus:outline-none'
           )}
-        >
-          {charCount.toLocaleString()} / {MAX_CONTENT_LENGTH.toLocaleString()}
-        </span>
-      </div>
+        />
 
-      {/* Image uploader */}
-      <ImageUploader
-        existingImages={existingImages}
-        onImagesChange={onImagesChange}
-        onExistingImageRemove={onExistingImageRemove}
-        className="mt-4"
-      />
-    </div>
-  )
-}
+        {/* 底部固定区域：图片 + 字数统计 */}
+        <div className="mt-auto shrink-0 pt-4">
+          {/* Image preview */}
+          {hasImages && (
+            <ImagePreview
+              existingImages={existingImages}
+              newImages={newImages}
+              onExistingRemove={onExistingImageRemove}
+              onNewRemove={onNewImageRemove}
+              className="mb-4"
+            />
+          )}
+
+          {/* Character count */}
+          <div className="flex justify-end">
+            <span
+              className={cn(
+                'text-xs',
+                isOverLimit ? 'text-destructive' : 'text-muted-foreground'
+              )}
+            >
+              {charCount.toLocaleString()} / {MAX_CONTENT_LENGTH.toLocaleString()}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+)
 
 interface EditorHeaderProps {
   /** Page title */
@@ -152,7 +183,7 @@ export function EditorHeader({
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-foreground">{title}</span>
         {isDirty && (
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-label="有未保存的修改" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" role="status" aria-label="有未保存的修改" />
         )}
       </div>
 

@@ -2,16 +2,27 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { DiaryEditor, EditorHeader } from '@/components/editor'
+import { DiaryEditor, EditorHeader, EditorToolbar } from '@/components/editor'
+import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
 import { ConfirmDialog } from '@/components/ui'
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries'
 import { useCreateImages } from '@/hooks/useImages'
+import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
 import { dateUtils } from '@/components/timeline'
+import { revokeImageUrl } from '@/lib/image'
 
 interface ProcessedImage {
   file: File
   blob: Blob
   thumbnail: Blob
+}
+
+interface ImageItem {
+  id: string
+  file: File
+  previewUrl: string
+  isProcessing: boolean
+  error: string | undefined
 }
 
 interface NewEntrySearch {
@@ -32,7 +43,11 @@ function NewEntryPage() {
 
   const [content, setContent] = useState('')
   const [isDirty, setIsDirty] = useState(false)
-  const imagesRef = useRef<ProcessedImage[]>([])
+  const [images, setImages] = useState<ImageItem[]>([])
+  const processedImagesRef = useRef<Map<string, ProcessedImage>>(new Map())
+  const editorRef = useRef<DiaryEditorRef>(null)
+
+  const keyboardHeight = useKeyboardHeight()
 
   const createEntry = useCreateEntry()
   const updateEntry = useUpdateEntry()
@@ -43,9 +58,41 @@ function NewEntryPage() {
     setIsDirty(true)
   }, [])
 
-  const handleImagesChange = useCallback((images: ProcessedImage[]) => {
-    imagesRef.current = images
+  // 图片相关处理
+  const handleImagesAdd = useCallback((newImages: ImageItem[]) => {
+    setImages((prev) => [...prev, ...newImages])
     setIsDirty(true)
+  }, [])
+
+  const handleImageProcessed = useCallback(
+    (id: string, result: { file: File; blob: Blob; thumbnail: Blob }) => {
+      processedImagesRef.current.set(id, {
+        file: result.file,
+        blob: result.blob,
+        thumbnail: result.thumbnail,
+      })
+      setImages((prev) =>
+        prev.map((img) => (img.id === id ? { ...img, isProcessing: false } : img))
+      )
+    },
+    []
+  )
+
+  const handleImageError = useCallback((id: string, error: string) => {
+    setImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, isProcessing: false, error } : img))
+    )
+  }, [])
+
+  const handleNewImageRemove = useCallback((id: string) => {
+    setImages((prev) => {
+      const imageToRemove = prev.find((img) => img.id === id)
+      if (imageToRemove) {
+        revokeImageUrl(imageToRemove.previewUrl)
+      }
+      return prev.filter((img) => img.id !== id)
+    })
+    processedImagesRef.current.delete(id)
   }, [])
 
   // Cancel confirmation dialog state
@@ -79,8 +126,9 @@ function NewEntryPage() {
       })
 
       // Save images if any
-      if (imagesRef.current.length > 0) {
-        const imageInputs = imagesRef.current.map((img) => ({
+      const validImages = Array.from(processedImagesRef.current.values())
+      if (validImages.length > 0) {
+        const imageInputs = validImages.map((img) => ({
           entryId: entry.id,
           blob: img.blob,
           thumbnail: img.thumbnail,
@@ -102,9 +150,10 @@ function NewEntryPage() {
 
   // 新建日记必须有内容才能保存
   const saveDisabled = !content.trim()
+  const imageCount = images.length
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex h-dvh flex-col bg-background">
       <EditorHeader
         title="新建日记"
         isDirty={isDirty}
@@ -114,14 +163,28 @@ function NewEntryPage() {
         isSaving={createEntry.isPending}
       />
 
-      <main className="mx-auto max-w-[600px] p-4">
+      <main
+        className="flex min-h-0 flex-1 flex-col px-4 pt-4"
+        style={{ paddingBottom: keyboardHeight + 56 }}
+      >
         <DiaryEditor
+          ref={editorRef}
           initialContent=""
           onChange={handleContentChange}
-          onImagesChange={handleImagesChange}
+          newImages={images}
+          onNewImageRemove={handleNewImageRemove}
           autoFocus
         />
       </main>
+
+      <EditorToolbar
+        textareaRef={editorRef.current?.textareaRef ?? { current: null }}
+        setContent={editorRef.current?.setContent}
+        imageCount={imageCount}
+        onImagesAdd={handleImagesAdd}
+        onImageProcessed={handleImageProcessed}
+        onImageError={handleImageError}
+      />
 
       <ConfirmDialog
         isOpen={showCancelConfirm}
