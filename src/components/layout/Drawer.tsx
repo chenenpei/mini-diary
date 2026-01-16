@@ -23,8 +23,6 @@ interface DrawerProps {
   onThemeChange: (mode: ThemeMode) => void
   /** 存储使用量（字节） */
   storageUsed?: number
-  /** 存储配额（字节） */
-  storageQuota?: number
   /** 导出数据回调 */
   onExport: () => void
   /** 导入数据回调 */
@@ -67,7 +65,6 @@ export function Drawer({
   themeMode,
   onThemeChange,
   storageUsed = 0,
-  storageQuota = 0,
   onExport,
   onImport,
   onClearData,
@@ -100,8 +97,6 @@ export function Drawer({
   const handleBackdropClick = useCallback(() => {
     onClose()
   }, [onClose])
-
-  const storagePercentage = storageQuota > 0 ? (storageUsed / storageQuota) * 100 : 0
 
   return (
     <AnimatePresence>
@@ -151,14 +146,8 @@ export function Drawer({
                   存储空间
                 </h3>
                 <div className="rounded-md border border-border bg-surface p-3">
-                  <div className="mb-2 h-2 overflow-hidden rounded-full bg-border">
-                    <div
-                      className="h-full bg-foreground transition-all duration-300"
-                      style={{ width: `${Math.min(storagePercentage, 100)}%` }}
-                    />
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {formatStorageSize(storageUsed)} / {formatStorageSize(storageQuota)}
+                  <div className="text-sm text-foreground">
+                    已使用 {formatStorageSize(storageUsed)}
                   </div>
                 </div>
               </section>

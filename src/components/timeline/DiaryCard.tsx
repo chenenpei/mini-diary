@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
 import { Pencil, Trash2 } from 'lucide-react'
@@ -32,8 +33,21 @@ interface DiaryCardProps {
  * - 正文: Primary, 标准字号，完整展示
  * - 图片: 圆角 sm
  */
+const DOUBLE_TAP_DELAY = 300
+
 export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelete, className }: DiaryCardProps) {
+  const lastTapRef = useRef<number>(0)
   const formattedTime = formatTime(entry.createdAt)
+
+  const handleTap = () => {
+    const now = Date.now()
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      onEdit?.(entry)
+      lastTapRef.current = 0
+    } else {
+      lastTapRef.current = now
+    }
+  }
 
   const dropdownItems = [
     {
@@ -54,9 +68,11 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
   return (
     <article
       className={cn(
-        'relative rounded-lg bg-card p-4 shadow-sm border border-border sm:p-5',
+        'relative rounded-lg bg-card px-4 pb-4 pt-3 shadow-sm ring-1 ring-black/5 dark:border dark:border-border sm:px-5 sm:pb-5 sm:pt-3.5',
         className
       )}
+      onDoubleClick={() => onEdit?.(entry)}
+      onClick={handleTap}
     >
       {/* Dropdown menu */}
       <div className="absolute right-3 top-3 sm:right-4 sm:top-4">

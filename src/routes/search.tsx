@@ -264,7 +264,7 @@ function SearchPage() {
             autoFocus
             className={cn(
               'w-full rounded-sm border border-border bg-surface py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground',
-              'focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground',
+              'focus:outline-none',
               'transition-colors'
             )}
           />

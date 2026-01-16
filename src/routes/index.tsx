@@ -282,7 +282,6 @@ function HomePage() {
         themeMode={themeMode}
         onThemeChange={setTheme}
         storageUsed={storageData?.usage ?? 0}
-        storageQuota={storageData?.quota ?? 0}
         onExport={handleExport}
         onImport={handleImportClick}
         onClearData={handleClearData}

@@ -38,11 +38,14 @@ export function DatePicker({
 
   // Current view month (YYYY-MM)
   const [viewMonth, setViewMonth] = useState(() => selectedDate.slice(0, 7))
+  // Year selector mode
+  const [showYearSelector, setShowYearSelector] = useState(false)
 
   // Reset view to selected date when opening
   useEffect(() => {
     if (isOpen) {
       setViewMonth(selectedDate.slice(0, 7))
+      setShowYearSelector(false)
     }
   }, [isOpen, selectedDate])
 
@@ -149,6 +152,47 @@ export function DatePicker({
 
   const weekdays = ['日', '一', '二', '三', '四', '五', '六']
 
+  // Generate year list (from current year back to Unix epoch 1970)
+  const MIN_YEAR = 1970
+  const yearList = useMemo(() => {
+    const { year: maxYear } = parseYearMonth(max.slice(0, 7))
+    const years: number[] = []
+    for (let y = maxYear; y >= MIN_YEAR; y--) {
+      years.push(y)
+    }
+    return years
+  }, [max])
+
+  // Ref for year selector scroll container
+  const yearSelectorRef = useRef<HTMLDivElement>(null)
+
+  // Handle year selection
+  const handleYearSelect = useCallback((year: number) => {
+    const { month } = parseYearMonth(viewMonth)
+    const { year: maxYear, month: maxMonth } = parseYearMonth(max.slice(0, 7))
+
+    // If selecting current year and current month exceeds max month, use max month
+    let newMonth = month
+    if (year === maxYear && month > maxMonth) {
+      newMonth = maxMonth
+    }
+
+    setViewMonth(`${year}-${String(newMonth).padStart(2, '0')}`)
+    setShowYearSelector(false)
+  }, [viewMonth, max])
+
+  // Scroll to current year when year selector opens
+  useEffect(() => {
+    if (showYearSelector && yearSelectorRef.current) {
+      const { year: currentYear } = parseYearMonth(viewMonth)
+      const { year: maxYear } = parseYearMonth(max.slice(0, 7))
+      const yearIndex = maxYear - currentYear
+      // Each row has 3 items, row height ~40px
+      const rowIndex = Math.floor(yearIndex / 3)
+      yearSelectorRef.current.scrollTop = rowIndex * 40
+    }
+  }, [showYearSelector, viewMonth, max])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -185,7 +229,13 @@ export function DatePicker({
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <span className="font-medium text-foreground">{monthYearDisplay}</span>
+              <button
+                type="button"
+                onClick={() => setShowYearSelector(!showYearSelector)}
+                className="rounded-md px-2 py-1 font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                {monthYearDisplay}
+              </button>
               <button
                 type="button"
                 onClick={handleNextMonth}
@@ -202,66 +252,95 @@ export function DatePicker({
               </button>
             </div>
 
-            {/* Weekday headers */}
-            <div className="mb-1 grid grid-cols-7 gap-1">
-              {weekdays.map((day) => (
-                <div
-                  key={day}
-                  className="text-center text-xs font-medium text-muted-foreground"
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Days grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {calendarDays.map(({ date, day, isCurrentMonth, isDisabled }) => {
-                const isSelected = date === selectedDate
-                const isToday = date === toDateString(new Date())
-                const hasEntry = datesWithEntries?.has(date)
-
-                return (
-                  <button
-                    key={date}
-                    type="button"
-                    onClick={() => handleDateSelect(date)}
-                    disabled={isDisabled}
-                    className={cn(
-                      'relative flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors',
-                      !isCurrentMonth && 'text-muted-foreground/50',
-                      isCurrentMonth && !isSelected && !isDisabled && 'text-foreground hover:bg-muted',
-                      isSelected && 'bg-foreground text-background',
-                      isToday && !isSelected && 'ring-1 ring-foreground/30',
-                      isDisabled && 'cursor-not-allowed opacity-30'
-                    )}
-                    aria-label={date}
-                    aria-selected={isSelected}
-                  >
-                    {day}
-                    {hasEntry && !isSelected && (
-                      <span
+            {showYearSelector ? (
+              /* Year selector grid */
+              <div ref={yearSelectorRef} className="max-h-[280px] overflow-y-auto">
+                <div className="grid grid-cols-3 gap-2">
+                  {yearList.map((year) => {
+                    const { year: currentYear } = parseYearMonth(viewMonth)
+                    const isCurrentYear = year === currentYear
+                    return (
+                      <button
+                        key={year}
+                        type="button"
+                        onClick={() => handleYearSelect(year)}
                         className={cn(
-                          'absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full',
-                          isCurrentMonth ? 'bg-foreground/60' : 'bg-muted-foreground/40'
+                          'rounded-md py-2 text-sm transition-colors',
+                          isCurrentYear
+                            ? 'bg-foreground text-background'
+                            : 'text-foreground hover:bg-muted'
                         )}
-                      />
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+                      >
+                        {year}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Weekday headers */}
+                <div className="mb-1 grid grid-cols-7 gap-1">
+                  {weekdays.map((day) => (
+                    <div
+                      key={day}
+                      className="text-center text-xs font-medium text-muted-foreground"
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
 
-            {/* Today shortcut */}
-            <div className="mt-3 border-t border-border pt-3">
-              <button
-                type="button"
-                onClick={() => handleDateSelect(toDateString(new Date()))}
-                className="w-full rounded-md py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-              >
-                今天
-              </button>
-            </div>
+                {/* Days grid */}
+                <div className="grid grid-cols-7 gap-1">
+                  {calendarDays.map(({ date, day, isCurrentMonth, isDisabled }) => {
+                    const isSelected = date === selectedDate
+                    const isToday = date === toDateString(new Date())
+                    const hasEntry = datesWithEntries?.has(date)
+
+                    return (
+                      <button
+                        key={date}
+                        type="button"
+                        onClick={() => handleDateSelect(date)}
+                        disabled={isDisabled}
+                        className={cn(
+                          'relative flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors',
+                          !isCurrentMonth && 'text-muted-foreground/50',
+                          isCurrentMonth && !isSelected && !isDisabled && 'text-foreground hover:bg-muted',
+                          isSelected && 'bg-foreground text-background',
+                          isToday && !isSelected && 'ring-1 ring-foreground/30',
+                          isDisabled && 'cursor-not-allowed opacity-30'
+                        )}
+                        aria-label={date}
+                        aria-selected={isSelected}
+                      >
+                        {day}
+                        {hasEntry && !isSelected && (
+                          <span
+                            className={cn(
+                              'absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full',
+                              isCurrentMonth ? 'bg-foreground/60' : 'bg-muted-foreground/40'
+                            )}
+                          />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Today shortcut */}
+                <div className="mt-3 border-t border-border pt-3">
+                  <button
+                    type="button"
+                    onClick={() => handleDateSelect(toDateString(new Date()))}
+                    className="w-full rounded-md py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    今天
+                  </button>
+                </div>
+              </>
+            )}
           </motion.div>
         </>
       )}

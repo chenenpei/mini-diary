@@ -83,7 +83,7 @@ export function DiaryEditor({
         autoFocus={autoFocus}
         className={cn(
           'min-h-[300px] w-full resize-none rounded-md border border-border bg-surface p-4 text-base leading-relaxed text-foreground placeholder:text-muted-foreground',
-          'focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary',
+          'focus:outline-none',
           'sm:min-h-[400px] sm:p-5'
         )}
       />
