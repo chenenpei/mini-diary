@@ -2,6 +2,8 @@
 
 极简主义 PWA 日记应用，数据存储在本地浏览器。
 
+**在线预览**: [https://cep-mini-diary.netlify.app/](https://cep-mini-diary.netlify.app/)
+
 ## 特性
 
 - 📝 **极简记录** - 像发微博一样简单，打开即写
