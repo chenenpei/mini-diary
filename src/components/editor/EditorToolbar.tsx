@@ -2,7 +2,7 @@
 
 import { useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ImagePlus, Bold, List } from 'lucide-react'
+import { ImagePlus, Bold, List, ListOrdered } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
 import { processImage, createImageUrl, validateImage } from '@/lib/image'
@@ -141,41 +141,131 @@ export function EditorToolbar({
     }
   }, [textareaRef, setContent])
 
-  // 列表按钮处理
+  // 无序列表按钮处理（支持多行）
   const handleList = useCallback(() => {
     const textarea = textareaRef.current
     if (!textarea || !setContent) return
 
-    const { start } = getSelection()
+    const { start, end } = getSelection()
     const content = textarea.value
 
-    // 找到当前行的开始位置
-    let lineStart = start
-    while (lineStart > 0 && content[lineStart - 1] !== '\n') {
-      lineStart--
+    // 找到选区覆盖的所有行
+    let blockStart = start
+    while (blockStart > 0 && content[blockStart - 1] !== '\n') {
+      blockStart--
+    }
+    let blockEnd = end
+    while (blockEnd < content.length && content[blockEnd] !== '\n') {
+      blockEnd++
     }
 
-    // 检查行首是否已有列表标记
-    const lineContent = content.substring(lineStart)
-    if (lineContent.startsWith('- ')) {
-      // 移除列表标记
-      const newText =
-        content.substring(0, lineStart) + content.substring(lineStart + 2)
-      setContent(newText)
-      requestAnimationFrame(() => {
-        textarea.focus()
-        textarea.setSelectionRange(start - 2, start - 2)
+    // 获取选中的文本块并按行分割
+    const selectedBlock = content.substring(blockStart, blockEnd)
+    const lines = selectedBlock.split('\n')
+
+    // 检查是否所有行都已有列表标记
+    const allHaveMarker = lines.every((line) => line.startsWith('- '))
+
+    let newLines: string[]
+    let offsetChange: number
+
+    if (allHaveMarker) {
+      // 移除所有行的列表标记
+      newLines = lines.map((line) => line.substring(2))
+      offsetChange = -2
+    } else {
+      // 为所有行添加列表标记
+      newLines = lines.map((line) => `- ${line}`)
+      offsetChange = 2
+    }
+
+    const newBlock = newLines.join('\n')
+    const newText = content.substring(0, blockStart) + newBlock + content.substring(blockEnd)
+    setContent(newText)
+
+    requestAnimationFrame(() => {
+      textarea.focus()
+      // 调整选区位置
+      const newStart = Math.max(blockStart, start + offsetChange)
+      const newEnd = end + offsetChange * lines.length
+      textarea.setSelectionRange(newStart, newEnd)
+    })
+  }, [textareaRef, setContent, getSelection])
+
+  // 序号列表按钮处理（支持多行）
+  const handleOrderedList = useCallback(() => {
+    const textarea = textareaRef.current
+    if (!textarea || !setContent) return
+
+    const { start, end } = getSelection()
+    const content = textarea.value
+
+    // 找到选区覆盖的所有行
+    let blockStart = start
+    while (blockStart > 0 && content[blockStart - 1] !== '\n') {
+      blockStart--
+    }
+    let blockEnd = end
+    while (blockEnd < content.length && content[blockEnd] !== '\n') {
+      blockEnd++
+    }
+
+    // 获取选中的文本块并按行分割
+    const selectedBlock = content.substring(blockStart, blockEnd)
+    const lines = selectedBlock.split('\n')
+
+    // 检查是否所有行都已有序号列表标记
+    const allHaveMarker = lines.every((line) => /^\d+\. /.test(line))
+
+    let newLines: string[]
+    let totalOffsetChange = 0
+
+    if (allHaveMarker) {
+      // 移除所有行的序号列表标记
+      newLines = lines.map((line) => {
+        const match = line.match(/^(\d+)\. /)
+        if (match) {
+          totalOffsetChange -= match[0].length
+          return line.substring(match[0].length)
+        }
+        return line
       })
     } else {
-      // 添加列表标记
-      const newText = `${content.substring(0, lineStart)}- ${content.substring(lineStart)}`
-      setContent(newText)
-      requestAnimationFrame(() => {
-        textarea.focus()
-        textarea.setSelectionRange(start + 2, start + 2)
+      // 查找选区前一行的序号以确定起始序号
+      let prevLineEnd = blockStart - 1
+      let prevLineStart = prevLineEnd
+      while (prevLineStart > 0 && content[prevLineStart - 1] !== '\n') {
+        prevLineStart--
+      }
+      const prevLineContent = prevLineStart >= 0 ? content.substring(prevLineStart, prevLineEnd + 1) : ''
+      const prevMatch = prevLineContent.match(/^(\d+)\. /)
+      let startNumber = prevMatch?.[1] ? Number.parseInt(prevMatch[1], 10) + 1 : 1
+
+      // 为所有行添加序号列表标记
+      newLines = lines.map((line) => {
+        const marker = `${startNumber}. `
+        totalOffsetChange += marker.length
+        startNumber++
+        return `${marker}${line}`
       })
     }
-  }, [textareaRef, setContent])
+
+    const newBlock = newLines.join('\n')
+    const newText = content.substring(0, blockStart) + newBlock + content.substring(blockEnd)
+    setContent(newText)
+
+    requestAnimationFrame(() => {
+      textarea.focus()
+      // 调整选区位置
+      const firstLineMatch = lines[0]?.match(/^(\d+)\. /)
+      const firstLineOffset = allHaveMarker
+        ? -(firstLineMatch?.[0].length ?? 0)
+        : `1. `.length
+      const newStart = Math.max(blockStart, start + firstLineOffset)
+      const newEnd = end + totalOffsetChange
+      textarea.setSelectionRange(newStart, newEnd)
+    })
+  }, [textareaRef, setContent, getSelection])
 
   // 图片选择处理
   const handleFileSelect = useCallback(
@@ -241,10 +331,10 @@ export function EditorToolbar({
     >
       {/* 图片按钮 */}
       <ToolbarButton
-        icon={<ImagePlus className="h-5 w-5" />}
+        icon={<ImagePlus className="h-4 w-4" />}
+        label={t('addImage')}
         onClick={handleImageClick}
         disabled={remainingSlots <= 0}
-        aria-label={t('addImage')}
       />
 
       {/* 分隔线 */}
@@ -252,18 +342,26 @@ export function EditorToolbar({
 
       {/* 加粗按钮 */}
       <ToolbarButton
-        icon={<Bold className="h-5 w-5" />}
+        icon={<Bold className="h-4 w-4" />}
+        label={t('bold')}
         onClick={handleBold}
         onPointerDown={saveSelection}
-        aria-label={t('bold')}
       />
 
-      {/* 列表按钮 */}
+      {/* 无序列表按钮 */}
       <ToolbarButton
-        icon={<List className="h-5 w-5" />}
+        icon={<List className="h-4 w-4" />}
+        label={t('list')}
         onClick={handleList}
         onPointerDown={saveSelection}
-        aria-label={t('list')}
+      />
+
+      {/* 序号列表按钮 */}
+      <ToolbarButton
+        icon={<ListOrdered className="h-4 w-4" />}
+        label={t('orderedList')}
+        onClick={handleOrderedList}
+        onPointerDown={saveSelection}
       />
 
       {/* 隐藏的文件 input */}
@@ -281,19 +379,19 @@ export function EditorToolbar({
 
 interface ToolbarButtonProps {
   icon: React.ReactNode
+  label: string
   onClick?: () => void
   /** 在 pointerdown 时调用（用于保存选区位置） */
   onPointerDown?: () => void
   disabled?: boolean
-  'aria-label': string
 }
 
 function ToolbarButton({
   icon,
+  label,
   onClick,
   onPointerDown,
   disabled,
-  'aria-label': ariaLabel,
 }: ToolbarButtonProps) {
   // 在 mousedown/touchstart 时保存选区，并阻止默认行为防止焦点丢失
   const handlePointerDown = useCallback(
@@ -313,15 +411,15 @@ function ToolbarButton({
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
       disabled={disabled}
-      aria-label={ariaLabel}
       className={cn(
-        'flex h-9 w-9 items-center justify-center rounded-sm text-foreground transition-opacity',
+        'flex h-8 items-center gap-1.5 rounded-md px-2.5 text-foreground transition-colors',
         disabled
           ? 'cursor-not-allowed opacity-40'
-          : 'hover:opacity-70 active:opacity-50'
+          : 'hover:bg-muted active:opacity-70'
       )}
     >
       {icon}
+      <span className="text-sm">{label}</span>
     </button>
   )
 }
