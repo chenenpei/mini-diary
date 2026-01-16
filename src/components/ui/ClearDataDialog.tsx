@@ -88,7 +88,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: easing.smooth }}
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/80"
             onClick={() => !isLoading && onCancel()}
             aria-hidden="true"
           />
@@ -99,7 +99,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2, ease: easing.smooth }}
-            className="relative w-full max-w-sm rounded-lg bg-background p-6 shadow-lg"
+            className="relative w-full max-w-sm rounded-lg bg-card p-6 shadow-lg"
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="clear-dialog-title"
@@ -117,8 +117,8 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
 
             {/* 警告图标 */}
             <div className="mb-4 flex justify-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                <AlertTriangle className="h-6 w-6 text-red-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
             </div>
 
@@ -155,7 +155,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="flex-1 rounded-sm bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
+                      className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90"
                     >
                       继续
                     </button>
@@ -201,7 +201,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       type="button"
                       onClick={handleNextStep}
                       disabled={!isInputValid}
-                      className="flex-1 rounded-sm bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50"
+                      className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
                     >
                       继续
                     </button>
@@ -234,7 +234,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       type="button"
                       onClick={handleConfirm}
                       disabled={isLoading}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-sm bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
                     >
                       {isLoading ? (
                         <>

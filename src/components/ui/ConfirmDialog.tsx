@@ -75,14 +75,14 @@ export function ConfirmDialog({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 px-4"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 px-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onCancel}
         >
           <motion.div
-            className="w-full max-w-sm rounded-lg bg-background p-6 shadow-xl"
+            className="w-full max-w-sm rounded-lg bg-card p-6 shadow-xl"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}

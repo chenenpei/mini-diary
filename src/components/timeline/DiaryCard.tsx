@@ -54,7 +54,7 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
   return (
     <article
       className={cn(
-        'relative rounded-lg bg-white p-4 shadow-sm ring-1 ring-black/5 sm:p-5',
+        'relative rounded-lg bg-card p-4 shadow-sm border border-border sm:p-5',
         className
       )}
     >

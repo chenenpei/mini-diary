@@ -19,7 +19,7 @@
 
   /* === shadcn/ui Variables === */
   --foreground: #000000;
-  --card: #f9fafb;
+  --card: #ffffff;
   --card-foreground: #000000;
   --popover: #ffffff;
   --popover-foreground: #000000;
@@ -50,32 +50,32 @@
 }
 
 .dark {
-  /* === Color System (Dark Mode) === */
-  --color-primary: #ffffff;
-  --color-secondary: #f3f4f6;
-  --color-tertiary: #9ca3af;
-  --background: #000000;
-  --surface: #111827;
-  --border: #1f2937;
+  /* === Color System (Dark Mode) - Zinc Palette (Refined) === */
+  --color-primary: #f4f4f5;
+  --color-secondary: #a1a1aa;
+  --color-tertiary: #52525b;
+  --background: #09090b;
+  --surface: #18181b;
+  --border: #27272a;
 
   /* === shadcn/ui Variables === */
-  --foreground: #ffffff;
-  --card: #111827;
-  --card-foreground: #ffffff;
-  --popover: #111827;
-  --popover-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #000000;
-  --secondary: #111827;
-  --secondary-foreground: #f3f4f6;
-  --muted: #111827;
-  --muted-foreground: #9ca3af;
-  --accent: #111827;
-  --accent-foreground: #f3f4f6;
-  --destructive: #dc2626;
+  --foreground: #f4f4f5;
+  --card: #18181b;
+  --card-foreground: #f4f4f5;
+  --popover: #18181b;
+  --popover-foreground: #f4f4f5;
+  --primary: #27272a;
+  --primary-foreground: #ffffff;
+  --secondary: #18181b;
+  --secondary-foreground: #a1a1aa;
+  --muted: #18181b;
+  --muted-foreground: #52525b;
+  --accent: #18181b;
+  --accent-foreground: #a1a1aa;
+  --destructive: #b91c1c;
   --destructive-foreground: #ffffff;
-  --input: #1f2937;
-  --ring: #ffffff;
+  --input: #27272a;
+  --ring: #f4f4f5;
 
   /* === Shadows (Dark Mode - deeper black for natural "lift" effect) === */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
