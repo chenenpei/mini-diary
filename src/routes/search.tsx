@@ -202,7 +202,7 @@ function SearchPage() {
   const { data: results, isLoading, isFetching } = useSearchEntries(debouncedQuery)
 
   const handleBack = useCallback(() => {
-    navigate({ to: '/' })
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
   }, [navigate])
 
   const handleClear = useCallback(() => {
@@ -216,7 +216,8 @@ function SearchPage() {
         addToSearchHistory(debouncedQuery.trim())
         setSearchHistory(getSearchHistory())
       }
-      navigate({ to: '/entry/$id', params: { id: entry.id } })
+      // 跳转到首页时间线，传递日期和条目 ID
+      navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
     },
     [navigate, debouncedQuery]
   )

@@ -76,12 +76,12 @@ function EditEntryPage() {
       setShowCancelConfirm(true)
       return
     }
-    navigate({ to: '/' })
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
   }, [isDirty, navigate])
 
   const handleCancelConfirm = useCallback(() => {
     setShowCancelConfirm(false)
-    navigate({ to: '/' })
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
   }, [navigate])
 
   const handleCancelCancel = useCallback(() => {
@@ -93,7 +93,7 @@ function EditEntryPage() {
 
     // 没有内容时直接返回（相当于取消）
     if (!content.trim()) {
-      navigate({ to: '/' })
+      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
       return
     }
 
@@ -127,7 +127,7 @@ function EditEntryPage() {
       })
 
       setIsDirty(false)
-      navigate({ to: '/' })
+      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
     } catch {
       alert('保存失败，请重试')
     }
@@ -153,7 +153,7 @@ function EditEntryPage() {
             <p className="text-muted-foreground">日记不存在或加载失败</p>
             <button
               type="button"
-              onClick={() => navigate({ to: '/' })}
+              onClick={() => navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })}
               className="mt-4 text-primary hover:underline"
             >
               返回首页

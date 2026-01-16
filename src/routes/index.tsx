@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
@@ -14,7 +14,7 @@ import {
   dateUtils,
 } from '@/components/timeline'
 import { ConfirmDialog, DatePicker, ClearDataDialog, useToast } from '@/components/ui'
-import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry } from '@/hooks/useEntries'
+import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry, useDistinctDates } from '@/hooks/useEntries'
 import { useImagesByIds, useDeleteImagesByEntry } from '@/hooks/useImages'
 import { useTheme, useStorageEstimate } from '@/hooks'
 import { downloadExport, importData, clearAllData } from '@/lib/dataTransfer'
@@ -22,15 +22,41 @@ import type { DiaryEntry } from '@/types'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    date: typeof search.date === 'string' ? search.date : undefined,
+    scrollTo: typeof search.scrollTo === 'string' ? search.scrollTo : undefined,
+  }),
 })
 
 function HomePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { addToast } = useToast()
-  const [currentDate, setCurrentDate] = useState(dateUtils.getToday)
+  const { date: urlDate, scrollTo } = Route.useSearch()
+
+  // 初始化时使用 URL 中的日期，否则使用今天
+  const [currentDate, setCurrentDate] = useState(() => urlDate ?? dateUtils.getToday())
   const { data: entries, isLoading } = useEntriesByDate(currentDate)
   const prefetchEntries = usePrefetchEntriesByDate()
+
+  // URL 日期变化时更新状态
+  useEffect(() => {
+    if (urlDate && urlDate !== currentDate) {
+      setCurrentDate(urlDate)
+    }
+  }, [urlDate, currentDate])
+
+  // 获取有日记的日期列表
+  const { data: distinctDates } = useDistinctDates()
+  const datesWithEntriesSet = useMemo(
+    () => new Set(distinctDates ?? []),
+    [distinctDates]
+  )
+
+  // 滚动完成后清除 URL 参数
+  const handleScrollComplete = useCallback(() => {
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined }, replace: true })
+  }, [navigate])
 
   // Theme
   const { themeMode, setTheme } = useTheme()
@@ -221,6 +247,8 @@ function HomePage() {
                 onDelete={handleDeleteClick}
                 thumbnailUrlsMap={thumbnailUrlsMap}
                 fullImageUrlsMap={fullImageUrlsMap}
+                scrollToId={scrollTo}
+                onScrollComplete={handleScrollComplete}
               />
             {entries.length < 3 && <SparseHint />}
           </>
@@ -243,6 +271,7 @@ function HomePage() {
       <DatePicker
         isOpen={showDatePicker}
         selectedDate={currentDate}
+        datesWithEntries={datesWithEntriesSet}
         onSelect={handleDateSelect}
         onClose={() => setShowDatePicker(false)}
       />

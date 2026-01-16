@@ -12,6 +12,8 @@ interface DatePickerProps {
   selectedDate: string
   /** Max selectable date (YYYY-MM-DD), defaults to today */
   maxDate?: string | undefined
+  /** Dates that have entries (YYYY-MM-DD) */
+  datesWithEntries?: Set<string>
   /** Called when a date is selected */
   onSelect: (date: string) => void
   /** Called when picker should close */
@@ -27,6 +29,7 @@ export function DatePicker({
   isOpen,
   selectedDate,
   maxDate,
+  datesWithEntries,
   onSelect,
   onClose,
 }: DatePickerProps) {
@@ -216,6 +219,7 @@ export function DatePicker({
               {calendarDays.map(({ date, day, isCurrentMonth, isDisabled }) => {
                 const isSelected = date === selectedDate
                 const isToday = date === toDateString(new Date())
+                const hasEntry = datesWithEntries?.has(date)
 
                 return (
                   <button
@@ -224,7 +228,7 @@ export function DatePicker({
                     onClick={() => handleDateSelect(date)}
                     disabled={isDisabled}
                     className={cn(
-                      'flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors',
+                      'relative flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors',
                       !isCurrentMonth && 'text-muted-foreground/50',
                       isCurrentMonth && !isSelected && !isDisabled && 'text-foreground hover:bg-muted',
                       isSelected && 'bg-foreground text-background',
@@ -235,6 +239,14 @@ export function DatePicker({
                     aria-selected={isSelected}
                   >
                     {day}
+                    {hasEntry && !isSelected && (
+                      <span
+                        className={cn(
+                          'absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full',
+                          isCurrentMonth ? 'bg-foreground/60' : 'bg-muted-foreground/40'
+                        )}
+                      />
+                    )}
                   </button>
                 )
               })}

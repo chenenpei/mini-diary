@@ -56,12 +56,12 @@ function NewEntryPage() {
       setShowCancelConfirm(true)
       return
     }
-    navigate({ to: '/' })
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
   }, [isDirty, content, navigate])
 
   const handleCancelConfirm = useCallback(() => {
     setShowCancelConfirm(false)
-    navigate({ to: '/' })
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
   }, [navigate])
 
   const handleCancelCancel = useCallback(() => {
@@ -94,7 +94,7 @@ function NewEntryPage() {
         })
       }
 
-      navigate({ to: '/' })
+      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
     } catch {
       alert('保存失败，请重试')
     }
