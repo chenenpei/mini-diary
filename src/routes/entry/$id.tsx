@@ -142,7 +142,7 @@ function EditEntryPage() {
 
     // 没有内容时直接返回（相当于取消）
     if (!content.trim()) {
-      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
+      navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
       return
     }
 
@@ -177,7 +177,7 @@ function EditEntryPage() {
       })
 
       setIsDirty(false)
-      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
+      navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
     } catch {
       alert('保存失败，请重试')
     }
