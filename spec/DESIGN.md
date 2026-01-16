@@ -169,6 +169,13 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
 - 正文：Primary，标准字号
 - 图片：圆角 sm
 
+### 语言切换按钮组
+- 位置：设置侧边栏，主题切换下方
+- 样式：与主题切换保持一致的按钮组
+- 两个选项：简体中文 / English
+- 选中状态：`border-foreground bg-surface`
+- 未选中状态：`border-border hover:bg-surface`
+
 ### 输入框
 - 背景：Surface
 - 边框：1px Border

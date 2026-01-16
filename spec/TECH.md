@@ -34,6 +34,12 @@
 | Canvas API | 客户端图片压缩（轻量级方案） |
 | react-markdown + remark-gfm | Markdown 渲染 |
 
+### 国际化
+| 技术 | 用途 |
+|------|------|
+| i18next + react-i18next | 多语言支持 |
+| Intl.DateTimeFormat | 日期本地化 |
+
 > **备注**：使用原生 Canvas API 进行图片压缩，避免依赖已停止维护的 browser-image-compression。如需更高级功能，可考虑 @aspect-dev/image-compressor 或 Squoosh WASM。
 
 ### 测试工具
@@ -70,6 +76,13 @@ app/
 │       ├── TopBar.tsx
 │       ├── Drawer.tsx
 │       └── FAB.tsx
+├── i18n/                   # 国际化
+│   ├── index.ts            # i18n 初始化配置
+│   ├── types.ts            # TypeScript 类型定义
+│   ├── useLocale.ts        # 语言切换 hook
+│   └── locales/            # 翻译文件
+│       ├── zh-CN/          # 中文翻译
+│       └── en/             # 英文翻译
 ├── lib/
 │   ├── db.ts               # Dexie 数据库实例
 │   ├── repositories/       # 数据访问层
@@ -397,7 +410,52 @@ import 'fake-indexeddb/auto';
 
 ---
 
-## 12. 开发命令
+## 12. 国际化 (i18n)
+
+### 技术方案
+使用 `i18next` + `react-i18next` 实现多语言支持。
+
+### 翻译文件结构
+```
+src/i18n/locales/
+├── zh-CN/
+│   ├── common.json   # 通用词条
+│   ├── entry.json    # 日记相关
+│   ├── editor.json   # 编辑器相关
+│   ├── settings.json # 设置相关
+│   └── ...
+└── en/
+    └── (同上结构)
+```
+
+### 使用方式
+```typescript
+import { useTranslation } from 'react-i18next'
+
+function MyComponent() {
+  const { t } = useTranslation('entry')
+  return <h1>{t('createTitle')}</h1>
+}
+```
+
+### 日期本地化
+使用原生 `Intl.DateTimeFormat` 处理日期格式：
+```typescript
+// 中文: "1月15日 周三"
+// 英文: "Wed, Jan 15"
+new Intl.DateTimeFormat(locale, {
+  month: 'short',
+  day: 'numeric',
+  weekday: 'short'
+}).format(date)
+```
+
+### 语言持久化
+语言偏好存储在 `localStorage`，键名为 `mini-diary-locale`。
+
+---
+
+## 14. 开发命令
 
 ```bash
 pnpm install          # 安装依赖
@@ -412,7 +470,7 @@ pnpm test:watch       # 监听模式
 
 ---
 
-## 13. 部署
+## 15. 部署
 
 - **构建产物**：静态文件（SPA）
 - **托管选项**：Vercel / Netlify / Cloudflare Pages

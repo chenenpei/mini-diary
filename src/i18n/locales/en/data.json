@@ -1,0 +1,23 @@
+{
+  "export": "Export Data",
+  "exporting": "Exporting...",
+  "exportDescription": "Export as JSON backup file",
+  "exportSuccess": "Data exported successfully",
+  "exportFailed": "Export failed. Please try again.",
+  "import": "Import Data",
+  "importing": "Importing...",
+  "importDescription": "Restore from JSON backup",
+  "importSuccess": "Imported {{entryCount}} entries and {{imageCount}} images",
+  "importFailed": "Import failed",
+  "clearAll": "Clear All Data",
+  "clearDescription": "Delete all entries (irreversible)",
+  "clearAllTitle": "Clear All Data",
+  "clearWarning": "This will permanently delete all entries and images. This action cannot be undone. Make sure you have backed up your data.",
+  "confirmInputHint": "Type <1>{{confirmText}}</1> to confirm deletion",
+  "confirmDeleteText": "DELETE ALL",
+  "finalConfirmation": "Final confirmation: Click the button below to delete all data immediately.",
+  "clearSuccess": "All data has been cleared",
+  "invalidBackupFormat": "Invalid backup file format",
+  "invalidJsonFile": "Invalid JSON file",
+  "fileReadFailed": "Failed to read file"
+}

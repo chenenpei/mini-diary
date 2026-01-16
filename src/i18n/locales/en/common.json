@@ -1,0 +1,23 @@
+{
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "save": "Save",
+  "saving": "Saving...",
+  "delete": "Delete",
+  "deleting": "Deleting...",
+  "edit": "Edit",
+  "close": "Close",
+  "back": "Back",
+  "backToHome": "Back to Home",
+  "leave": "Leave",
+  "continue": "Continue",
+  "continueEditing": "Continue Editing",
+  "search": "Search",
+  "clear": "Clear",
+  "remove": "Remove",
+  "processing": "Processing...",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
+  "moreActions": "More actions",
+  "confirmDelete": "Confirm Delete"
+}

@@ -1,0 +1,23 @@
+{
+  "cancel": "取消",
+  "confirm": "确认",
+  "save": "保存",
+  "saving": "保存中...",
+  "delete": "删除",
+  "deleting": "删除中...",
+  "edit": "编辑",
+  "close": "关闭",
+  "back": "返回",
+  "backToHome": "返回首页",
+  "leave": "离开",
+  "continue": "继续",
+  "continueEditing": "继续编辑",
+  "search": "搜索",
+  "clear": "清除",
+  "remove": "移除",
+  "processing": "处理中...",
+  "openMenu": "打开菜单",
+  "closeMenu": "关闭菜单",
+  "moreActions": "更多操作",
+  "confirmDelete": "确定删除"
+}

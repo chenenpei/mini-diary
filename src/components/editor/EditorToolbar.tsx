@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ImagePlus, Bold, List } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
@@ -55,6 +56,8 @@ export function EditorToolbar({
   onImageError,
   className,
 }: EditorToolbarProps) {
+  const { t } = useTranslation('editor')
+  const { t: tImage } = useTranslation('image')
   const keyboardHeight = useKeyboardHeight()
   const fileInputRef = useRef<HTMLInputElement>(null)
   // 使用 ref 保存选区位置，确保同步读写
@@ -204,19 +207,19 @@ export function EditorToolbar({
         try {
           const validation = validateImage(imageItem.file)
           if (!validation.valid) {
-            onImageError?.(imageItem.id, validation.error ?? '图片验证失败')
+            onImageError?.(imageItem.id, validation.error ?? tImage('validationFailed'))
             continue
           }
 
           const { blob, thumbnail } = await processImage(imageItem.file)
           onImageProcessed?.(imageItem.id, { file: imageItem.file, blob, thumbnail })
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : '处理图片失败'
+          const errorMessage = err instanceof Error ? err.message : tImage('processFailed')
           onImageError?.(imageItem.id, errorMessage)
         }
       }
     },
-    [remainingSlots, onImagesAdd, onImageProcessed, onImageError]
+    [remainingSlots, onImagesAdd, onImageProcessed, onImageError, tImage]
   )
 
   // 触发文件选择
@@ -241,7 +244,7 @@ export function EditorToolbar({
         icon={<ImagePlus className="h-5 w-5" />}
         onClick={handleImageClick}
         disabled={remainingSlots <= 0}
-        aria-label="添加图片"
+        aria-label={t('addImage')}
       />
 
       {/* 分隔线 */}
@@ -252,7 +255,7 @@ export function EditorToolbar({
         icon={<Bold className="h-5 w-5" />}
         onClick={handleBold}
         onPointerDown={saveSelection}
-        aria-label="加粗"
+        aria-label={t('bold')}
       />
 
       {/* 列表按钮 */}
@@ -260,7 +263,7 @@ export function EditorToolbar({
         icon={<List className="h-5 w-5" />}
         onClick={handleList}
         onPointerDown={saveSelection}
-        aria-label="无序列表"
+        aria-label={t('list')}
       />
 
       {/* 隐藏的文件 input */}

@@ -1,0 +1,13 @@
+{
+  "create": "新建日记",
+  "createTitle": "新建日记",
+  "editTitle": "编辑日记",
+  "deleteTitle": "删除日记",
+  "deleteMessage": "确定要删除这条日记吗？此操作无法撤销。",
+  "discardCreateTitle": "放弃新建",
+  "discardEditTitle": "放弃修改",
+  "unsavedMessage": "有未保存的内容，确定要离开吗？",
+  "unsavedChangesMessage": "有未保存的修改，确定要离开吗？",
+  "saveFailed": "保存失败，请重试",
+  "notFound": "日记不存在或加载失败"
+}

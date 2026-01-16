@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -43,6 +44,7 @@ export function Dropdown({
   triggerClassName,
   menuClassName,
 }: DropdownProps) {
+  const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -94,7 +96,7 @@ export function Dropdown({
           'flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
           triggerClassName
         )}
-        aria-label="更多操作"
+        aria-label={t('moreActions')}
         aria-expanded={isOpen}
       >
         {trigger ?? <MoreHorizontal className="h-5 w-5" />}

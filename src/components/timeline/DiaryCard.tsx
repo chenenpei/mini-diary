@@ -1,6 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
+import i18n from '@/i18n'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
 import { Pencil, Trash2 } from 'lucide-react'
@@ -36,6 +38,7 @@ interface DiaryCardProps {
 const DOUBLE_TAP_DELAY = 300
 
 export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelete, className }: DiaryCardProps) {
+  const { t } = useTranslation('common')
   const lastTapRef = useRef<number>(0)
   const formattedTime = formatTime(entry.createdAt)
 
@@ -52,13 +55,13 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
   const dropdownItems = [
     {
       key: 'edit',
-      label: '编辑',
+      label: t('edit'),
       icon: <Pencil className="h-4 w-4" />,
       onClick: () => onEdit?.(entry),
     },
     {
       key: 'delete',
-      label: '删除',
+      label: t('delete'),
       icon: <Trash2 className="h-4 w-4" />,
       destructive: true,
       onClick: () => onDelete?.(entry),
@@ -121,7 +124,8 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
  */
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp)
-  return date.toLocaleTimeString('zh-CN', {
+  const locale = i18n.language === 'en' ? 'en-US' : 'zh-CN'
+  return date.toLocaleTimeString(locale, {
     hour: '2-digit',
     minute: '2-digit',
   })

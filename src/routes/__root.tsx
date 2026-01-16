@@ -3,6 +3,8 @@ import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 import { ToastProvider } from '@/components/ui'
 import { registerServiceWorker } from '@/lib/registerSW'
+import '@/i18n'
+import i18n from '@/i18n'
 import appCss from '../styles.css?url'
 
 interface RouterContext {
@@ -68,8 +70,11 @@ function RootComponent() {
     registerServiceWorker()
   }, [])
 
+  // 获取当前语言
+  const currentLang = i18n.language || 'zh-CN'
+
   return (
-    <html lang="zh-CN">
+    <html lang={currentLang}>
       <head>
         <HeadContent />
       </head>

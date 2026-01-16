@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslation } from 'react-i18next'
+import i18n from '@/i18n'
 import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { ComponentPropsWithoutRef } from 'react'
@@ -35,6 +37,7 @@ export function DateNavigator({
   className,
   ...props
 }: DateNavigatorProps) {
+  const { t } = useTranslation('date')
   const formattedDate = formatDateDisplay(date)
   const isToday = date === getTodayString()
 
@@ -42,7 +45,7 @@ export function DateNavigator({
     <div
       className={cn('flex items-center justify-center gap-2', className)}
       role="navigation"
-      aria-label="日期导航"
+      aria-label={t('navigation')}
       {...props}
     >
       {/* Previous Day Button */}
@@ -50,7 +53,7 @@ export function DateNavigator({
         type="button"
         onClick={onPrevious}
         className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-        aria-label="前一天"
+        aria-label={t('previousDay')}
       >
         <ChevronLeft className="h-5 w-5" />
       </button>
@@ -60,9 +63,9 @@ export function DateNavigator({
         type="button"
         onClick={onDateClick}
         className="touch-target min-w-[120px] rounded-sm px-3 py-1 text-center font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        aria-label="选择日期"
+        aria-label={t('selectDate')}
       >
-        {isToday ? '今天' : formattedDate}
+        {isToday ? t('today') : formattedDate}
       </button>
 
       {/* Next Day Button */}
@@ -74,7 +77,7 @@ export function DateNavigator({
           'touch-target flex items-center justify-center rounded-sm text-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
           disableNext ? 'cursor-not-allowed opacity-40' : 'hover:bg-surface active:opacity-60'
         )}
-        aria-label="后一天"
+        aria-label={t('nextDay')}
       >
         <ChevronRight className="h-5 w-5" />
       </button>
@@ -83,16 +86,26 @@ export function DateNavigator({
 }
 
 /**
- * Format date string for display
- * YYYY-MM-DD -> "M月D日 周X"
+ * Format date string for display using Intl.DateTimeFormat
+ * zh-CN: "1月15日 周三"
+ * en: "Wed, Jan 15"
  */
 function formatDateDisplay(dateStr: string): string {
   const date = new Date(dateStr)
-  const month = date.getMonth() + 1
-  const day = date.getDate()
-  const weekday = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()]
+  const locale = i18n.language === 'en' ? 'en-US' : 'zh-CN'
 
-  return `${month}月${day}日 周${weekday}`
+  if (locale === 'zh-CN') {
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    const weekday = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()]
+    return `${month}月${day}日 周${weekday}`
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
 }
 
 /**

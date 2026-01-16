@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { useState, useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ImagePreview } from './ImagePreview'
 
 const MAX_CONTENT_LENGTH = 10000
@@ -61,14 +62,16 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
       newImages = [],
       onExistingImageRemove,
       onNewImageRemove,
-      placeholder = '写点什么...',
+      placeholder,
       autoFocus = false,
       className,
     },
     ref
   ) {
+    const { t } = useTranslation('editor')
     const [content, setContent] = useState(initialContent)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const placeholderText = placeholder ?? t('placeholder')
 
     // 暴露 ref 给父组件
     useImperativeHandle(ref, () => ({
@@ -104,7 +107,7 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
           ref={textareaRef}
           value={content}
           onChange={handleChange}
-          placeholder={placeholder}
+          placeholder={placeholderText}
           autoFocus={autoFocus}
           className={cn(
             'min-h-0 w-full flex-1 resize-none border-none bg-transparent p-0 text-base leading-relaxed text-foreground placeholder:text-muted-foreground',
@@ -168,6 +171,8 @@ export function EditorHeader({
   saveDisabled = false,
   isSaving = false,
 }: EditorHeaderProps) {
+  const { t } = useTranslation('editor')
+
   return (
     <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-border bg-background px-4">
       {/* Back button */}
@@ -176,14 +181,14 @@ export function EditorHeader({
         onClick={onBack}
         className="text-sm text-foreground transition-colors hover:text-foreground/70 active:opacity-60"
       >
-        取消
+        {t('cancel')}
       </button>
 
       {/* Title with dirty indicator */}
       <div className="flex items-center gap-2">
         <span className="text-sm font-medium text-foreground">{title}</span>
         {isDirty && (
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" role="status" aria-label="有未保存的修改" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" role="status" aria-label={t('unsavedChanges')} />
         )}
       </div>
 
@@ -199,7 +204,7 @@ export function EditorHeader({
             : 'hover:bg-primary/90 active:opacity-80'
         )}
       >
-        {isSaving ? '保存中...' : '保存'}
+        {isSaving ? t('saving') : t('save')}
       </button>
     </header>
   )

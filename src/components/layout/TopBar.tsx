@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import { Menu, Search } from 'lucide-react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface TopBarProps extends ComponentPropsWithoutRef<'header'> {
   /** Left action button click handler (menu) */
@@ -35,6 +36,8 @@ export function TopBar({
   className,
   ...props
 }: TopBarProps) {
+  const { t } = useTranslation()
+
   return (
     <header
       className={cn(
@@ -50,7 +53,7 @@ export function TopBar({
             type="button"
             onClick={onMenuClick}
             className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-            aria-label="打开菜单"
+            aria-label={t('openMenu')}
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -67,7 +70,7 @@ export function TopBar({
             type="button"
             onClick={onSearchClick}
             className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-            aria-label="搜索"
+            aria-label={t('search')}
           >
             <Search className="h-6 w-6" />
           </button>

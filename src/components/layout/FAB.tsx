@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface FABProps {
   /** Button icon */
@@ -25,7 +26,10 @@ interface FABProps {
  * - 阴影: md
  * - Hover: scale(1.05) + 阴影增强
  */
-export function FAB({ icon, onClick, className, 'aria-label': ariaLabel = '新建日记' }: FABProps) {
+export function FAB({ icon, onClick, className, 'aria-label': ariaLabel }: FABProps) {
+  const { t } = useTranslation('entry')
+  const label = ariaLabel ?? t('create')
+
   return (
     <motion.button
       type="button"
@@ -36,7 +40,7 @@ export function FAB({ icon, onClick, className, 'aria-label': ariaLabel = '新�
       )}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      aria-label={ariaLabel}
+      aria-label={label}
     >
       {icon}
     </motion.button>

@@ -1,0 +1,13 @@
+{
+  "remove": "Remove image",
+  "prev": "Previous",
+  "next": "Next",
+  "processing": "Processing",
+  "failed": "Failed",
+  "validationFailed": "Image validation failed",
+  "processFailed": "Failed to process image",
+  "unsupportedFormat": "Unsupported format. Please use JPG, PNG, or WebP",
+  "sizeTooLarge": "Image size cannot exceed 10MB",
+  "canvasError": "Cannot create canvas context",
+  "compressionFailed": "Image compression failed"
+}

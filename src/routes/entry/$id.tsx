@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { DiaryEditor, EditorHeader, EditorToolbar } from '@/components/editor'
 import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
 import { Skeleton } from '@/components/timeline'
@@ -31,6 +32,8 @@ export const Route = createFileRoute('/entry/$id')({
 
 function EditEntryPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('entry')
+  const { t: tCommon } = useTranslation('common')
   const { id } = Route.useParams()
 
   const { data: entry, isLoading, error } = useEntry(id)
@@ -179,9 +182,9 @@ function EditEntryPage() {
       setIsDirty(false)
       navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
     } catch {
-      alert('保存失败，请重试')
+      alert(t('saveFailed'))
     }
-  }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate])
+  }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate, t])
 
   const imageCount = existingImages.length + newImages.length
 
@@ -213,7 +216,7 @@ function EditEntryPage() {
   if (isLoading) {
     return (
       <div className="flex h-dvh flex-col bg-background">
-        <EditorHeader title="编辑日记" onBack={handleBack} saveDisabled />
+        <EditorHeader title={t('editTitle')} onBack={handleBack} saveDisabled />
         <main className="flex-1 overflow-y-auto px-4 pt-4">
           <Skeleton className="h-[300px] w-full sm:h-[400px]" />
         </main>
@@ -224,16 +227,16 @@ function EditEntryPage() {
   if (error || !entry) {
     return (
       <div className="flex h-dvh flex-col bg-background">
-        <EditorHeader title="编辑日记" onBack={handleBack} saveDisabled />
+        <EditorHeader title={t('editTitle')} onBack={handleBack} saveDisabled />
         <main className="flex-1 overflow-y-auto px-4 pt-4">
           <div className="py-16 text-center">
-            <p className="text-muted-foreground">日记不存在或加载失败</p>
+            <p className="text-muted-foreground">{t('notFound')}</p>
             <button
               type="button"
               onClick={() => navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })}
               className="mt-4 text-primary hover:underline"
             >
-              返回首页
+              {tCommon('backToHome')}
             </button>
           </div>
         </main>
@@ -247,7 +250,7 @@ function EditEntryPage() {
   return (
     <div className="flex h-dvh flex-col bg-background">
       <EditorHeader
-        title="编辑日记"
+        title={t('editTitle')}
         isDirty={isDirty}
         onBack={handleBack}
         onSave={handleSave}
@@ -281,10 +284,10 @@ function EditEntryPage() {
 
       <ConfirmDialog
         isOpen={showCancelConfirm}
-        title="放弃修改"
-        message="有未保存的修改，确定要离开吗？"
-        confirmText="离开"
-        cancelText="继续编辑"
+        title={t('discardEditTitle')}
+        message={t('unsavedChangesMessage')}
+        confirmText={tCommon('leave')}
+        cancelText={tCommon('continueEditing')}
         destructive
         onConfirm={handleCancelConfirm}
         onCancel={handleCancelCancel}

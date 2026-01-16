@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils'
 
@@ -38,13 +39,16 @@ export function ConfirmDialog({
   isOpen,
   title,
   message,
-  confirmText = '确认',
-  cancelText = '取消',
+  confirmText,
+  cancelText,
   destructive = false,
   onConfirm,
   onCancel,
   isLoading = false,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation('common')
+  const displayConfirmText = confirmText ?? t('confirm')
+  const displayCancelText = cancelText ?? t('cancel')
   // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return
@@ -104,7 +108,7 @@ export function ConfirmDialog({
                 disabled={isLoading}
                 className="rounded-md px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted active:opacity-80 disabled:opacity-50"
               >
-                {cancelText}
+                {displayCancelText}
               </button>
               <button
                 type="button"
@@ -117,7 +121,7 @@ export function ConfirmDialog({
                     : 'bg-primary text-primary-foreground hover:bg-primary/90 active:opacity-80'
                 )}
               >
-                {isLoading ? '处理中...' : confirmText}
+                {isLoading ? t('processing') : displayConfirmText}
               </button>
             </div>
           </motion.div>

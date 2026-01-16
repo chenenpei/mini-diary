@@ -1,0 +1,6 @@
+{
+  "placeholder": "Search entries...",
+  "history": "Search History",
+  "hint": "Enter keywords to search",
+  "noResults": "No results found for \"{{keyword}}\""
+}

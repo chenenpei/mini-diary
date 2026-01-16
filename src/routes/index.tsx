@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { TopBar, FAB, PageLayout, Drawer } from '@/components/layout'
 import {
   DateNavigator,
@@ -32,6 +33,8 @@ function HomePage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { addToast } = useToast()
+  const { t: tData } = useTranslation('data')
+  const { t: tEntry } = useTranslation('entry')
   const { date: urlDate, scrollTo } = Route.useSearch()
 
   // 初始化时使用 URL 中的日期，否则使用今天
@@ -176,13 +179,13 @@ function HomePage() {
     setIsExporting(true)
     try {
       await downloadExport()
-      addToast('数据导出成功', 'success')
+      addToast(tData('exportSuccess'), 'success')
     } catch {
-      addToast('导出失败，请重试', 'error')
+      addToast(tData('exportFailed'), 'error')
     } finally {
       setIsExporting(false)
     }
-  }, [addToast])
+  }, [addToast, tData])
 
   const handleImportClick = useCallback(() => {
     // Create and trigger file input
@@ -198,15 +201,15 @@ function HomePage() {
         const result = await importData(file)
         await queryClient.invalidateQueries({ queryKey: ['entries'] })
         await queryClient.invalidateQueries({ queryKey: ['images'] })
-        addToast(`导入成功：${result.entriesCount} 条日记，${result.imagesCount} 张图片`, 'success')
+        addToast(tData('importSuccess', { entryCount: result.entriesCount, imageCount: result.imagesCount }), 'success')
       } catch (error) {
-        addToast(error instanceof Error ? error.message : '导入失败', 'error')
+        addToast(error instanceof Error ? error.message : tData('importFailed'), 'error')
       } finally {
         setIsImporting(false)
       }
     }
     input.click()
-  }, [queryClient, addToast])
+  }, [queryClient, addToast, tData])
 
   const handleClearData = useCallback(() => {
     setShowClearDialog(true)
@@ -219,8 +222,8 @@ function HomePage() {
     await queryClient.invalidateQueries({ queryKey: ['images'] })
     await queryClient.invalidateQueries({ queryKey: ['storage'] })
     setShowClearDialog(false)
-    addToast('已清空所有数据', 'success')
-  }, [queryClient, addToast])
+    addToast(tData('clearSuccess'), 'success')
+  }, [queryClient, addToast, tData])
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -259,9 +262,9 @@ function HomePage() {
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}
-        title="删除日记"
-        message="确定要删除这条日记吗？此操作无法撤销。"
-        confirmText="删除"
+        title={tEntry('deleteTitle')}
+        message={tEntry('deleteMessage')}
+        confirmText={tEntry('deleteTitle')}
         destructive
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}

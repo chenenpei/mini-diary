@@ -1,0 +1,6 @@
+{
+  "placeholder": "搜索日记内容...",
+  "history": "搜索历史",
+  "hint": "输入关键词搜索日记",
+  "noResults": "未找到 \"{{keyword}}\" 相关记录"
+}

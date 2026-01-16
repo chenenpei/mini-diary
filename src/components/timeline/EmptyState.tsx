@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { motion } from 'motion/react'
 
@@ -21,10 +22,13 @@ interface EmptyStateProps {
  * - 文案简短直接，不超过 15 字
  */
 export function EmptyState({
-  title = '今天还是一片空白',
-  description = '点击 + 开始记录',
+  title,
+  description,
   className,
 }: EmptyStateProps) {
+  const { t } = useTranslation('timeline')
+  const displayTitle = title ?? t('emptyTitle')
+  const displayDescription = description ?? t('emptyDescription')
   return (
     <motion.div
       className={cn('flex flex-col items-center justify-center py-16 text-center', className)}
@@ -56,8 +60,8 @@ export function EmptyState({
         <line x1="88" y1="58" x2="78" y2="68" />
       </svg>
 
-      <h3 className="text-lg font-medium text-foreground">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+      <h3 className="text-lg font-medium text-foreground">{displayTitle}</h3>
+      <p className="mt-2 text-sm text-muted-foreground">{displayDescription}</p>
     </motion.div>
   )
 }
@@ -78,12 +82,15 @@ interface SparseHintProps {
  * - 不强制用户多写，仅轻提示
  */
 export function SparseHint({
-  text = '继续记录今天的点滴',
+  text,
   className,
 }: SparseHintProps) {
+  const { t } = useTranslation('timeline')
+  const displayText = text ?? t('sparseHint')
+
   return (
     <p className={cn('py-4 text-center text-sm text-muted-foreground', className)}>
-      {text}
+      {displayText}
     </p>
   )
 }

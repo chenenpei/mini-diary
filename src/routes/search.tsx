@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Search, X, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useSearchEntries } from '@/hooks/useEntries'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
@@ -100,10 +101,12 @@ function SearchResultItem({
   entry,
   keyword,
   onClick,
+  locale,
 }: {
   entry: DiaryEntry
   keyword: string
   onClick: () => void
+  locale: string
 }) {
   // 获取摘要，显示关键词周围的内容
   const excerpt = useMemo(() => {
@@ -135,9 +138,13 @@ function SearchResultItem({
 
   // 格式化日期
   const formattedDate = useMemo(() => {
-    const [year, month, day] = entry.date.split('-')
-    return `${year}年${Number(month)}月${Number(day)}日`
-  }, [entry.date])
+    const date = new Date(entry.date)
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(date)
+  }, [entry.date, locale])
 
   return (
     <button
@@ -158,10 +165,12 @@ function SearchHistoryItem({
   query,
   onClick,
   onRemove,
+  removeLabel,
 }: {
   query: string
   onClick: () => void
   onRemove: () => void
+  removeLabel: string
 }) {
   return (
     <div className="flex items-center justify-between px-4 py-3 border-b border-border hover:bg-surface transition-colors">
@@ -179,7 +188,7 @@ function SearchHistoryItem({
           onRemove()
         }}
         className="p-1 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        aria-label="移除"
+        aria-label={removeLabel}
       >
         <X className="h-4 w-4" />
       </button>
@@ -189,6 +198,9 @@ function SearchHistoryItem({
 
 function SearchPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('search')
+  const { t: tCommon } = useTranslation('common')
+  const { i18n } = useTranslation()
   const [query, setQuery] = useState('')
   const [searchHistory, setSearchHistory] = useState<string[]>([])
   const debouncedQuery = useDebounce(query, 300)
@@ -247,7 +259,7 @@ function SearchPage() {
           type="button"
           onClick={handleBack}
           className="touch-target flex shrink-0 items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-          aria-label="返回"
+          aria-label={tCommon('back')}
         >
           <ArrowLeft className="h-6 w-6" />
         </button>
@@ -259,7 +271,7 @@ function SearchPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="搜索日记内容..."
+            placeholder={t('placeholder')}
             // biome-ignore lint/a11y/noAutofocus: Search page needs auto-focus for better UX
             autoFocus
             className={cn(
@@ -277,7 +289,7 @@ function SearchPage() {
                 type="button"
                 onClick={handleClear}
                 className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="清除"
+                aria-label={tCommon('clear')}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -298,6 +310,7 @@ function SearchPage() {
                   entry={entry}
                   keyword={debouncedQuery}
                   onClick={() => handleResultClick(entry)}
+                  locale={i18n.language}
                 />
               ))}
             </div>
@@ -306,7 +319,7 @@ function SearchPage() {
             <div className="flex flex-col items-center justify-center px-4 py-16">
               <Search className="h-12 w-12 text-muted-foreground/50 mb-4" />
               <p className="text-muted-foreground text-center">
-                未找到 "{debouncedQuery}" 相关记录
+                {t('noResults', { keyword: debouncedQuery })}
               </p>
             </div>
           ) : null
@@ -315,20 +328,21 @@ function SearchPage() {
           <div>
             {hasHistory ? (
               <>
-                <div className="px-4 py-2 text-xs text-muted-foreground">搜索历史</div>
+                <div className="px-4 py-2 text-xs text-muted-foreground">{t('history')}</div>
                 {searchHistory.map((historyQuery) => (
                   <SearchHistoryItem
                     key={historyQuery}
                     query={historyQuery}
                     onClick={() => handleHistoryClick(historyQuery)}
                     onRemove={() => handleHistoryRemove(historyQuery)}
+                    removeLabel={tCommon('remove')}
                   />
                 ))}
               </>
             ) : (
               <div className="flex flex-col items-center justify-center px-4 py-16">
                 <Search className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                <p className="text-muted-foreground text-center">输入关键词搜索日记</p>
+                <p className="text-muted-foreground text-center">{t('hint')}</p>
               </div>
             )}
           </div>

@@ -1,0 +1,14 @@
+{
+  "title": "Settings",
+  "menu": "Settings menu",
+  "storage": "Storage",
+  "storageUsed": "Used {{size}}",
+  "theme": "Theme",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeSystem": "System",
+  "dataManagement": "Data Management",
+  "language": "Language",
+  "languageZh": "简体中文",
+  "languageEn": "English"
+}

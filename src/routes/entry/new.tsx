@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { DiaryEditor, EditorHeader, EditorToolbar } from '@/components/editor'
 import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
 import { ConfirmDialog } from '@/components/ui'
@@ -38,6 +39,8 @@ export const Route = createFileRoute('/entry/new')({
 
 function NewEntryPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('entry')
+  const { t: tCommon } = useTranslation('common')
   const { date } = Route.useSearch()
   const entryDate = date ?? dateUtils.getToday()
 
@@ -144,9 +147,9 @@ function NewEntryPage() {
 
       navigate({ to: '/', search: { date: entryDate, scrollTo: entry.id } })
     } catch {
-      alert('保存失败，请重试')
+      alert(t('saveFailed'))
     }
-  }, [content, entryDate, createEntry, updateEntry, createImages, navigate])
+  }, [content, entryDate, createEntry, updateEntry, createImages, navigate, t])
 
   // 新建日记必须有内容才能保存
   const saveDisabled = !content.trim()
@@ -180,7 +183,7 @@ function NewEntryPage() {
   return (
     <div className="flex h-dvh flex-col bg-background">
       <EditorHeader
-        title="新建日记"
+        title={t('createTitle')}
         isDirty={isDirty}
         onBack={handleBack}
         onSave={handleSave}
@@ -213,10 +216,10 @@ function NewEntryPage() {
 
       <ConfirmDialog
         isOpen={showCancelConfirm}
-        title="放弃新建"
-        message="有未保存的内容，确定要离开吗？"
-        confirmText="离开"
-        cancelText="继续编辑"
+        title={t('discardCreateTitle')}
+        message={t('unsavedMessage')}
+        confirmText={tCommon('leave')}
+        cancelText={tCommon('continueEditing')}
         destructive
         onConfirm={handleCancelConfirm}
         onCancel={handleCancelCancel}

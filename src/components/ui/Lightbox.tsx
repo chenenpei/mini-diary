@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -34,6 +35,8 @@ export function Lightbox({
   onClose,
   onIndexChange,
 }: LightboxProps) {
+  const { t } = useTranslation('image')
+  const { t: tCommon } = useTranslation('common')
   const hasMultiple = images.length > 1
   const hasPrev = currentIndex > 0
   const hasNext = currentIndex < images.length - 1
@@ -99,7 +102,7 @@ export function Lightbox({
             type="button"
             onClick={onClose}
             className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-            aria-label="关闭"
+            aria-label={tCommon('close')}
           >
             <X className="h-6 w-6" />
           </button>
@@ -124,7 +127,7 @@ export function Lightbox({
                 'absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
                 hasPrev ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30'
               )}
-              aria-label="上一张"
+              aria-label={t('prev')}
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
@@ -143,7 +146,7 @@ export function Lightbox({
                 'absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
                 hasNext ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30'
               )}
-              aria-label="下一张"
+              aria-label={t('next')}
             >
               <ChevronRight className="h-6 w-6" />
             </button>

@@ -1,0 +1,13 @@
+{
+  "remove": "移除图片",
+  "prev": "上一张",
+  "next": "下一张",
+  "processing": "处理中",
+  "failed": "失败",
+  "validationFailed": "图片验证失败",
+  "processFailed": "处理图片失败",
+  "unsupportedFormat": "不支持的图片格式，请使用 JPG、PNG 或 WebP",
+  "sizeTooLarge": "图片大小不能超过 10MB",
+  "canvasError": "无法创建 Canvas 上下文",
+  "compressionFailed": "图片压缩失败"
+}

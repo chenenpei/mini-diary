@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Lightbox } from '@/components/ui'
@@ -123,6 +124,8 @@ function ImageThumbnail({
   onClick,
   onRemove,
 }: ImageThumbnailProps) {
+  const { t } = useTranslation('image')
+
   return (
     <div className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted">
       {onClick ? (
@@ -159,7 +162,7 @@ function ImageThumbnail({
             viewBox="0 0 24 24"
             fill="none"
             role="img"
-            aria-label="处理中"
+            aria-label={t('processing')}
           >
             <circle
               className="opacity-25"
@@ -181,7 +184,7 @@ function ImageThumbnail({
       {/* 错误提示 */}
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-destructive/80">
-          <span className="text-xs text-white">失败</span>
+          <span className="text-xs text-white">{t('failed')}</span>
         </div>
       )}
 
@@ -191,7 +194,7 @@ function ImageThumbnail({
           type="button"
           onClick={onRemove}
           className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
-          aria-label="移除图片"
+          aria-label={t('remove')}
         >
           <X className="h-3 w-3" />
         </button>

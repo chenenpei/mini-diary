@@ -2,8 +2,11 @@
 
 import { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { X, Download, Upload, Moon, Sun, Monitor, Trash2, HardDrive } from 'lucide-react'
+import { X, Download, Upload, Moon, Sun, Monitor, Trash2, HardDrive, Languages } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
+import { useLocale } from '@/i18n/useLocale'
+import type { Locale } from '@/i18n'
 
 // 动画缓动函数
 const easing = {
@@ -44,11 +47,10 @@ function formatStorageSize(bytes: number): string {
   return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
 }
 
-// 主题选项配置
-const themeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
-  { value: 'light', label: '浅色', icon: <Sun className="h-4 w-4" /> },
-  { value: 'dark', label: '深色', icon: <Moon className="h-4 w-4" /> },
-  { value: 'system', label: '跟随系统', icon: <Monitor className="h-4 w-4" /> },
+// 语言选项配置
+const languageOptions: { value: Locale; labelKey: 'languageZh' | 'languageEn'; flag: string }[] = [
+  { value: 'zh-CN', labelKey: 'languageZh', flag: '🇨🇳' },
+  { value: 'en', labelKey: 'languageEn', flag: '🇺🇸' },
 ]
 
 /**
@@ -71,6 +73,18 @@ export function Drawer({
   isExporting = false,
   isImporting = false,
 }: DrawerProps) {
+  const { t } = useTranslation('settings')
+  const { t: tCommon } = useTranslation('common')
+  const { t: tData } = useTranslation('data')
+  const { locale, setLocale } = useLocale()
+
+  // 主题选项配置（需要在组件内部以获取翻译）
+  const themeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
+    { value: 'light', label: t('themeLight'), icon: <Sun className="h-4 w-4" /> },
+    { value: 'dark', label: t('themeDark'), icon: <Moon className="h-4 w-4" /> },
+    { value: 'system', label: t('themeSystem'), icon: <Monitor className="h-4 w-4" /> },
+  ]
+
   // ESC 键关闭
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -122,39 +136,39 @@ export function Drawer({
             className="absolute left-0 top-0 h-full w-[280px] max-w-[80vw] bg-background shadow-lg"
             role="dialog"
             aria-modal="true"
-            aria-label="设置菜单"
+            aria-label={t('menu')}
           >
             {/* 头部 */}
             <div className="flex h-14 items-center justify-between border-b border-border px-4">
-              <span className="text-lg font-medium text-foreground">设置</span>
+              <span className="text-lg font-medium text-foreground">{t('title')}</span>
               <button
                 type="button"
                 onClick={onClose}
                 className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-                aria-label="关闭菜单"
+                aria-label={tCommon('closeMenu')}
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* 内容 */}
-            <div className="flex flex-col gap-6 p-4">
+            <div className="flex flex-col gap-6 overflow-y-auto p-4 pb-20">
               {/* 存储监控 */}
               <section>
                 <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
                   <HardDrive className="h-4 w-4" />
-                  存储空间
+                  {t('storage')}
                 </h3>
                 <div className="rounded-md border border-border bg-surface p-3">
                   <div className="text-sm text-foreground">
-                    已使用 {formatStorageSize(storageUsed)}
+                    {t('storageUsed', { size: formatStorageSize(storageUsed) })}
                   </div>
                 </div>
               </section>
 
               {/* 主题切换 */}
               <section>
-                <h3 className="mb-3 text-sm font-medium text-foreground">主题</h3>
+                <h3 className="mb-3 text-sm font-medium text-foreground">{t('theme')}</h3>
                 <div className="flex gap-2">
                   {themeOptions.map((option) => (
                     <button
@@ -175,9 +189,35 @@ export function Drawer({
                 </div>
               </section>
 
+              {/* 语言切换 */}
+              <section>
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                  <Languages className="h-4 w-4" />
+                  {t('language')}
+                </h3>
+                <div className="flex gap-2">
+                  {languageOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setLocale(option.value)}
+                      className={cn(
+                        'flex flex-1 flex-col items-center gap-1 rounded-md border p-3 transition-colors',
+                        locale === option.value
+                          ? 'border-foreground bg-surface'
+                          : 'border-border hover:bg-surface'
+                      )}
+                    >
+                      <span className="text-base">{option.flag}</span>
+                      <span className="text-xs text-foreground">{t(option.labelKey)}</span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+
               {/* 数据管理 */}
               <section>
-                <h3 className="mb-3 text-sm font-medium text-foreground">数据管理</h3>
+                <h3 className="mb-3 text-sm font-medium text-foreground">{t('dataManagement')}</h3>
                 <div className="flex flex-col gap-2">
                   {/* 导出 */}
                   <button
@@ -189,9 +229,9 @@ export function Drawer({
                     <Download className="h-5 w-5 text-foreground" />
                     <div className="flex-1">
                       <div className="text-sm font-medium text-foreground">
-                        {isExporting ? '导出中...' : '导出数据'}
+                        {isExporting ? tData('exporting') : tData('export')}
                       </div>
-                      <div className="text-xs text-muted-foreground">导出为 JSON 备份文件</div>
+                      <div className="text-xs text-muted-foreground">{tData('exportDescription')}</div>
                     </div>
                   </button>
 
@@ -205,9 +245,9 @@ export function Drawer({
                     <Upload className="h-5 w-5 text-foreground" />
                     <div className="flex-1">
                       <div className="text-sm font-medium text-foreground">
-                        {isImporting ? '导入中...' : '导入数据'}
+                        {isImporting ? tData('importing') : tData('import')}
                       </div>
-                      <div className="text-xs text-muted-foreground">从 JSON 备份恢复</div>
+                      <div className="text-xs text-muted-foreground">{tData('importDescription')}</div>
                     </div>
                   </button>
 
@@ -219,8 +259,8 @@ export function Drawer({
                   >
                     <Trash2 className="h-5 w-5 text-red-500" />
                     <div className="flex-1">
-                      <div className="text-sm font-medium text-red-500">清空数据</div>
-                      <div className="text-xs text-muted-foreground">删除所有日记（不可恢复）</div>
+                      <div className="text-sm font-medium text-red-500">{tData('clearAll')}</div>
+                      <div className="text-xs text-muted-foreground">{tData('clearDescription')}</div>
                     </div>
                   </button>
                 </div>
@@ -228,7 +268,7 @@ export function Drawer({
             </div>
 
             {/* 底部版本信息 */}
-            <div className="absolute bottom-0 left-0 right-0 border-t border-border p-4">
+            <div className="absolute bottom-0 left-0 right-0 border-t border-border bg-background p-4">
               <div className="text-center text-xs text-muted-foreground">
                 MiniDiary v1.0.0
               </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { AlertTriangle, X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -16,8 +17,6 @@ const easing = {
   smooth: [0.4, 0, 0.2, 1] as const,
 }
 
-const CONFIRM_TEXT = '确认删除'
-
 /**
  * ClearDataDialog - 清空数据确认对话框
  *
@@ -27,9 +26,14 @@ const CONFIRM_TEXT = '确认删除'
  * 3. 最终确认按钮
  */
 export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialogProps) {
+  const { t } = useTranslation('data')
+  const { t: tCommon } = useTranslation('common')
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  // Confirmation text varies by language (Chinese: "确认删除", English: "DELETE ALL")
+  const confirmText = t('confirmDeleteText')
 
   // 重置状态
   useEffect(() => {
@@ -76,7 +80,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
     }
   }, [onConfirm])
 
-  const isInputValid = inputValue === CONFIRM_TEXT
+  const isInputValid = inputValue === confirmText
 
   return (
     <AnimatePresence>
@@ -110,7 +114,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
               onClick={onCancel}
               disabled={isLoading}
               className="absolute right-4 top-4 rounded-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
-              aria-label="关闭"
+              aria-label={tCommon('close')}
             >
               <X className="h-5 w-5" />
             </button>
@@ -127,7 +131,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
               id="clear-dialog-title"
               className="mb-2 text-center text-lg font-medium text-foreground"
             >
-              清空所有数据
+              {t('clearAllTitle')}
             </h2>
 
             {/* 内容区域 */}
@@ -142,7 +146,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                   className="space-y-4"
                 >
                   <p className="text-center text-sm text-muted-foreground">
-                    此操作将永久删除所有日记和图片，且无法恢复。请确保您已备份重要数据。
+                    {t('clearWarning')}
                   </p>
                   <div className="flex gap-3">
                     <button
@@ -150,14 +154,14 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       onClick={onCancel}
                       className="flex-1 rounded-sm border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface"
                     >
-                      取消
+                      {tCommon('cancel')}
                     </button>
                     <button
                       type="button"
                       onClick={handleNextStep}
                       className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90"
                     >
-                      继续
+                      {tCommon('continue')}
                     </button>
                   </div>
                 </motion.div>
@@ -173,13 +177,15 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                   className="space-y-4"
                 >
                   <p className="text-center text-sm text-muted-foreground">
-                    请输入 <span className="font-medium text-foreground">{CONFIRM_TEXT}</span> 以确认删除
+                    {t('confirmInputHint', { confirmText }).split('<1>')[0]}
+                    <span className="font-medium text-foreground">{confirmText}</span>
+                    {t('confirmInputHint', { confirmText }).split('</1>')[1] || ''}
                   </p>
                   <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder={CONFIRM_TEXT}
+                    placeholder={confirmText}
                     className={cn(
                       'w-full rounded-sm border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground',
                       'focus:outline-none focus:ring-1',
@@ -195,7 +201,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       onClick={onCancel}
                       className="flex-1 rounded-sm border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface"
                     >
-                      取消
+                      {tCommon('cancel')}
                     </button>
                     <button
                       type="button"
@@ -203,7 +209,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       disabled={!isInputValid}
                       className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
                     >
-                      继续
+                      {tCommon('continue')}
                     </button>
                   </div>
                 </motion.div>
@@ -219,7 +225,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                   className="space-y-4"
                 >
                   <p className="text-center text-sm text-muted-foreground">
-                    最后确认：点击下方按钮将立即删除所有数据。
+                    {t('finalConfirmation')}
                   </p>
                   <div className="flex gap-3">
                     <button
@@ -228,7 +234,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       disabled={isLoading}
                       className="flex-1 rounded-sm border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface disabled:opacity-50"
                     >
-                      取消
+                      {tCommon('cancel')}
                     </button>
                     <button
                       type="button"
@@ -239,10 +245,10 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       {isLoading ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          删除中...
+                          {tCommon('deleting')}
                         </>
                       ) : (
-                        '确定删除'
+                        tCommon('confirmDelete')
                       )}
                     </button>
                   </div>

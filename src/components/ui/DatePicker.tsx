@@ -1,6 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import i18n from '@/i18n'
 import { motion, AnimatePresence } from 'motion/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -33,6 +35,7 @@ export function DatePicker({
   onSelect,
   onClose,
 }: DatePickerProps) {
+  const { t } = useTranslation('date')
   const containerRef = useRef<HTMLDivElement>(null)
   const max = maxDate ?? toDateString(new Date())
 
@@ -135,10 +138,12 @@ export function DatePicker({
     return days
   }, [viewMonth, max])
 
-  // Month/year display
+  // Month/year display using Intl.DateTimeFormat for localization
   const monthYearDisplay = useMemo(() => {
     const { year, month } = parseYearMonth(viewMonth)
-    return `${year}年${month}月`
+    const date = new Date(year, month - 1, 1)
+    const locale = i18n.language === 'en' ? 'en-US' : 'zh-CN'
+    return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(date)
   }, [viewMonth])
 
   const handleDateSelect = useCallback(
@@ -150,7 +155,14 @@ export function DatePicker({
     [max, onSelect, onClose]
   )
 
-  const weekdays = ['日', '一', '二', '三', '四', '五', '六']
+  // Weekday headers - localized
+  const weekdays = useMemo(() => {
+    const locale = i18n.language === 'en' ? 'en-US' : 'zh-CN'
+    if (locale === 'zh-CN') {
+      return ['日', '一', '二', '三', '四', '五', '六']
+    }
+    return ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+  }, [])
 
   // Generate year list (from current year back to Unix epoch 1970)
   const MIN_YEAR = 1970
@@ -217,7 +229,7 @@ export function DatePicker({
             className="fixed left-1/2 top-1/2 z-50 w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-4 shadow-xl border border-border"
             role="dialog"
             aria-modal="true"
-            aria-label="选择日期"
+            aria-label={t('selectDate')}
           >
             {/* Header */}
             <div className="mb-3 flex items-center justify-between">
@@ -225,7 +237,7 @@ export function DatePicker({
                 type="button"
                 onClick={handlePrevMonth}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                aria-label="上个月"
+                aria-label={t('prevMonth')}
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -246,7 +258,7 @@ export function DatePicker({
                     ? 'cursor-not-allowed text-muted-foreground/40'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )}
-                aria-label="下个月"
+                aria-label={t('nextMonth')}
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
@@ -336,7 +348,7 @@ export function DatePicker({
                     onClick={() => handleDateSelect(toDateString(new Date()))}
                     className="w-full rounded-md py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                   >
-                    今天
+                    {t('today')}
                   </button>
                 </div>
               </>
