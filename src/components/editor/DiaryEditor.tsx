@@ -96,6 +96,69 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
       [onChange]
     )
 
+    // 处理列表自动延续
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // 只处理纯 Enter 键，忽略 Shift+Enter、Cmd+Enter、Ctrl+Enter
+        if (e.key !== 'Enter' || e.shiftKey || e.metaKey || e.ctrlKey) return
+
+        const textarea = e.currentTarget
+        const { selectionStart, value } = textarea
+
+        // 找到当前行
+        let lineStart = selectionStart
+        while (lineStart > 0 && value[lineStart - 1] !== '\n') {
+          lineStart--
+        }
+        const currentLine = value.substring(lineStart, selectionStart)
+
+        // 检查无序列表
+        if (currentLine.startsWith('- ')) {
+          if (currentLine === '- ') {
+            // 空列表项，移除标记
+            e.preventDefault()
+            const newContent = value.substring(0, lineStart) + value.substring(selectionStart)
+            setContent(newContent)
+            onChange?.(newContent)
+            requestAnimationFrame(() => textarea.setSelectionRange(lineStart, lineStart))
+          } else {
+            // 延续列表
+            e.preventDefault()
+            const newContent = value.substring(0, selectionStart) + '\n- ' + value.substring(selectionStart)
+            setContent(newContent)
+            onChange?.(newContent)
+            const newPos = selectionStart + 3
+            requestAnimationFrame(() => textarea.setSelectionRange(newPos, newPos))
+          }
+          return
+        }
+
+        // 检查有序列表
+        const orderedMatch = currentLine.match(/^(\d+)\. /)
+        if (orderedMatch) {
+          if (currentLine === orderedMatch[0]) {
+            // 空列表项，移除标记
+            e.preventDefault()
+            const newContent = value.substring(0, lineStart) + value.substring(selectionStart)
+            setContent(newContent)
+            onChange?.(newContent)
+            requestAnimationFrame(() => textarea.setSelectionRange(lineStart, lineStart))
+          } else {
+            // 延续列表，序号递增
+            e.preventDefault()
+            const nextNumber = Number.parseInt(orderedMatch[1] ?? '0', 10) + 1
+            const marker = `\n${nextNumber}. `
+            const newContent = value.substring(0, selectionStart) + marker + value.substring(selectionStart)
+            setContent(newContent)
+            onChange?.(newContent)
+            const newPos = selectionStart + marker.length
+            requestAnimationFrame(() => textarea.setSelectionRange(newPos, newPos))
+          }
+        }
+      },
+      [onChange]
+    )
+
     const isOverLimit = content.length > MAX_CONTENT_LENGTH
     const charCount = content.length
     const hasImages = existingImages.length > 0 || newImages.length > 0
@@ -107,6 +170,7 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
           ref={textareaRef}
           value={content}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder={placeholderText}
           autoFocus={autoFocus}
           className={cn(
