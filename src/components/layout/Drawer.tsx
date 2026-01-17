@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { X, Download, Upload, Moon, Sun, Monitor, Trash2, HardDrive, Languages } from 'lucide-react'
+import { X, Download, Upload, Moon, Sun, Monitor, Trash2, HardDrive, Languages, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import { useLocale } from '@/i18n/useLocale'
 import type { Locale } from '@/i18n'
+import { InfoDialog } from '@/components/ui/InfoDialog'
 
 // 动画缓动函数
 const easing = {
@@ -77,6 +78,7 @@ export function Drawer({
   const { t: tCommon } = useTranslation('common')
   const { t: tData } = useTranslation('data')
   const { locale, setLocale } = useLocale()
+  const [showStorageInfo, setShowStorageInfo] = useState(false)
 
   // 主题选项配置（需要在组件内部以获取翻译）
   const themeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
@@ -217,7 +219,17 @@ export function Drawer({
 
               {/* 数据管理 */}
               <section>
-                <h3 className="mb-3 text-sm font-medium text-foreground">{t('dataManagement')}</h3>
+                <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                  {t('dataManagement')}
+                  <button
+                    type="button"
+                    onClick={() => setShowStorageInfo(true)}
+                    className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    aria-label={tData('storageInfoTitle')}
+                  >
+                    <Info className="h-4 w-4" />
+                  </button>
+                </h3>
                 <div className="flex flex-col gap-2">
                   {/* 导出 */}
                   <button
@@ -274,6 +286,20 @@ export function Drawer({
               </div>
             </div>
           </motion.aside>
+
+          {/* 数据存储说明弹窗 */}
+          <InfoDialog
+            isOpen={showStorageInfo}
+            title={tData('storageInfoTitle')}
+            items={[
+              tData('storageInfoItem1'),
+              tData('storageInfoItem2'),
+              tData('storageInfoItem3'),
+              tData('storageInfoItem4'),
+            ]}
+            closeText={tData('gotIt')}
+            onClose={() => setShowStorageInfo(false)}
+          />
         </div>
       )}
     </AnimatePresence>

@@ -1,4 +1,10 @@
 {
+  "storageInfoTitle": "Data Storage Info",
+  "storageInfoItem1": "Your diary is saved in this browser only, not uploaded anywhere",
+  "storageInfoItem2": "Clearing browser data will delete your diary",
+  "storageInfoItem3": "Switching browsers (e.g., Chrome to Safari) means starting fresh",
+  "storageInfoItem4": "We recommend using \"Export Data\" regularly to back up",
+  "gotIt": "Got it",
   "export": "Export Data",
   "exporting": "Exporting...",
   "exportDescription": "Export as JSON backup file",

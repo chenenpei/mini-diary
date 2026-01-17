@@ -1,4 +1,10 @@
 {
+  "storageInfoTitle": "数据存储说明",
+  "storageInfoItem1": "你的日记保存在当前浏览器中，不会上传到网络",
+  "storageInfoItem2": "清除浏览器数据会导致日记丢失",
+  "storageInfoItem3": "换一个浏览器（如从 Chrome 换到 Safari）无法看到原有日记",
+  "storageInfoItem4": "建议定期点击「导出数据」保存备份",
+  "gotIt": "知道了",
   "export": "导出数据",
   "exporting": "导出中...",
   "exportDescription": "导出为 JSON 备份文件",
