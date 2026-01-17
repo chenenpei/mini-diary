@@ -31,24 +31,22 @@ export const markdownComponents: Components = {
     <em className="italic">{children}</em>
   ),
 
-  // Supported: unordered list
+  // Supported: unordered list - 与编辑器对齐
   ul: ({ children }) => (
     <ul className="my-2 list-disc pl-5">{children}</ul>
   ),
 
-  // Supported: ordered list
+  // Supported: ordered list - 与编辑器对齐
   ol: ({ children }) => (
     <ol className="my-2 list-decimal pl-5">{children}</ol>
   ),
 
-  // Supported: list item
-  li: ({ children }) => (
-    <li className="my-0.5">{children}</li>
-  ),
+  // Supported: list item - 与编辑器对齐
+  li: ({ children }) => <li className="my-0.5">{children}</li>,
 
-  // Supported: paragraph
+  // Supported: paragraph - 无 margin，与编辑器对齐
   p: ({ children }) => (
-    <p className="my-2 leading-relaxed">{children}</p>
+    <p className="leading-relaxed">{children}</p>
   ),
 
   // Disable unsupported elements by rendering just their children

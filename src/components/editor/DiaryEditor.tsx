@@ -1,9 +1,23 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { useState, useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { ImagePreview } from './ImagePreview'
+import {
+  markdownToHtml,
+  htmlToMarkdown,
+  sanitizeHtml,
+  getTextLength,
+} from '@/lib/contentEditable'
 
 const MAX_CONTENT_LENGTH = 10000
 
@@ -20,14 +34,15 @@ interface NewImage {
 }
 
 export interface DiaryEditorRef {
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  editorRef: React.RefObject<HTMLDivElement | null>
   setContent: (content: string) => void
+  getMarkdown: () => string
 }
 
 interface DiaryEditorProps {
-  /** Initial content */
+  /** Initial content (Markdown format) */
   initialContent?: string
-  /** Content change handler */
+  /** Content change handler (receives Markdown) */
   onChange?: (content: string) => void
   /** Existing images with URLs (for edit mode) */
   existingImages?: ExistingImage[]
@@ -46,12 +61,16 @@ interface DiaryEditorProps {
 }
 
 /**
- * DiaryEditor - 日记编辑器组件（沉浸式设计）
+ * DiaryEditor - 日记编辑器组件（WYSIWYG 设计）
  *
  * 设计规范:
- * - 无边框、透明背景
- * - 图片展示在文字下方
- * - 字数统计在底部
+ * - 使用 contenteditable 实现所见即所得
+ * - 支持加粗、无序列表、有序列表
+ * - 数据以 Markdown 格式存储
+ *
+ * 安全说明:
+ * - 所有 HTML 内容在设置前都经过 DOMPurify sanitizeHtml() 清理
+ * - 粘贴时只提取纯文本，丢弃 HTML
  */
 export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
   function DiaryEditor(
@@ -69,115 +88,168 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
     ref
   ) {
     const { t } = useTranslation('editor')
-    const [content, setContent] = useState(initialContent)
-    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const editorRef = useRef<HTMLDivElement>(null)
     const placeholderText = placeholder ?? t('placeholder')
+    const isComposingRef = useRef(false)
+    const [isComposing, setIsComposing] = useState(false)
+    const [charCount, setCharCount] = useState(0)
+
+    // 将 Markdown 转为 HTML 显示（已清理）
+    const initialHtml = useMemo(
+      () => sanitizeHtml(markdownToHtml(initialContent)),
+      [initialContent]
+    )
+
+    // 安全地设置编辑器内容
+    const setEditorContent = useCallback((html: string) => {
+      if (editorRef.current) {
+        // 内容已经过 sanitizeHtml 清理，安全设置
+        editorRef.current.innerHTML = html
+      }
+    }, [])
 
     // 暴露 ref 给父组件
     useImperativeHandle(ref, () => ({
-      textareaRef,
-      setContent: (newContent: string) => {
-        setContent(newContent)
-        onChange?.(newContent)
+      editorRef,
+      setContent: (markdown: string) => {
+        const html = sanitizeHtml(markdownToHtml(markdown))
+        setEditorContent(html)
+        updateCharCount()
+        onChange?.(markdown)
+      },
+      getMarkdown: () => {
+        if (editorRef.current) {
+          return htmlToMarkdown(editorRef.current.innerHTML)
+        }
+        return ''
       },
     }))
 
+    // 更新字数统计
+    const updateCharCount = useCallback(() => {
+      if (editorRef.current) {
+        const length = getTextLength(editorRef.current.innerHTML)
+        setCharCount(length)
+      }
+    }, [])
+
+    // 初始化编辑器内容
     useEffect(() => {
-      setContent(initialContent)
-    }, [initialContent])
+      if (editorRef.current && initialHtml) {
+        setEditorContent(initialHtml)
+        updateCharCount()
+      }
+    }, [initialHtml, updateCharCount, setEditorContent])
 
+    // 自动聚焦
+    useEffect(() => {
+      if (autoFocus && editorRef.current) {
+        editorRef.current.focus()
+        // 将光标移到末尾
+        const selection = window.getSelection()
+        if (selection) {
+          selection.selectAllChildren(editorRef.current)
+          selection.collapseToEnd()
+        }
+      }
+    }, [autoFocus])
 
-    const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const newContent = e.target.value
-        setContent(newContent)
-        onChange?.(newContent)
+    // 处理输入
+    const handleInput = useCallback(() => {
+      // 在 IME 输入过程中不触发更新
+      if (isComposingRef.current) return
+
+      updateCharCount()
+
+      if (editorRef.current && onChange) {
+        const markdown = htmlToMarkdown(editorRef.current.innerHTML)
+        onChange(markdown)
+      }
+    }, [onChange, updateCharCount])
+
+    // 处理 IME 输入开始
+    const handleCompositionStart = useCallback(() => {
+      isComposingRef.current = true
+      setIsComposing(true)
+    }, [])
+
+    // 处理 IME 输入结束
+    const handleCompositionEnd = useCallback(() => {
+      isComposingRef.current = false
+      setIsComposing(false)
+      handleInput()
+    }, [handleInput])
+
+    // 处理粘贴 - 只保留纯文本，防止 XSS
+    const handlePaste = useCallback(
+      (e: React.ClipboardEvent) => {
+        e.preventDefault()
+        // 只提取纯文本，丢弃所有 HTML
+        const text = e.clipboardData.getData('text/plain')
+        document.execCommand('insertText', false, text)
       },
-      [onChange]
+      []
     )
 
-    // 处理列表自动延续
+    // 处理键盘事件
     const handleKeyDown = useCallback(
-      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // 只处理纯 Enter 键，忽略 Shift+Enter、Cmd+Enter、Ctrl+Enter
-        if (e.key !== 'Enter' || e.shiftKey || e.metaKey || e.ctrlKey) return
-
-        const textarea = e.currentTarget
-        const { selectionStart, value } = textarea
-
-        // 找到当前行
-        let lineStart = selectionStart
-        while (lineStart > 0 && value[lineStart - 1] !== '\n') {
-          lineStart--
-        }
-        const currentLine = value.substring(lineStart, selectionStart)
-
-        // 检查无序列表
-        if (currentLine.startsWith('- ')) {
-          if (currentLine === '- ') {
-            // 空列表项，移除标记
-            e.preventDefault()
-            const newContent = value.substring(0, lineStart) + value.substring(selectionStart)
-            setContent(newContent)
-            onChange?.(newContent)
-            requestAnimationFrame(() => textarea.setSelectionRange(lineStart, lineStart))
-          } else {
-            // 延续列表
-            e.preventDefault()
-            const newContent = value.substring(0, selectionStart) + '\n- ' + value.substring(selectionStart)
-            setContent(newContent)
-            onChange?.(newContent)
-            const newPos = selectionStart + 3
-            requestAnimationFrame(() => textarea.setSelectionRange(newPos, newPos))
-          }
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        // Cmd/Ctrl + B 加粗
+        if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+          e.preventDefault()
+          document.execCommand('bold', false)
           return
         }
 
-        // 检查有序列表
-        const orderedMatch = currentLine.match(/^(\d+)\. /)
-        if (orderedMatch) {
-          if (currentLine === orderedMatch[0]) {
-            // 空列表项，移除标记
-            e.preventDefault()
-            const newContent = value.substring(0, lineStart) + value.substring(selectionStart)
-            setContent(newContent)
-            onChange?.(newContent)
-            requestAnimationFrame(() => textarea.setSelectionRange(lineStart, lineStart))
-          } else {
-            // 延续列表，序号递增
-            e.preventDefault()
-            const nextNumber = Number.parseInt(orderedMatch[1] ?? '0', 10) + 1
-            const marker = `\n${nextNumber}. `
-            const newContent = value.substring(0, selectionStart) + marker + value.substring(selectionStart)
-            setContent(newContent)
-            onChange?.(newContent)
-            const newPos = selectionStart + marker.length
-            requestAnimationFrame(() => textarea.setSelectionRange(newPos, newPos))
-          }
+        // Cmd/Ctrl + I 斜体
+        if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
+          e.preventDefault()
+          document.execCommand('italic', false)
+          return
         }
       },
-      [onChange]
+      []
     )
 
-    const isOverLimit = content.length > MAX_CONTENT_LENGTH
-    const charCount = content.length
+    const isOverLimit = charCount > MAX_CONTENT_LENGTH
     const hasImages = existingImages.length > 0 || newImages.length > 0
+    const isEmpty = charCount === 0
 
     return (
       <div className={cn('flex min-h-0 flex-1 flex-col', className)}>
-        {/* Textarea - 占据剩余空间，内容超出时滚动 */}
-        <textarea
-          ref={textareaRef}
-          value={content}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholderText}
-          autoFocus={autoFocus}
-          className={cn(
-            'min-h-0 w-full flex-1 resize-none border-none bg-transparent p-0 text-base leading-relaxed text-foreground placeholder:text-muted-foreground',
-            'focus:outline-none'
+        {/* ContentEditable 编辑器 */}
+        <div className="relative min-h-0 flex-1">
+          <div
+            ref={editorRef}
+            contentEditable
+            onInput={handleInput}
+            onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
+            onCompositionStart={handleCompositionStart}
+            onCompositionEnd={handleCompositionEnd}
+            className={cn(
+              'min-h-full w-full border-none bg-transparent p-0 text-base leading-relaxed text-foreground',
+              'focus:outline-none',
+              // 编辑器内部样式
+              '[&_p]:my-0 [&_p]:leading-relaxed',
+              '[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5',
+              '[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5',
+              '[&_li]:my-0.5',
+              '[&_strong]:font-bold',
+              '[&_em]:italic'
+            )}
+            suppressContentEditableWarning
+          />
+          {/* Placeholder - IME 输入时也隐藏 */}
+          {isEmpty && !isComposing && (
+            <div
+              className="pointer-events-none absolute left-0 top-0 text-base leading-relaxed text-muted-foreground"
+              aria-hidden="true"
+            >
+              {placeholderText}
+            </div>
           )}
-        />
+        </div>
 
         {/* 底部固定区域：图片 + 字数统计 */}
         <div className="mt-auto shrink-0 pt-4">

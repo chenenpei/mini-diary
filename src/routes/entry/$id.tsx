@@ -274,8 +274,7 @@ function EditEntryPage() {
       </main>
 
       <EditorToolbar
-        textareaRef={editorRef.current?.textareaRef ?? { current: null }}
-        setContent={editorRef.current?.setContent}
+        editorRef={editorRef.current?.editorRef ?? { current: null }}
         imageCount={imageCount}
         onImagesAdd={handleImagesAdd}
         onImageProcessed={handleImageProcessed}

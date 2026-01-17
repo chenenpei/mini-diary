@@ -16,10 +16,8 @@ interface ImageItem {
 }
 
 interface EditorToolbarProps {
-  /** Ref to textarea for text manipulation */
-  textareaRef: React.RefObject<HTMLTextAreaElement | null>
-  /** Function to set content (from DiaryEditorRef.setContent) */
-  setContent?: ((content: string) => void) | undefined
+  /** Ref to contenteditable editor for focus management */
+  editorRef: React.RefObject<HTMLDivElement | null>
   /** Current image count (existing + new) */
   imageCount?: number
   /** Max images allowed */
@@ -35,20 +33,20 @@ interface EditorToolbarProps {
 }
 
 /**
- * EditorToolbar - 编辑器底部工具栏
+ * EditorToolbar - 编辑器底部工具栏（WYSIWYG 版本）
  *
  * 功能：
  * - 图片按钮：添加图片
- * - 加粗按钮：包裹选中文本或插入 **文字**
- * - 列表按钮：在行首插入 -
+ * - 加粗按钮：使用 execCommand('bold')
+ * - 列表按钮：使用 execCommand('insertUnorderedList')
+ * - 有序列表按钮：使用 execCommand('insertOrderedList')
  *
  * 特性：
  * - 固定在底部，跟随键盘高度
  * - 适配 iPhone 安全区域
  */
 export function EditorToolbar({
-  textareaRef,
-  setContent,
+  editorRef,
   imageCount = 0,
   maxImages = 3,
   onImagesAdd,
@@ -60,212 +58,31 @@ export function EditorToolbar({
   const { t: tImage } = useTranslation('image')
   const keyboardHeight = useKeyboardHeight()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  // 使用 ref 保存选区位置，确保同步读写
-  const savedSelectionRef = useRef<{ start: number; end: number } | null>(null)
 
   const remainingSlots = maxImages - imageCount
 
-  // 在 pointerdown 时保存当前选区位置
-  const saveSelection = useCallback(() => {
-    const textarea = textareaRef.current
-    if (textarea) {
-      savedSelectionRef.current = {
-        start: textarea.selectionStart,
-        end: textarea.selectionEnd,
-      }
-    }
-  }, [textareaRef])
+  // 确保编辑器获得焦点
+  const focusEditor = useCallback(() => {
+    editorRef.current?.focus()
+  }, [editorRef])
 
-  // 获取选区位置（优先使用保存的，否则使用当前的）
-  const getSelection = useCallback(() => {
-    const textarea = textareaRef.current
-    if (savedSelectionRef.current) {
-      const result = savedSelectionRef.current
-      savedSelectionRef.current = null // 使用后清除
-      return result
-    }
-    if (textarea) {
-      return {
-        start: textarea.selectionStart,
-        end: textarea.selectionEnd,
-      }
-    }
-    return { start: 0, end: 0 }
-  }, [textareaRef])
-
-  // 加粗按钮处理（切换加粗状态）
+  // 加粗按钮处理
   const handleBold = useCallback(() => {
-    const textarea = textareaRef.current
-    if (!textarea || !setContent) return
+    focusEditor()
+    document.execCommand('bold', false)
+  }, [focusEditor])
 
-    const { start, end } = getSelection()
-    const content = textarea.value
-    const selectedText = content.substring(start, end)
-
-    // 检查选中文本是否已被加粗（前后各有 **）
-    const before = content.substring(Math.max(0, start - 2), start)
-    const after = content.substring(end, end + 2)
-    const isAlreadyBold = before === '**' && after === '**'
-
-    if (isAlreadyBold) {
-      // 移除加粗：删除前后的 **
-      const newText =
-        content.substring(0, start - 2) +
-        selectedText +
-        content.substring(end + 2)
-      setContent(newText)
-      requestAnimationFrame(() => {
-        textarea.focus()
-        // 光标位置需要减去前面移除的 2 个字符
-        textarea.setSelectionRange(start - 2, end - 2)
-      })
-    } else {
-      // 添加加粗
-      const newText =
-        content.substring(0, start) +
-        '**' +
-        selectedText +
-        '**' +
-        content.substring(end)
-      setContent(newText)
-      requestAnimationFrame(() => {
-        textarea.focus()
-        if (start === end) {
-          // 没有选中文本，将光标移到两个星号之间
-          textarea.setSelectionRange(start + 2, start + 2)
-        } else {
-          // 有选中文本，保持选中状态（位置向后偏移 2）
-          textarea.setSelectionRange(start + 2, end + 2)
-        }
-      })
-    }
-  }, [textareaRef, setContent])
-
-  // 无序列表按钮处理（支持多行）
+  // 无序列表按钮处理
   const handleList = useCallback(() => {
-    const textarea = textareaRef.current
-    if (!textarea || !setContent) return
+    focusEditor()
+    document.execCommand('insertUnorderedList', false)
+  }, [focusEditor])
 
-    const { start, end } = getSelection()
-    const content = textarea.value
-
-    // 找到选区覆盖的所有行
-    let blockStart = start
-    while (blockStart > 0 && content[blockStart - 1] !== '\n') {
-      blockStart--
-    }
-    let blockEnd = end
-    while (blockEnd < content.length && content[blockEnd] !== '\n') {
-      blockEnd++
-    }
-
-    // 获取选中的文本块并按行分割
-    const selectedBlock = content.substring(blockStart, blockEnd)
-    const lines = selectedBlock.split('\n')
-
-    // 检查是否所有行都已有列表标记
-    const allHaveMarker = lines.every((line) => line.startsWith('- '))
-
-    let newLines: string[]
-    let offsetChange: number
-
-    if (allHaveMarker) {
-      // 移除所有行的列表标记
-      newLines = lines.map((line) => line.substring(2))
-      offsetChange = -2
-    } else {
-      // 为所有行添加列表标记
-      newLines = lines.map((line) => `- ${line}`)
-      offsetChange = 2
-    }
-
-    const newBlock = newLines.join('\n')
-    const newText = content.substring(0, blockStart) + newBlock + content.substring(blockEnd)
-    setContent(newText)
-
-    requestAnimationFrame(() => {
-      textarea.focus()
-      // 调整选区位置
-      const newStart = Math.max(blockStart, start + offsetChange)
-      const newEnd = end + offsetChange * lines.length
-      textarea.setSelectionRange(newStart, newEnd)
-    })
-  }, [textareaRef, setContent, getSelection])
-
-  // 序号列表按钮处理（支持多行）
+  // 序号列表按钮处理
   const handleOrderedList = useCallback(() => {
-    const textarea = textareaRef.current
-    if (!textarea || !setContent) return
-
-    const { start, end } = getSelection()
-    const content = textarea.value
-
-    // 找到选区覆盖的所有行
-    let blockStart = start
-    while (blockStart > 0 && content[blockStart - 1] !== '\n') {
-      blockStart--
-    }
-    let blockEnd = end
-    while (blockEnd < content.length && content[blockEnd] !== '\n') {
-      blockEnd++
-    }
-
-    // 获取选中的文本块并按行分割
-    const selectedBlock = content.substring(blockStart, blockEnd)
-    const lines = selectedBlock.split('\n')
-
-    // 检查是否所有行都已有序号列表标记
-    const allHaveMarker = lines.every((line) => /^\d+\. /.test(line))
-
-    let newLines: string[]
-    let totalOffsetChange = 0
-
-    if (allHaveMarker) {
-      // 移除所有行的序号列表标记
-      newLines = lines.map((line) => {
-        const match = line.match(/^(\d+)\. /)
-        if (match) {
-          totalOffsetChange -= match[0].length
-          return line.substring(match[0].length)
-        }
-        return line
-      })
-    } else {
-      // 查找选区前一行的序号以确定起始序号
-      let prevLineEnd = blockStart - 1
-      let prevLineStart = prevLineEnd
-      while (prevLineStart > 0 && content[prevLineStart - 1] !== '\n') {
-        prevLineStart--
-      }
-      const prevLineContent = prevLineStart >= 0 ? content.substring(prevLineStart, prevLineEnd + 1) : ''
-      const prevMatch = prevLineContent.match(/^(\d+)\. /)
-      let startNumber = prevMatch?.[1] ? Number.parseInt(prevMatch[1], 10) + 1 : 1
-
-      // 为所有行添加序号列表标记
-      newLines = lines.map((line) => {
-        const marker = `${startNumber}. `
-        totalOffsetChange += marker.length
-        startNumber++
-        return `${marker}${line}`
-      })
-    }
-
-    const newBlock = newLines.join('\n')
-    const newText = content.substring(0, blockStart) + newBlock + content.substring(blockEnd)
-    setContent(newText)
-
-    requestAnimationFrame(() => {
-      textarea.focus()
-      // 调整选区位置
-      const firstLineMatch = lines[0]?.match(/^(\d+)\. /)
-      const firstLineOffset = allHaveMarker
-        ? -(firstLineMatch?.[0].length ?? 0)
-        : `1. `.length
-      const newStart = Math.max(blockStart, start + firstLineOffset)
-      const newEnd = end + totalOffsetChange
-      textarea.setSelectionRange(newStart, newEnd)
-    })
-  }, [textareaRef, setContent, getSelection])
+    focusEditor()
+    document.execCommand('insertOrderedList', false)
+  }, [focusEditor])
 
   // 图片选择处理
   const handleFileSelect = useCallback(
@@ -345,7 +162,6 @@ export function EditorToolbar({
         icon={<Bold className="h-4 w-4" />}
         label={t('bold')}
         onClick={handleBold}
-        onPointerDown={saveSelection}
       />
 
       {/* 无序列表按钮 */}
@@ -353,7 +169,6 @@ export function EditorToolbar({
         icon={<List className="h-4 w-4" />}
         label={t('list')}
         onClick={handleList}
-        onPointerDown={saveSelection}
       />
 
       {/* 序号列表按钮 */}
@@ -361,7 +176,6 @@ export function EditorToolbar({
         icon={<ListOrdered className="h-4 w-4" />}
         label={t('orderedList')}
         onClick={handleOrderedList}
-        onPointerDown={saveSelection}
       />
 
       {/* 隐藏的文件 input */}
@@ -381,8 +195,6 @@ interface ToolbarButtonProps {
   icon: React.ReactNode
   label: string
   onClick?: () => void
-  /** 在 pointerdown 时调用（用于保存选区位置） */
-  onPointerDown?: () => void
   disabled?: boolean
 }
 
@@ -390,26 +202,18 @@ function ToolbarButton({
   icon,
   label,
   onClick,
-  onPointerDown,
   disabled,
 }: ToolbarButtonProps) {
-  // 在 mousedown/touchstart 时保存选区，并阻止默认行为防止焦点丢失
-  const handlePointerDown = useCallback(
-    (e: React.MouseEvent | React.TouchEvent) => {
-      if (onPointerDown) {
-        onPointerDown()
-        e.preventDefault() // 阻止焦点丢失
-      }
-    },
-    [onPointerDown]
-  )
+  // 在 mousedown 时阻止默认行为防止焦点丢失
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+  }, [])
 
   return (
     <button
       type="button"
       onClick={onClick}
-      onMouseDown={handlePointerDown}
-      onTouchStart={handlePointerDown}
+      onMouseDown={handleMouseDown}
       disabled={disabled}
       className={cn(
         'flex h-8 items-center gap-1.5 rounded-md px-2.5 text-foreground transition-colors',

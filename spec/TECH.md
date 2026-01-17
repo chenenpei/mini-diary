@@ -463,6 +463,152 @@ new Intl.DateTimeFormat(locale, {
 
 ---
 
+## 13. WYSIWYG 编辑器
+
+### 技术方案
+
+使用原生 `contenteditable` 实现所见即所得编辑，支持受限格式：
+- **加粗**：`<strong>` / `**text**`
+- **斜体**：`<em>` / `*text*`
+- **无序列表**：`<ul><li>` / `- item`
+- **有序列表**：`<ol><li>` / `1. item`
+
+数据存储仍为 Markdown 格式，通过双向转换实现兼容。
+
+### 依赖
+
+| 库 | 用途 |
+|----|------|
+| DOMPurify (~7KB) | HTML 清理，防止 XSS |
+
+### 核心文件
+
+| 文件 | 职责 |
+|------|------|
+| `lib/contentEditable.ts` | Markdown ↔ HTML 转换 + 清理 |
+| `components/editor/DiaryEditor.tsx` | contenteditable 编辑器组件 |
+| `components/timeline/MarkdownContent.tsx` | Markdown 预处理 + 渲染 |
+
+### HTML ↔ Markdown 转换
+
+#### Markdown → HTML（加载时）
+
+```typescript
+markdownToHtml("今天**很开心**\n- 买了咖啡")
+// → "<p>今天<strong>很开心</strong></p><ul><li>买了咖啡</li></ul>"
+```
+
+#### HTML → Markdown（保存时）
+
+```typescript
+htmlToMarkdown("<p>今天<strong>很开心</strong></p><ul><li>买了咖啡</li></ul>")
+// → "今天**很开心**\n- 买了咖啡\n"
+```
+
+### 可见空行保留
+
+用户在编辑器中创建的可见空行需要在保存和渲染时保持一致。
+
+#### 问题
+
+标准 Markdown 将多个空行合并为一个段落分隔：
+
+```
+Line 1
+
+Line 2      → 渲染时只有一个段落间距
+```
+
+但富文本编辑器中，用户可能明确希望保留多个空行作为视觉分隔。
+
+#### 解决方案
+
+**规则定义**：
+- 一个空行（`\n\n`）= 段落分隔符（不可见）
+- 两个或更多空行（`\n\n\n+`）= 段落分隔 + 可见空行
+
+**Markdown → HTML**（`markdownToHtml`）：
+
+```typescript
+// 第一个空行：段落分隔符（不生成内容）
+// 连续的额外空行：生成 <p><br></p>（可见空段落）
+
+if (line.trim() === '') {
+  if (lastWasBlank) {
+    result.push('<p><br></p>')  // 可见空行
+  } else {
+    lastWasBlank = true         // 仅分隔
+  }
+  continue
+}
+```
+
+**HTML → Markdown**（`htmlToMarkdown`）：
+
+```typescript
+// 空段落（只有 <br> 或空内容）贡献一个 \n
+// 保持 lastWasBlock 不变，让连续空段落各贡献一个 \n
+
+if (isEmptyParagraph) {
+  if (isTopLevel && lastWasBlock) {
+    result.push('\n')
+  }
+  // 不改变 lastWasBlock
+  break
+}
+```
+
+**Markdown 预处理**（用于 react-markdown 渲染）：
+
+react-markdown 遵循标准 Markdown 规范，会合并空行。为了在时间线渲染时保留可见空行，需要预处理：
+
+```typescript
+// preprocessMarkdown: 将额外空行转换为 non-breaking space
+// \n\n\n → \n\n\u00A0\n\n
+
+export function preprocessMarkdown(markdown: string): string {
+  return markdown.replace(/\n\n(\n+)/g, (_match, extraNewlines: string) => {
+    const visibleLines = Array(extraNewlines.length).fill('\u00A0').join('\n\n')
+    return '\n\n' + visibleLines + '\n\n'
+  })
+}
+```
+
+**示例**：
+
+| 用户输入 | Markdown 存储 | 编辑器显示 | 时间线渲染 |
+|----------|---------------|------------|------------|
+| A↵↵B | `A\n\nB` | A（空）B | A（空）B |
+| A↵↵↵B | `A\n\n\nB` | A（空行）B | A（空行）B |
+| A↵↵↵↵B | `A\n\n\n\nB` | A（两空行）B | A（两空行）B |
+
+### 安全措施
+
+1. **HTML 清理**：所有 HTML 在显示前经过 DOMPurify 清理
+2. **白名单标签**：只允许 `p`, `br`, `strong`, `b`, `em`, `i`, `ul`, `ol`, `li`, `div`
+3. **无属性**：不允许任何 HTML 属性（如 `onclick`, `href`）
+4. **粘贴处理**：粘贴时只提取纯文本，丢弃 HTML
+
+### IME 输入处理
+
+中文输入法需要特殊处理以避免 placeholder 重叠：
+
+```typescript
+const [isComposing, setIsComposing] = useState(false)
+
+// compositionstart 时隐藏 placeholder
+const handleCompositionStart = () => setIsComposing(true)
+const handleCompositionEnd = () => {
+  setIsComposing(false)
+  handleInput()  // IME 结束后触发更新
+}
+
+// Placeholder 显示条件
+{isEmpty && !isComposing && <Placeholder />}
+```
+
+---
+
 ## 14. 开发命令
 
 ```bash

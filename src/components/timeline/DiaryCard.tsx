@@ -88,8 +88,8 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
       </time>
 
       {/* Full Content */}
-      <div className="mt-2 text-sm leading-relaxed text-foreground sm:text-base [&_p]:m-0 [&_ul]:m-0 [&_ol]:m-0 [&_li]:m-0 [&_p]:mb-2 [&_p:last-child]:mb-0">
-        <MarkdownContent content={entry.content} className="prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0" />
+      <div className="mt-2 text-sm leading-relaxed text-foreground sm:text-base">
+        <MarkdownContent content={entry.content} />
       </div>
 
       {/* Images */}
