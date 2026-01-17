@@ -22,14 +22,15 @@ const easing = {
  *
  * 设计规范:
  * - Mobile First
- * - 桌面端内容区 max-w-md (448px) 居中
- * - 页面内边距: 16px (mobile) / 24px (tablet) / 32px (desktop)
+ * - 内容区 max-w-[600px] 居中
+ * - 背景色: Surface (light) / Background (dark)
+ * - 页面内边距: 20px (mobile) / 24px (tablet) / 32px (desktop)
  */
 export function PageLayout({ children, animate = true, className, ...props }: PageLayoutProps) {
   const content = (
     <main
       className={cn(
-        'flex-1 bg-background px-4 pb-24 pt-4 sm:px-6 lg:px-8',
+        'flex-1 bg-surface dark:bg-background px-5 pb-24 pt-5 sm:px-6 lg:px-8',
         'mx-auto max-w-[600px]',
         className
       )}
@@ -45,6 +46,7 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
 
   return (
     <motion.div
+      className='flex-1 bg-surface dark:bg-background'
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}

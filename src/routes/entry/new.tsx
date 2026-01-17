@@ -192,7 +192,7 @@ function NewEntryPage() {
       />
 
       <main
-        className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 pt-4"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden px-5 pt-5"
         style={{ paddingBottom: keyboardHeight + 56 }}
       >
         <DiaryEditor

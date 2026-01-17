@@ -82,7 +82,7 @@ export function DiaryList({
   return (
     <>
       <motion.div
-        className={cn('flex flex-col gap-4', className)}
+        className={cn('flex flex-col gap-5', className)}
         variants={cardListVariants}
         initial={false}
         animate="show"
