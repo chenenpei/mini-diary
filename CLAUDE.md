@@ -97,6 +97,16 @@ interface ImageRecord {
 8. **Commit 信息**：使用中文
 9. **小步提交**：每完成一个独立任务立即提交，不要积攒多个任务一起提交
 10. **动画性能**：仅对合成器属性 (`transform`, `opacity`) 进行动画，禁止对布局属性 (`width`, `height`, `margin`, `padding`) 进行动画
+11. **提交前检查**：每次提交 commit 前，先确认是否需要更新 `spec/` 目录下的文档和 `CLAUDE.md`
+
+## 移动端适配
+
+- **Viewport 配置**：`interactive-widget=resizes-content` 确保键盘弹出时调整内容大小而非滚动页面
+- **页面布局**：
+  - 需要滚动的页面使用 `h-dvh overflow-y-auto`
+  - 编辑器等禁止滚动的页面使用 `h-dvh overflow-hidden`
+- **全局样式**：`html/body` 设置 `overflow: hidden` + `overscroll-behavior: none`
+- **键盘高度监听**：使用 `useKeyboardHeight` hook 通过 `visualViewport` API 获取键盘高度
 
 ## 功能优先级
 

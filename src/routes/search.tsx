@@ -251,7 +251,7 @@ function SearchPage() {
   const hasHistory = searchHistory.length > 0
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex h-dvh flex-col overflow-y-auto bg-background">
       {/* 搜索栏 */}
       <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-border bg-background px-4 py-2">
         {/* 返回按钮 */}

@@ -283,6 +283,14 @@ queryClient.prefetchQuery({
 
 ## 8. PWA 配置
 
+### Viewport Meta
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+```
+
+- `viewport-fit=cover` - 支持 iOS 刘海屏安全区域
+- `interactive-widget=resizes-content` - 键盘弹出时调整内容大小而非滚动页面（关键！）
+
 ### Service Worker (Workbox)
 ```javascript
 // 缓存策略

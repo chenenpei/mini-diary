@@ -181,7 +181,7 @@ function NewEntryPage() {
   }, [showCancelConfirm, saveDisabled, createEntry.isPending, handleSave, handleBack])
 
   return (
-    <div className="flex h-dvh flex-col bg-background">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
       <EditorHeader
         title={t('createTitle')}
         isDirty={isDirty}
@@ -192,7 +192,7 @@ function NewEntryPage() {
       />
 
       <main
-        className="flex min-h-0 flex-1 flex-col px-4 pt-4"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden px-4 pt-4"
         style={{ paddingBottom: keyboardHeight + 56 }}
       >
         <DiaryEditor

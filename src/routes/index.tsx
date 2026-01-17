@@ -226,7 +226,7 @@ function HomePage() {
   }, [queryClient, addToast, tData])
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex h-dvh flex-col overflow-y-auto bg-background">
       <TopBar onMenuClick={handleMenuClick} onSearchClick={handleSearchClick}>
         <DateNavigator
           date={currentDate}
