@@ -12,7 +12,6 @@
 - [PRD.md](spec/PRD.md) - 产品需求
 - [TECH.md](spec/TECH.md) - 技术架构
 - [DESIGN.md](spec/DESIGN.md) - 设计规范
-- [MILESTONES.md](.claude/MILESTONES.md) - 开发进度跟踪
 
 ## 技术栈
 
@@ -109,11 +108,15 @@ interface ImageRecord {
 - **全局样式**：`html/body` 设置 `overflow: hidden` + `overscroll-behavior: none`
 - **键盘高度监听**：使用 `useKeyboardHeight` hook 通过 `visualViewport` API 获取键盘高度
 
-## 功能优先级
+## 功能状态
 
-| P0 (MVP) | P1 | P2 |
-|----------|-----|-----|
-| 时间线视图 | 全文搜索 | Web Worker 搜索 |
-| 日期导航 | 数据导入/导出 | HEIC 支持 |
-| 创建/编辑/删除 | 主题切换 | Lightbox |
-| 图片上传 | PWA 安装 | |
+| 已完成 | 待实现 |
+|--------|--------|
+| 时间线视图 | Web Worker 搜索 |
+| 日期导航 | HEIC 支持 |
+| 创建/编辑/删除 | Lightbox |
+| 图片上传 | PWA 安装引导 |
+| 全文搜索 | |
+| 数据导入/导出 | |
+| 主题切换 | |
+| 语言切换 | |

@@ -228,15 +228,23 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
             onCompositionStart={handleCompositionStart}
             onCompositionEnd={handleCompositionEnd}
             className={cn(
-              'min-h-full w-full border-none bg-transparent p-0 text-base leading-relaxed text-foreground',
+              'min-h-full w-full border-none bg-transparent p-0 text-sm leading-relaxed text-foreground',
               'focus:outline-none',
-              // 编辑器内部样式
+              // 编辑器内部基础样式
               '[&_p]:my-0 [&_p]:leading-relaxed',
-              '[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5',
-              '[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5',
+              '[&_ul]:my-0 [&_ul]:list-disc [&_ul]:pl-5',
+              '[&_ol]:my-0 [&_ol]:list-decimal [&_ol]:pl-5',
               '[&_li]:my-0.5',
               '[&_strong]:font-bold',
-              '[&_em]:italic'
+              '[&_em]:italic',
+              // 段落间距规则（相邻兄弟选择器）
+              '[&_p+p]:mt-2',
+              '[&_ul+p]:mt-2',
+              '[&_ol+p]:mt-2',
+              '[&_ul+ul]:mt-2',
+              '[&_ul+ol]:mt-2',
+              '[&_ol+ul]:mt-2',
+              '[&_ol+ol]:mt-2'
             )}
             suppressContentEditableWarning
           />
@@ -322,7 +330,7 @@ export function EditorHeader({
 
       {/* Title with dirty indicator */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-foreground">{title}</span>
+        <span className="text-base font-medium text-foreground">{title}</span>
         {isDirty && (
           <span className="h-1.5 w-1.5 rounded-full bg-primary" role="status" aria-label={t('unsavedChanges')} />
         )}

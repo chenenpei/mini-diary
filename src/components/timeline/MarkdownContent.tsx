@@ -46,7 +46,18 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
   const processedContent = preprocessMarkdown(content)
 
   return (
-    <div className={cn('max-w-none text-foreground', className)}>
+    <div className={cn(
+      'max-w-none text-foreground',
+      // 段落间距规则（相邻兄弟选择器）
+      '[&>p+p]:mt-2',           // 段落+段落：有间距
+      '[&>ul+p]:mt-2',          // 列表+段落：有间距
+      '[&>ol+p]:mt-2',
+      '[&>ul+ul]:mt-2',         // 列表+列表：有间距
+      '[&>ul+ol]:mt-2',
+      '[&>ol+ul]:mt-2',
+      '[&>ol+ol]:mt-2',
+      className
+    )}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={markdownComponents}

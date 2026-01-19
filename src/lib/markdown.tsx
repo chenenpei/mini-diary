@@ -31,14 +31,14 @@ export const markdownComponents: Components = {
     <em className="italic">{children}</em>
   ),
 
-  // Supported: unordered list - 与编辑器对齐
+  // Supported: unordered list - 间距由容器相邻兄弟选择器控制
   ul: ({ children }) => (
-    <ul className="my-2 list-disc pl-5">{children}</ul>
+    <ul className="list-disc pl-5">{children}</ul>
   ),
 
-  // Supported: ordered list - 与编辑器对齐
+  // Supported: ordered list - 间距由容器相邻兄弟选择器控制
   ol: ({ children }) => (
-    <ol className="my-2 list-decimal pl-5">{children}</ol>
+    <ol className="list-decimal pl-5">{children}</ol>
   ),
 
   // Supported: list item - 与编辑器对齐
