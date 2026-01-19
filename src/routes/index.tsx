@@ -5,6 +5,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useSwipeable } from 'react-swipeable'
 import { TopBar, FAB, PageLayout, Drawer } from '@/components/layout'
 import {
   DateNavigator,
@@ -118,6 +119,18 @@ function HomePage() {
     }
   }
 
+  // 移动端滑动切换日期
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (!isToday) handleNextDay()
+    },
+    onSwipedRight: handlePreviousDay,
+    delta: 80,
+    swipeDuration: 300,
+    trackMouse: false,
+    preventScrollOnSwipe: false,
+  })
+
   const handleCreateEntry = () => {
     navigate({ to: '/entry/new', search: { date: currentDate } })
   }
@@ -226,7 +239,7 @@ function HomePage() {
   }, [queryClient, addToast, tData])
 
   return (
-    <div className="flex h-dvh flex-col overflow-y-auto bg-background">
+    <div className="flex h-dvh flex-col overflow-y-auto bg-background" {...swipeHandlers}>
       <TopBar onMenuClick={handleMenuClick} onSearchClick={handleSearchClick}>
         <DateNavigator
           date={currentDate}
