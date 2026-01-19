@@ -128,13 +128,13 @@ function EditEntryPage() {
       setShowCancelConfirm(true)
       return
     }
-    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
-  }, [isDirty, navigate])
+    navigate({ to: '/', search: { date: entry?.date, scrollTo: undefined } })
+  }, [isDirty, navigate, entry?.date])
 
   const handleCancelConfirm = useCallback(() => {
     setShowCancelConfirm(false)
-    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
-  }, [navigate])
+    navigate({ to: '/', search: { date: entry?.date, scrollTo: undefined } })
+  }, [navigate, entry?.date])
 
   const handleCancelCancel = useCallback(() => {
     setShowCancelConfirm(false)
