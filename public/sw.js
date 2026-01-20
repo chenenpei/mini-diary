@@ -1,10 +1,9 @@
 // MiniDiary Service Worker
-const CACHE_NAME = 'mini-diary-v1'
-const STATIC_CACHE_NAME = 'mini-diary-static-v1'
+const CACHE_NAME = 'mini-diary-v2'
+const STATIC_CACHE_NAME = 'mini-diary-static-v2'
 
-// 静态资源缓存列表
+// 静态资源缓存列表（只包含真正的静态文件，不包含 SSR 路由）
 const STATIC_ASSETS = [
-  '/',
   '/manifest.json',
   '/favicon.ico',
   '/logo192.png',
@@ -48,7 +47,10 @@ self.addEventListener('fetch', (event) => {
   }
 
   // 对于导航请求，使用网络优先策略
+  // 使用 pathname 作为缓存键，避免查询参数导致缓存未命中
   if (request.mode === 'navigate') {
+    const cacheKey = url.pathname
+
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -56,14 +58,14 @@ self.addEventListener('fetch', (event) => {
           if (response.ok) {
             const responseClone = response.clone()
             caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone)
+              cache.put(cacheKey, responseClone)
             })
           }
           return response
         })
         .catch(() => {
-          // 网络失败时使用缓存
-          return caches.match(request).then((cached) => {
+          // 网络失败时使用缓存：先尝试精确匹配，再回退到根路径
+          return caches.match(cacheKey).then((cached) => {
             return cached || caches.match('/')
           })
         })
@@ -81,32 +83,59 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) {
-          // 在后台更新缓存
-          fetch(request).then((response) => {
-            if (response.ok) {
-              caches.open(STATIC_CACHE_NAME).then((cache) => {
-                cache.put(request, response)
-              })
-            }
-          })
+          // 在后台更新缓存（静默失败，不影响返回）
+          fetch(request)
+            .then((response) => {
+              if (response.ok) {
+                caches.open(STATIC_CACHE_NAME).then((cache) => {
+                  cache.put(request, response)
+                })
+              }
+            })
+            .catch(() => {
+              // 网络失败时静默忽略，使用缓存即可
+            })
           return cached
         }
 
         // 没有缓存，从网络获取并缓存
-        return fetch(request).then((response) => {
-          if (response.ok) {
-            const responseClone = response.clone()
-            caches.open(STATIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone)
-            })
-          }
-          return response
-        })
+        return fetch(request)
+          .then((response) => {
+            if (response.ok) {
+              const responseClone = response.clone()
+              caches.open(STATIC_CACHE_NAME).then((cache) => {
+                cache.put(request, responseClone)
+              })
+            }
+            return response
+          })
+          .catch(() => {
+            // 网络失败且无缓存，返回离线提示（对于关键资源这种情况很少见）
+            return new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
+          })
       })
     )
     return
   }
 
-  // 其他请求直接走网络
-  event.respondWith(fetch(request))
+  // 其他请求：网络优先，失败时尝试缓存
+  event.respondWith(
+    fetch(request)
+      .then((response) => {
+        // 缓存成功响应以备离线使用
+        if (response.ok) {
+          const responseClone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseClone)
+          })
+        }
+        return response
+      })
+      .catch(() => {
+        // 网络失败时尝试从缓存获取
+        return caches.match(request).then((cached) => {
+          return cached || new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
+        })
+      })
+  )
 })
