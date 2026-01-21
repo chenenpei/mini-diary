@@ -4,8 +4,9 @@
 export function registerServiceWorker(): void {
   if (typeof window === 'undefined') return
   if (!('serviceWorker' in navigator)) return
+  if (import.meta.env.DEV) return
 
-  window.addEventListener('load', async () => {
+  const register = async () => {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
@@ -28,5 +29,17 @@ export function registerServiceWorker(): void {
     } catch (error) {
       console.error('[SW] Service Worker registration failed:', error)
     }
-  })
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    void register()
+  } else {
+    window.addEventListener(
+      'DOMContentLoaded',
+      () => {
+        void register()
+      },
+      { once: true }
+    )
+  }
 }

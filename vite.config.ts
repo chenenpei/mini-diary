@@ -5,6 +5,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 
 const config = defineConfig({
@@ -33,6 +34,40 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      injectRegister: null,
+      strategies: 'generateSW',
+      filename: 'sw.js',
+      includeAssets: [
+        'manifest.json',
+        'favicon.ico',
+        'logo180.png',
+        'logo192.png',
+        'logo512.png',
+        'robots.txt',
+      ],
+      workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        navigateFallback: null,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages',
+              networkTimeoutSeconds: 3,
+              matchOptions: {
+                ignoreSearch: true,
+              },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+        ],
+      },
+    }),
   ],
 })
 
