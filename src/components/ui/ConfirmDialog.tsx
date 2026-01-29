@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '@/lib/utils'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface ConfirmDialogProps {
   /** Whether the dialog is open */
@@ -49,6 +50,14 @@ export function ConfirmDialog({
   const { t } = useTranslation('common')
   const displayConfirmText = confirmText ?? t('confirm')
   const displayCancelText = cancelText ?? t('cancel')
+
+  // Focus trap
+  const dialogRef = useFocusTrap<HTMLDivElement>({
+    isActive: isOpen,
+    autoFocus: true,
+    restoreFocus: true,
+  })
+
   // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return
@@ -88,17 +97,22 @@ export function ConfirmDialog({
           onClick={onCancel}
         >
           <motion.div
+            ref={dialogRef}
             className="w-full max-w-sm rounded-lg bg-card p-6 shadow-xl"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             onClick={(e) => e.stopPropagation()}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="confirm-dialog-title"
+            aria-describedby="confirm-dialog-message"
           >
             {/* Title */}
-            <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+            <h2 id="confirm-dialog-title" className="text-lg font-semibold text-foreground">{title}</h2>
 
             {/* Message */}
-            <p className="mt-2 text-sm text-muted-foreground">{message}</p>
+            <p id="confirm-dialog-message" className="mt-2 text-sm text-muted-foreground">{message}</p>
 
             {/* Actions */}
             <div className="mt-6 flex justify-end gap-3">

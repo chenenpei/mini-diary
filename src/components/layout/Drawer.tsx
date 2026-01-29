@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useLocale } from '@/i18n/useLocale'
 import type { Locale } from '@/i18n'
 import { InfoDialog } from '@/components/ui/InfoDialog'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 // 动画缓动函数
 const easing = {
@@ -80,6 +81,13 @@ export function Drawer({
   const { locale, setLocale } = useLocale()
   const [showStorageInfo, setShowStorageInfo] = useState(false)
 
+  // Focus trap
+  const drawerRef = useFocusTrap<HTMLElement>({
+    isActive: isOpen && !showStorageInfo, // Disable when info dialog is open
+    autoFocus: true,
+    restoreFocus: true,
+  })
+
   // 主题选项配置（需要在组件内部以获取翻译）
   const themeOptions: { value: ThemeMode; label: string; icon: React.ReactNode }[] = [
     { value: 'light', label: t('themeLight'), icon: <Sun className="h-4 w-4" /> },
@@ -131,6 +139,7 @@ export function Drawer({
 
           {/* 侧边栏内容 */}
           <motion.aside
+            ref={drawerRef}
             initial={{ x: -300, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}

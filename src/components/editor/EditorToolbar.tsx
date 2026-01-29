@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { ImagePlus, Bold, List, ListOrdered } from 'lucide-react'
 import { cn, generateId } from '@/lib/utils'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
-import { processImage, createImageUrl, validateImage } from '@/lib/image'
+import { processImage, createImageUrl, validateImage, ImageProcessingError } from '@/lib/image'
 
 interface ImageItem {
   id: string
@@ -114,14 +114,16 @@ export function EditorToolbar({
         try {
           const validation = validateImage(imageItem.file)
           if (!validation.valid) {
-            onImageError?.(imageItem.id, validation.error ?? tImage('validationFailed'))
+            onImageError?.(imageItem.id, tImage(validation.errorKey ?? 'validationFailed'))
             continue
           }
 
           const { blob, thumbnail } = await processImage(imageItem.file)
           onImageProcessed?.(imageItem.id, { file: imageItem.file, blob, thumbnail })
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : tImage('processFailed')
+          const errorMessage = err instanceof ImageProcessingError
+            ? tImage(err.errorKey)
+            : tImage('processFailed')
           onImageError?.(imageItem.id, errorMessage)
         }
       }
@@ -218,7 +220,7 @@ function ToolbarButton({
       className={cn(
         'flex h-8 items-center gap-1.5 rounded-md px-2.5 text-foreground transition-colors',
         disabled
-          ? 'cursor-not-allowed opacity-40'
+          ? 'cursor-not-allowed opacity-60'
           : 'hover:bg-muted active:opacity-70'
       )}
     >

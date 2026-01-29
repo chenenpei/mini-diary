@@ -9,5 +9,7 @@
   "unsupportedFormat": "Unsupported format. Please use JPG, PNG, or WebP",
   "sizeTooLarge": "Image size cannot exceed 10MB",
   "canvasError": "Cannot create canvas context",
-  "compressionFailed": "Image compression failed"
+  "compressionFailed": "Image compression failed",
+  "lightbox": "Image viewer",
+  "imageOf": "Image {{current}}/{{total}}"
 }

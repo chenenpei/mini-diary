@@ -74,7 +74,7 @@ export function DateNavigator({
         disabled={disableNext}
         className={cn(
           'touch-target flex items-center justify-center rounded-sm text-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
-          disableNext ? 'cursor-not-allowed opacity-40' : 'hover:bg-surface active:opacity-60'
+          disableNext ? 'cursor-not-allowed opacity-60' : 'hover:bg-surface active:opacity-60'
         )}
         aria-label={t('nextDay')}
       >

@@ -1,9 +1,10 @@
 'use client'
 
 import { useCallback, useRef, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ImagePlus, X } from 'lucide-react'
 import { cn, generateId } from '@/lib/utils'
-import { processImage, createImageUrl, revokeImageUrl, validateImage } from '@/lib/image'
+import { processImage, createImageUrl, revokeImageUrl, validateImage, ImageProcessingError } from '@/lib/image'
 import { Lightbox } from '@/components/ui'
 
 const MAX_IMAGES = 3
@@ -47,6 +48,7 @@ export function ImageUploader({
   onExistingImageRemove,
   className,
 }: ImageUploaderProps) {
+  const { t } = useTranslation('image')
   const [images, setImages] = useState<ImageItem[]>([])
   const processedImagesRef = useRef<
     Map<string, { file: File; blob: Blob; thumbnail: Blob }>
@@ -105,7 +107,7 @@ export function ImageUploader({
             setImages((prev) =>
               prev.map((img) =>
                 img.id === imageItem.id
-                  ? { ...img, isProcessing: false, error: validation.error }
+                  ? { ...img, isProcessing: false, error: t(validation.errorKey ?? 'validationFailed') }
                   : img
               )
             )
@@ -126,7 +128,9 @@ export function ImageUploader({
             )
           )
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : '处理图片失败'
+          const errorMessage = err instanceof ImageProcessingError
+            ? t(err.errorKey)
+            : t('processFailed')
           setImages((prev) =>
             prev.map((img) =>
               img.id === imageItem.id
@@ -141,7 +145,7 @@ export function ImageUploader({
       const validImages = Array.from(processedImagesRef.current.values())
       onImagesChange?.(validImages)
     },
-    [remainingSlots, onImagesChange]
+    [remainingSlots, onImagesChange, t]
   )
 
   const handleRemove = useCallback(
@@ -186,7 +190,7 @@ export function ImageUploader({
               type="button"
               onClick={() => onExistingImageRemove?.(existing.id)}
               className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
-              aria-label="移除图片"
+              aria-label={t('remove')}
             >
               <X className="h-3 w-3" />
             </button>
@@ -259,7 +263,7 @@ export function ImageUploader({
               {/* Error indicator */}
               {image.error && (
                 <div className="absolute inset-0 flex items-center justify-center bg-destructive/80">
-                  <span className="text-xs text-white">失败</span>
+                  <span className="text-xs text-white">{t('failed')}</span>
                 </div>
               )}
 
@@ -269,7 +273,7 @@ export function ImageUploader({
                   type="button"
                   onClick={() => handleRemove(image.id)}
                   className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
-                  aria-label="移除图片"
+                  aria-label={t('remove')}
                 >
                   <X className="h-3 w-3" />
                 </button>

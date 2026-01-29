@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/timeline'
 import { ConfirmDialog } from '@/components/ui'
 import { useEntry, useUpdateEntry } from '@/hooks/useEntries'
 import { useImagesByIds, useCreateImages, useDeleteImage } from '@/hooks/useImages'
+import { useToast } from '@/components/ui'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
 import { revokeImageUrl } from '@/lib/image'
 
@@ -34,6 +35,7 @@ function EditEntryPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('entry')
   const { t: tCommon } = useTranslation('common')
+  const { addToast } = useToast()
   const { id } = Route.useParams()
 
   const { data: entry, isLoading, error } = useEntry(id)
@@ -182,9 +184,9 @@ function EditEntryPage() {
       setIsDirty(false)
       navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
     } catch {
-      alert(t('saveFailed'))
+      addToast(t('saveFailed'), 'error')
     }
-  }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate, t])
+  }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate, t, addToast])
 
   const imageCount = existingImages.length + newImages.length
 

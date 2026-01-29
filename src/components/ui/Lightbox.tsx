@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useSwipeable } from 'react-swipeable'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface LightboxProps {
   /** Array of image URLs */
@@ -38,6 +39,14 @@ export function Lightbox({
 }: LightboxProps) {
   const { t } = useTranslation('image')
   const { t: tCommon } = useTranslation('common')
+
+  // Focus trap
+  const lightboxRef = useFocusTrap<HTMLDivElement>({
+    isActive: isOpen,
+    autoFocus: true,
+    restoreFocus: true,
+  })
+
   const hasMultiple = images.length > 1
   const hasPrev = currentIndex > 0
   const hasNext = currentIndex < images.length - 1
@@ -122,11 +131,15 @@ export function Lightbox({
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          ref={lightboxRef}
           className="fixed inset-0 z-100 flex items-center justify-center bg-black/90"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('lightbox')}
         >
           {/* Close button */}
           <button
@@ -191,7 +204,7 @@ export function Lightbox({
             <motion.img
               key={currentIndex}
               src={images[currentIndex]}
-              alt=""
+              alt={t('imageOf', { current: currentIndex + 1, total: images.length })}
               className="max-h-[90vh] max-w-[90vw] object-contain"
               initial={{
                 opacity: 0,

@@ -233,7 +233,7 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
             onCompositionEnd={handleCompositionEnd}
             className={cn(
               'min-h-full w-full border-none bg-transparent p-0 text-sm leading-relaxed text-foreground',
-              'focus:outline-none',
+              'outline-none focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2',
               // 编辑器内部基础样式
               '[&_p]:my-0 [&_p]:leading-relaxed',
               '[&_ul]:my-0 [&_ul]:list-disc [&_ul]:pl-5',

@@ -8,6 +8,7 @@ import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
 import { ConfirmDialog } from '@/components/ui'
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries'
 import { useCreateImages } from '@/hooks/useImages'
+import { useToast } from '@/components/ui'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
 import { dateUtils } from '@/components/timeline'
 import { revokeImageUrl } from '@/lib/image'
@@ -41,6 +42,7 @@ function NewEntryPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('entry')
   const { t: tCommon } = useTranslation('common')
+  const { addToast } = useToast()
   const { date } = Route.useSearch()
   const entryDate = date ?? dateUtils.getToday()
 
@@ -147,9 +149,9 @@ function NewEntryPage() {
 
       navigate({ to: '/', search: { date: entryDate, scrollTo: entry.id } })
     } catch {
-      alert(t('saveFailed'))
+      addToast(t('saveFailed'), 'error')
     }
-  }, [content, entryDate, createEntry, updateEntry, createImages, navigate, t])
+  }, [content, entryDate, createEntry, updateEntry, createImages, navigate, t, addToast])
 
   // 新建日记必须有内容才能保存
   const saveDisabled = !content.trim()

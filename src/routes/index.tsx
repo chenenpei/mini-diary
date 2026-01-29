@@ -101,14 +101,14 @@ function HomePage() {
 
   const isToday = dateUtils.isToday(currentDate)
 
-  const handlePreviousDay = () => {
+  const handlePreviousDay = useCallback(() => {
     const prevDate = dateUtils.getPreviousDay(currentDate)
     setCurrentDate(prevDate)
     // Prefetch the day before
     prefetchEntries(dateUtils.getPreviousDay(prevDate))
-  }
+  }, [currentDate, prefetchEntries])
 
-  const handleNextDay = () => {
+  const handleNextDay = useCallback(() => {
     if (!isToday) {
       const nextDate = dateUtils.getNextDay(currentDate)
       setCurrentDate(nextDate)
@@ -117,7 +117,7 @@ function HomePage() {
         prefetchEntries(dateUtils.getNextDay(nextDate))
       }
     }
-  }
+  }, [isToday, currentDate, prefetchEntries])
 
   // 移动端滑动切换日期
   const swipeHandlers = useSwipeable({
@@ -237,6 +237,42 @@ function HomePage() {
     setShowClearDialog(false)
     addToast(tData('clearSuccess'), 'success')
   }, [queryClient, addToast, tData])
+
+  // 键盘快捷键导航日期
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 忽略输入框、文本区域和可编辑元素内的按键
+      const target = e.target as HTMLElement
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        return
+      }
+
+      // 忽略弹窗打开时的按键
+      if (isDrawerOpen || showDatePicker || deleteTarget !== null || showClearDialog) {
+        return
+      }
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          handlePreviousDay()
+          break
+        case 'ArrowRight':
+          if (!isToday) {
+            e.preventDefault()
+            handleNextDay()
+          }
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isDrawerOpen, showDatePicker, deleteTarget, showClearDialog, isToday, handlePreviousDay, handleNextDay])
 
   return (
     <div className="flex h-dvh flex-col overflow-y-auto bg-background" {...swipeHandlers}>

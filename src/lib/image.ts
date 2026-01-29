@@ -2,6 +2,22 @@
  * Image compression utilities using Canvas API
  */
 
+export type ImageProcessingErrorKey = 'canvasError' | 'compressionFailed' | 'processFailed' | 'unsupportedFormat' | 'sizeTooLarge'
+
+/**
+ * Custom error class for image processing errors
+ * Contains an i18n key instead of a hardcoded message
+ */
+export class ImageProcessingError extends Error {
+  readonly errorKey: ImageProcessingErrorKey
+
+  constructor(errorKey: ImageProcessingErrorKey) {
+    super(errorKey)
+    this.name = 'ImageProcessingError'
+    this.errorKey = errorKey
+  }
+}
+
 interface ImageConfig {
   maxWidth: number
   maxHeight: number
@@ -34,16 +50,19 @@ interface ProcessedImage {
   thumbnail: Blob
 }
 
+export type ImageValidationErrorKey = Extract<ImageProcessingErrorKey, 'unsupportedFormat' | 'sizeTooLarge'>
+
 /**
  * Validate image file
+ * Returns error key for i18n instead of hardcoded message
  */
-export function validateImage(file: File): { valid: boolean; error?: string } {
+export function validateImage(file: File): { valid: boolean; errorKey?: ImageValidationErrorKey } {
   if (!SUPPORTED_FORMATS.includes(file.type)) {
-    return { valid: false, error: '不支持的图片格式，请使用 JPG、PNG 或 WebP' }
+    return { valid: false, errorKey: 'unsupportedFormat' }
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    return { valid: false, error: '图片大小不能超过 10MB' }
+    return { valid: false, errorKey: 'sizeTooLarge' }
   }
 
   return { valid: true }
@@ -93,7 +112,7 @@ async function compressWithCanvas(
   if (typeof OffscreenCanvas !== 'undefined') {
     const canvas = new OffscreenCanvas(width, height)
     const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('无法创建 Canvas 上下文')
+    if (!ctx) throw new ImageProcessingError('canvasError')
 
     ctx.drawImage(bitmap, 0, 0, width, height)
     bitmap.close()
@@ -110,7 +129,7 @@ async function compressWithCanvas(
   canvas.height = height
 
   const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('无法创建 Canvas 上下文')
+  if (!ctx) throw new ImageProcessingError('canvasError')
 
   ctx.drawImage(bitmap, 0, 0, width, height)
   bitmap.close()
@@ -121,7 +140,7 @@ async function compressWithCanvas(
         if (blob) {
           resolve(blob)
         } else {
-          reject(new Error('图片压缩失败'))
+          reject(new ImageProcessingError('compressionFailed'))
         }
       },
       config.outputFormat,
@@ -136,7 +155,7 @@ async function compressWithCanvas(
 export async function processImage(file: File): Promise<ProcessedImage> {
   const validation = validateImage(file)
   if (!validation.valid) {
-    throw new Error(validation.error)
+    throw new ImageProcessingError(validation.errorKey ?? 'processFailed')
   }
 
   // Compress main image and thumbnail in parallel

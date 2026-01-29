@@ -9,5 +9,7 @@
   "unsupportedFormat": "不支持的图片格式，请使用 JPG、PNG 或 WebP",
   "sizeTooLarge": "图片大小不能超过 10MB",
   "canvasError": "无法创建 Canvas 上下文",
-  "compressionFailed": "图片压缩失败"
+  "compressionFailed": "图片压缩失败",
+  "lightbox": "图片查看器",
+  "imageOf": "图片 {{current}}/{{total}}"
 }
