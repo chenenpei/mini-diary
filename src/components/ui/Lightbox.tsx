@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
+import { useSwipeable } from 'react-swipeable'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -40,18 +41,48 @@ export function Lightbox({
   const hasMultiple = images.length > 1
   const hasPrev = currentIndex > 0
   const hasNext = currentIndex < images.length - 1
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null)
 
   const handlePrev = useCallback(() => {
     if (hasPrev) {
+      setSwipeDirection('right')
       onIndexChange(currentIndex - 1)
     }
   }, [hasPrev, currentIndex, onIndexChange])
 
   const handleNext = useCallback(() => {
     if (hasNext) {
+      setSwipeDirection('left')
       onIndexChange(currentIndex + 1)
     }
   }, [hasNext, currentIndex, onIndexChange])
+
+  // Swipe handlers
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (hasNext) {
+        handleNext()
+      }
+    },
+    onSwipedRight: () => {
+      if (hasPrev) {
+        handlePrev()
+      }
+    },
+    delta: 50,
+    swipeDuration: 500,
+    trackMouse: false,
+    preventScrollOnSwipe: true,
+  })
+
+  // Reset swipe direction after animation
+  useEffect(() => {
+    if (swipeDirection === null) {
+      return
+    }
+    const timer = setTimeout(() => setSwipeDirection(null), 300)
+    return () => clearTimeout(timer)
+  }, [swipeDirection])
 
   // Keyboard navigation
   useEffect(() => {
@@ -152,17 +183,30 @@ export function Lightbox({
             </button>
           )}
 
-          {/* Image */}
-          <motion.img
-            key={currentIndex}
-            src={images[currentIndex]}
-            alt=""
-            className="max-h-[90vh] max-w-[90vw] object-contain"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            onClick={(e) => e.stopPropagation()}
-          />
+          {/* Image with swipe support */}
+          <div
+            {...swipeHandlers}
+            className="flex h-full w-full items-center justify-center"
+          >
+            <motion.img
+              key={currentIndex}
+              src={images[currentIndex]}
+              alt=""
+              className="max-h-[90vh] max-w-[90vw] object-contain"
+              initial={{
+                opacity: 0,
+                scale: 0.9,
+                x: swipeDirection === 'left' ? 100 : swipeDirection === 'right' ? -100 : 0,
+              }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{
+                opacity: 0,
+                scale: 0.9,
+                x: swipeDirection === 'left' ? -100 : swipeDirection === 'right' ? 100 : 0,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

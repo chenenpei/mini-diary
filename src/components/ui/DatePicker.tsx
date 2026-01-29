@@ -325,7 +325,7 @@ export function DatePicker({
                           isDisabled && 'cursor-not-allowed opacity-30'
                         )}
                         aria-label={date}
-                        aria-selected={isSelected}
+                        aria-pressed={isSelected}
                       >
                         {day}
                         {hasEntry && !isSelected && (

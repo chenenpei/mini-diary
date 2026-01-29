@@ -278,7 +278,7 @@ function processUnorderedList(ul: Element): string {
   }
   // 末尾加换行，配合 nodeToMarkdown 中块级元素前的换行，形成空行
   // 这样 Markdown 解析器才能正确识别列表结束
-  return items.join('\n') + '\n'
+  return `${items.join('\n')}\n`
 }
 
 /**
@@ -294,7 +294,7 @@ function processOrderedList(ol: Element): string {
     }
   }
   // 末尾加换行，配合 nodeToMarkdown 中块级元素前的换行，形成空行
-  return items.join('\n') + '\n'
+  return `${items.join('\n')}\n`
 }
 
 /**

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { ComponentPropsWithoutRef } from 'react'
 
-interface DateNavigatorProps extends ComponentPropsWithoutRef<'div'> {
+interface DateNavigatorProps extends ComponentPropsWithoutRef<'nav'> {
   /** Current selected date (YYYY-MM-DD) */
   date: string
   /** Navigate to previous day */
@@ -42,9 +42,8 @@ export function DateNavigator({
   const isToday = date === getTodayString()
 
   return (
-    <div
+    <nav
       className={cn('flex items-center justify-center gap-2', className)}
-      role="navigation"
       aria-label={t('navigation')}
       {...props}
     >
@@ -81,7 +80,7 @@ export function DateNavigator({
       >
         <ChevronRight className="h-5 w-5" />
       </button>
-    </div>
+    </nav>
   )
 }
 

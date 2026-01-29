@@ -45,6 +45,8 @@ export function EmptyState({
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        role="img"
+        aria-hidden="true"
       >
         {/* Book/diary outline */}
         <rect x="20" y="15" width="60" height="70" rx="2" />

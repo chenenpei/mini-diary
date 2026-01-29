@@ -30,7 +30,7 @@ export function preprocessMarkdown(markdown: string): string {
   return markdown.replace(/\n\n(\n+)/g, (_match, extraNewlines: string) => {
     // extraNewlines.length = 额外换行符数量 = 可见空行数量
     const visibleLines = Array(extraNewlines.length).fill('\u00A0').join('\n\n')
-    return '\n\n' + visibleLines + '\n\n'
+    return `\n\n${visibleLines}\n\n`
   })
 }
 

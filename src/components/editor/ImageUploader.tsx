@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState, useMemo } from 'react'
 import { ImagePlus, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, generateId } from '@/lib/utils'
 import { processImage, createImageUrl, revokeImageUrl, validateImage } from '@/lib/image'
 import { Lightbox } from '@/components/ui'
 
@@ -88,7 +88,7 @@ export function ImageUploader({
 
       // Add files to state with processing status
       const newImages: ImageItem[] = filesToProcess.map((file) => ({
-        id: crypto.randomUUID(),
+        id: generateId(),
         file,
         previewUrl: createImageUrl(file),
         isProcessing: true,
@@ -236,6 +236,8 @@ export function ImageUploader({
                     className="h-6 w-6 animate-spin text-white"
                     viewBox="0 0 24 24"
                     fill="none"
+                    aria-label="Processing"
+                    role="img"
                   >
                     <circle
                       className="opacity-25"

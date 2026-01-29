@@ -219,8 +219,12 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(
       <div className={cn('flex min-h-0 flex-1 flex-col', className)}>
         {/* ContentEditable 编辑器 */}
         <div className="relative min-h-0 flex-1">
+          {/* biome-ignore lint/a11y/useSemanticElements: contentEditable requires div, not textarea */}
           <div
             ref={editorRef}
+            role="textbox"
+            aria-multiline="true"
+            tabIndex={0}
             contentEditable
             onInput={handleInput}
             onKeyDown={handleKeyDown}
@@ -332,7 +336,10 @@ export function EditorHeader({
       <div className="flex items-center gap-2">
         <span className="text-base font-medium text-foreground">{title}</span>
         {isDirty && (
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" role="status" aria-label={t('unsavedChanges')} />
+          <output className="sr-only" aria-live="polite">{t('unsavedChanges')}</output>
+        )}
+        {isDirty && (
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
         )}
       </div>
 

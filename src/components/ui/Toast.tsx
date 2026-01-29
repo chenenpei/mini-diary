@@ -3,7 +3,7 @@
 import { useEffect, useCallback, useState, createContext, useContext } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, generateId } from '@/lib/utils'
 
 type ToastType = 'success' | 'error' | 'info'
 
@@ -29,7 +29,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
 
   const addToast = useCallback((message: string, type: ToastType = 'info', duration = 3000) => {
-    const id = crypto.randomUUID()
+    const id = generateId()
     setToasts((prev) => [...prev, { id, message, type, duration }])
   }, [])
 

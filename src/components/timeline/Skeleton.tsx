@@ -61,7 +61,8 @@ export function DiaryListSkeleton({ count = 3, className }: DiaryListSkeletonPro
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {Array.from({ length: count }).map((_, index) => (
-        <DiaryCardSkeleton key={`skeleton-${index}`} />
+        // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list, items never reorder
+        <DiaryCardSkeleton key={index} />
       ))}
     </div>
   )
@@ -83,6 +84,8 @@ export function ImageSkeleton({ className }: SkeletonProps) {
         className="h-5 w-5 animate-spin text-muted-foreground"
         viewBox="0 0 24 24"
         fill="none"
+        role="img"
+        aria-hidden="true"
       >
         <circle
           className="opacity-25"

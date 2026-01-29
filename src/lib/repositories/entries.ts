@@ -1,15 +1,9 @@
 import { db } from '@/lib/db'
+import { generateId } from '@/lib/utils'
 import type { CreateEntryInput, DateRangeQuery, DiaryEntry, UpdateEntryInput } from '@/types'
 
 const MAX_CONTENT_LENGTH = 10000
 const MAX_IMAGE_IDS = 3
-
-/**
- * Generate a UUID v4
- */
-function generateId(): string {
-  return crypto.randomUUID()
-}
 
 /**
  * Validate entry content

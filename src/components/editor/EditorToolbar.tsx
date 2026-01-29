@@ -3,7 +3,7 @@
 import { useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ImagePlus, Bold, List, ListOrdered } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, generateId } from '@/lib/utils'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
 import { processImage, createImageUrl, validateImage } from '@/lib/image'
 
@@ -100,7 +100,7 @@ export function EditorToolbar({
 
       // 创建图片项
       const newImages: ImageItem[] = filesToProcess.map((file) => ({
-        id: crypto.randomUUID(),
+        id: generateId(),
         file,
         previewUrl: createImageUrl(file),
         isProcessing: true,

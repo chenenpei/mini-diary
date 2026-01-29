@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn, triggerHaptic } from '@/lib/utils'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -40,6 +40,7 @@ export function FAB({ icon, onClick, className, 'aria-label': ariaLabel }: FABPr
       )}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      onTapStart={() => triggerHaptic(10)}
       aria-label={label}
     >
       {icon}

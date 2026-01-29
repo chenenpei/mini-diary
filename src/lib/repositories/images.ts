@@ -1,12 +1,6 @@
 import { db } from '@/lib/db'
+import { generateId } from '@/lib/utils'
 import type { CreateImageInput, ImageRecord } from '@/types'
-
-/**
- * Generate a UUID v4
- */
-function generateId(): string {
-  return crypto.randomUUID()
-}
 
 /**
  * Images Repository
