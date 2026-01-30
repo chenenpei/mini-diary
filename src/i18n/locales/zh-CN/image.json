@@ -11,5 +11,6 @@
   "canvasError": "无法创建 Canvas 上下文",
   "compressionFailed": "图片压缩失败",
   "lightbox": "图片查看器",
-  "imageOf": "图片 {{current}}/{{total}}"
+  "imageOf": "图片 {{current}}/{{total}}",
+  "imageAlt": "图片 {{index}}/{{total}}"
 }

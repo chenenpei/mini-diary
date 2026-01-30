@@ -10,6 +10,8 @@ import { Pencil, Trash2 } from 'lucide-react'
 import { MarkdownContent } from './MarkdownContent'
 import { Dropdown } from '@/components/ui'
 
+const MAX_IMAGES = 3
+
 interface DiaryCardProps {
   /** Diary entry data */
   entry: DiaryEntry
@@ -40,6 +42,7 @@ const DOUBLE_TAP_DELAY = 300
 
 export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelete, className }: DiaryCardProps) {
   const { t } = useTranslation('common')
+  const { t: tImage } = useTranslation('image')
   const lastTapRef = useRef<number>(0)
   const formattedTime = formatTime(entry.createdAt)
 
@@ -72,7 +75,7 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
   return (
     <motion.article
       className={cn(
-        'relative rounded-lg bg-card px-4 pb-4 pt-3 shadow-sm ring-1 ring-black/5 dark:border dark:border-border sm:px-5 sm:pb-5 sm:pt-3.5',
+        'relative cursor-pointer rounded-lg bg-card px-4 pb-4 pt-3 shadow-sm ring-1 ring-black/5 dark:border dark:border-border sm:px-5 sm:pb-5 sm:pt-3.5',
         className
       )}
       onDoubleClick={() => onEdit?.(entry)}
@@ -96,11 +99,11 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
       {/* Images */}
       {imageUrls.length > 0 && (
         <div className="mt-3 flex gap-2">
-          {imageUrls.slice(0, 3).map((url, index) => (
+          {imageUrls.slice(0, MAX_IMAGES).map((url, index) => (
             <button
               type="button"
               key={`${entry.id}-img-${index}`}
-              className="relative aspect-square w-20 overflow-hidden rounded-sm bg-muted"
+              className="relative aspect-square w-20 cursor-pointer overflow-hidden rounded-sm bg-muted"
               onClick={(e) => {
                 e.stopPropagation()
                 onImageClick?.(index)
@@ -108,7 +111,7 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
             >
               <img
                 src={url}
-                alt=""
+                alt={tImage('imageAlt', { index: index + 1, total: imageUrls.length })}
                 className="h-full w-full object-cover"
                 loading="lazy"
               />

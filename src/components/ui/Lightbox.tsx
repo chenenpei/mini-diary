@@ -145,7 +145,7 @@ export function Lightbox({
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+            className="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
             aria-label={tCommon('close')}
           >
             <X className="h-6 w-6" />
@@ -168,7 +168,7 @@ export function Lightbox({
               }}
               disabled={!hasPrev}
               className={cn(
-                'absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
+                'absolute left-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
                 hasPrev ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30'
               )}
               aria-label={t('prev')}
@@ -187,7 +187,7 @@ export function Lightbox({
               }}
               disabled={!hasNext}
               className={cn(
-                'absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
+                'absolute right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
                 hasNext ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30'
               )}
               aria-label={t('next')}

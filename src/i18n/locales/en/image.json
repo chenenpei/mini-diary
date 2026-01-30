@@ -11,5 +11,6 @@
   "canvasError": "Cannot create canvas context",
   "compressionFailed": "Image compression failed",
   "lightbox": "Image viewer",
-  "imageOf": "Image {{current}}/{{total}}"
+  "imageOf": "Image {{current}}/{{total}}",
+  "imageAlt": "Image {{index}} of {{total}}"
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useCallback, useState, createContext, useContext } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react'
 import { cn, generateId } from '@/lib/utils'
@@ -77,6 +78,8 @@ const ToastIcon = ({ type }: { type: ToastType }) => {
  * Single Toast Item
  */
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) {
+  const { t } = useTranslation('common')
+
   useEffect(() => {
     if (toast.duration && toast.duration > 0) {
       const timer = setTimeout(onRemove, toast.duration)
@@ -96,6 +99,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
         'min-w-[280px] max-w-[400px]'
       )}
       role="alert"
+      aria-live="polite"
     >
       <ToastIcon type={toast.type} />
       <span className="flex-1 text-sm text-foreground">{toast.message}</span>
@@ -103,7 +107,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
         type="button"
         onClick={onRemove}
         className="rounded-sm text-muted-foreground transition-colors hover:text-foreground"
-        aria-label="关闭"
+        aria-label={t('close')}
       >
         <X className="h-4 w-4" />
       </button>
