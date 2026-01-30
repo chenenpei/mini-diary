@@ -75,8 +75,6 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
         'relative rounded-lg bg-card px-4 pb-4 pt-3 shadow-sm ring-1 ring-black/5 dark:border dark:border-border sm:px-5 sm:pb-5 sm:pt-3.5',
         className
       )}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
       onDoubleClick={() => onEdit?.(entry)}
       onClick={handleTap}
     >
