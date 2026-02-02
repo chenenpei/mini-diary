@@ -18,7 +18,7 @@ import {
 import { ConfirmDialog, DatePicker, ClearDataDialog, useToast } from '@/components/ui'
 import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry, useDistinctDates } from '@/hooks/useEntries'
 import { useImagesByIds, useDeleteImagesByEntry } from '@/hooks/useImages'
-import { useTheme, useStorageEstimate } from '@/hooks'
+import { useTheme, useStorageEstimate, useTimelineAnimationPolicy } from '@/hooks'
 import { downloadExport, importData, clearAllData } from '@/lib/dataTransfer'
 import type { DiaryEntry } from '@/types'
 
@@ -42,6 +42,8 @@ function HomePage() {
   const [currentDate, setCurrentDate] = useState(() => urlDate ?? dateUtils.getToday())
   const { data: entries, isLoading } = useEntriesByDate(currentDate)
   const prefetchEntries = usePrefetchEntriesByDate()
+  const isToday = dateUtils.isToday(currentDate)
+  const { shouldAnimatePage, shouldAnimateEntries } = useTimelineAnimationPolicy(currentDate, scrollTo)
 
   // URL 日期变化时更新状态
   useEffect(() => {
@@ -98,8 +100,6 @@ function HomePage() {
     }
     return { thumbnailUrlsMap: thumbnailMap, fullImageUrlsMap: fullMap }
   }, [entries, images])
-
-  const isToday = dateUtils.isToday(currentDate)
 
   const handlePreviousDay = useCallback(() => {
     const prevDate = dateUtils.getPreviousDay(currentDate)
@@ -286,7 +286,7 @@ function HomePage() {
         />
       </TopBar>
 
-      <PageLayout>
+      <PageLayout animate={shouldAnimatePage}>
         {isLoading ? (
           <DiaryListSkeleton />
         ) : !entries || entries.length === 0 ? (
@@ -294,14 +294,15 @@ function HomePage() {
         ) : (
           <>
             <DiaryList
-                entries={entries}
-                onEdit={handleEditEntry}
-                onDelete={handleDeleteClick}
-                thumbnailUrlsMap={thumbnailUrlsMap}
-                fullImageUrlsMap={fullImageUrlsMap}
-                scrollToId={scrollTo}
-                onScrollComplete={handleScrollComplete}
-              />
+              entries={entries}
+              animateEntries={shouldAnimateEntries}
+              onEdit={handleEditEntry}
+              onDelete={handleDeleteClick}
+              thumbnailUrlsMap={thumbnailUrlsMap}
+              fullImageUrlsMap={fullImageUrlsMap}
+              scrollToId={scrollTo}
+              onScrollComplete={handleScrollComplete}
+            />
             {entries.length < 3 && <SparseHint />}
           </>
         )}

@@ -41,7 +41,7 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
   )
 
   if (!animate) {
-    return content
+    return <div className="flex-1 bg-surface dark:bg-background">{content}</div>
   }
 
   return (

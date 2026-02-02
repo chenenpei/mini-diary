@@ -93,6 +93,7 @@ app/
 ├── hooks/                  # 自定义 Hooks
 │   ├── useEntries.ts
 │   ├── useImages.ts
+│   ├── useTimelineAnimationPolicy.ts  # 时间线入场动画策略
 │   └── useTheme.ts
 ├── utils/                  # 纯工具函数
 │   ├── date.ts

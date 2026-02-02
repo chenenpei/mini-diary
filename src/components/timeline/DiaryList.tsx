@@ -10,6 +10,8 @@ import { Lightbox } from '@/components/ui'
 interface DiaryListProps {
   /** List of diary entries */
   entries: DiaryEntry[]
+  /** When true, cards play enter animation; when false (e.g. return from edit/new), no animation */
+  animateEntries?: boolean
   /** Edit entry handler */
   onEdit?: (entry: DiaryEntry) => void
   /** Delete entry handler */
@@ -35,6 +37,7 @@ interface DiaryListProps {
  */
 export function DiaryList({
   entries,
+  animateEntries = true,
   onEdit,
   onDelete,
   thumbnailUrlsMap = new Map(),
@@ -43,10 +46,6 @@ export function DiaryList({
   onScrollComplete,
   className,
 }: DiaryListProps) {
-  // Track known entry IDs to only animate new ones
-  const knownIdsRef = useRef<Set<string>>(new Set())
-
-  // Refs for scrolling to specific entries
   const entryRefs = useRef<Map<string, HTMLDivElement>>(new Map())
 
   // Handle scroll to entry
@@ -87,32 +86,25 @@ export function DiaryList({
         initial={false}
         animate="show"
       >
-        {entries.map((entry) => {
-          // Check if this is a new entry
-          const isNew = !knownIdsRef.current.has(entry.id)
-          // Add to known IDs (will persist across renders)
-          knownIdsRef.current.add(entry.id)
-
-          return (
-            <motion.div
-              key={entry.id}
-              ref={(el) => {
-                if (el) entryRefs.current.set(entry.id, el)
-              }}
-              initial={isNew ? { opacity: 0, y: 20 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <DiaryCard
-                entry={entry}
-                imageUrls={thumbnailUrlsMap.get(entry.id) ?? []}
-                onImageClick={(index) => handleImageClick(entry.id, index)}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
-            </motion.div>
-          )
-        })}
+        {entries.map((entry) => (
+          <motion.div
+            key={entry.id}
+            ref={(el) => {
+              if (el) entryRefs.current.set(entry.id, el)
+            }}
+            initial={animateEntries ? { opacity: 0, y: 20 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <DiaryCard
+              entry={entry}
+              imageUrls={thumbnailUrlsMap.get(entry.id) ?? []}
+              onImageClick={(index) => handleImageClick(entry.id, index)}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          </motion.div>
+        ))}
       </motion.div>
 
       <Lightbox
