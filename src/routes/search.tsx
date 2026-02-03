@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ArrowLeft, Search, X, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2, Search, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchEntries } from '@/hooks/useEntries'
 import { cn } from '@/lib/utils'
@@ -90,7 +90,7 @@ function HighlightText({ text, keyword }: { text: string; keyword: string }) {
         pos: acc.pos + part.length,
       }
     },
-    { elements: [], pos: 0 }
+    { elements: [], pos: 0 },
   )
 
   return <span>{elementsWithKeys.elements}</span>
@@ -231,18 +231,21 @@ function SearchPage() {
       // 跳转到首页时间线，传递日期和条目 ID
       navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
     },
-    [navigate, debouncedQuery]
+    [navigate, debouncedQuery],
   )
 
   const handleHistoryClick = useCallback((historyQuery: string) => {
     setQuery(historyQuery)
   }, [])
 
-  const handleHistoryRemove = useCallback((queryToRemove: string) => {
-    const newHistory = searchHistory.filter((item) => item !== queryToRemove)
-    saveSearchHistory(newHistory)
-    setSearchHistory(newHistory)
-  }, [searchHistory])
+  const handleHistoryRemove = useCallback(
+    (queryToRemove: string) => {
+      const newHistory = searchHistory.filter((item) => item !== queryToRemove)
+      saveSearchHistory(newHistory)
+      setSearchHistory(newHistory)
+    },
+    [searchHistory],
+  )
 
   // 判断是否正在搜索
   const isSearching = isLoading || isFetching
@@ -277,7 +280,7 @@ function SearchPage() {
             className={cn(
               'w-full rounded-sm border border-border bg-surface py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground',
               'focus:outline-none',
-              'transition-colors'
+              'transition-colors',
             )}
           />
           {/* 清除/加载指示器 */}

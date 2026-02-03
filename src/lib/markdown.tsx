@@ -22,32 +22,22 @@ import type { Components } from 'react-markdown'
  */
 export const markdownComponents: Components = {
   // Supported: bold
-  strong: ({ children }) => (
-    <strong className="font-bold">{children}</strong>
-  ),
+  strong: ({ children }) => <strong className="font-bold">{children}</strong>,
 
   // Supported: italic
-  em: ({ children }) => (
-    <em className="italic">{children}</em>
-  ),
+  em: ({ children }) => <em className="italic">{children}</em>,
 
   // Supported: unordered list - 间距由容器相邻兄弟选择器控制
-  ul: ({ children }) => (
-    <ul className="list-disc pl-5">{children}</ul>
-  ),
+  ul: ({ children }) => <ul className="list-disc pl-5">{children}</ul>,
 
   // Supported: ordered list - 间距由容器相邻兄弟选择器控制
-  ol: ({ children }) => (
-    <ol className="list-decimal pl-5">{children}</ol>
-  ),
+  ol: ({ children }) => <ol className="list-decimal pl-5">{children}</ol>,
 
   // Supported: list item - 与编辑器对齐
   li: ({ children }) => <li className="my-0.5">{children}</li>,
 
   // Supported: paragraph - 无 margin，与编辑器对齐
-  p: ({ children }) => (
-    <p className="leading-relaxed">{children}</p>
-  ),
+  p: ({ children }) => <p className="leading-relaxed">{children}</p>,
 
   // Disable unsupported elements by rendering just their children
   h1: ({ children }) => <p className="my-2">{children}</p>,

@@ -1,10 +1,10 @@
 'use client'
 
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '@/i18n'
-import { motion, AnimatePresence } from 'motion/react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DatePickerProps {
@@ -110,7 +110,8 @@ export function DatePicker({
     const daysInMonth = lastDay.getDate()
     const startWeekday = firstDay.getDay()
 
-    const days: Array<{ date: string; day: number; isCurrentMonth: boolean; isDisabled: boolean }> = []
+    const days: Array<{ date: string; day: number; isCurrentMonth: boolean; isDisabled: boolean }> =
+      []
 
     // Previous month padding
     const prevMonth = new Date(year, month - 2, 1)
@@ -131,7 +132,9 @@ export function DatePicker({
     const remaining = 42 - days.length // 6 rows * 7 days
     const nextMonthDate = new Date(year, month, 1)
     for (let d = 1; d <= remaining; d++) {
-      const dateStr = toDateString(new Date(nextMonthDate.getFullYear(), nextMonthDate.getMonth(), d))
+      const dateStr = toDateString(
+        new Date(nextMonthDate.getFullYear(), nextMonthDate.getMonth(), d),
+      )
       days.push({ date: dateStr, day: d, isCurrentMonth: false, isDisabled: dateStr > max })
     }
 
@@ -152,7 +155,7 @@ export function DatePicker({
       onSelect(date)
       onClose()
     },
-    [max, onSelect, onClose]
+    [max, onSelect, onClose],
   )
 
   // Weekday headers - localized
@@ -179,19 +182,22 @@ export function DatePicker({
   const yearSelectorRef = useRef<HTMLDivElement>(null)
 
   // Handle year selection
-  const handleYearSelect = useCallback((year: number) => {
-    const { month } = parseYearMonth(viewMonth)
-    const { year: maxYear, month: maxMonth } = parseYearMonth(max.slice(0, 7))
+  const handleYearSelect = useCallback(
+    (year: number) => {
+      const { month } = parseYearMonth(viewMonth)
+      const { year: maxYear, month: maxMonth } = parseYearMonth(max.slice(0, 7))
 
-    // If selecting current year and current month exceeds max month, use max month
-    let newMonth = month
-    if (year === maxYear && month > maxMonth) {
-      newMonth = maxMonth
-    }
+      // If selecting current year and current month exceeds max month, use max month
+      let newMonth = month
+      if (year === maxYear && month > maxMonth) {
+        newMonth = maxMonth
+      }
 
-    setViewMonth(`${year}-${String(newMonth).padStart(2, '0')}`)
-    setShowYearSelector(false)
-  }, [viewMonth, max])
+      setViewMonth(`${year}-${String(newMonth).padStart(2, '0')}`)
+      setShowYearSelector(false)
+    },
+    [viewMonth, max],
+  )
 
   // Scroll to current year when year selector opens
   useEffect(() => {
@@ -256,7 +262,7 @@ export function DatePicker({
                   'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                   nextMonthDisabled
                     ? 'cursor-not-allowed text-muted-foreground/40'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}
                 aria-label={t('nextMonth')}
               >
@@ -280,7 +286,7 @@ export function DatePicker({
                           'rounded-md py-2 text-sm transition-colors',
                           isCurrentYear
                             ? 'bg-foreground text-background'
-                            : 'text-foreground hover:bg-muted'
+                            : 'text-foreground hover:bg-muted',
                         )}
                       >
                         {year}
@@ -319,10 +325,13 @@ export function DatePicker({
                         className={cn(
                           'relative flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors',
                           !isCurrentMonth && 'text-muted-foreground/50',
-                          isCurrentMonth && !isSelected && !isDisabled && 'text-foreground hover:bg-muted',
+                          isCurrentMonth &&
+                            !isSelected &&
+                            !isDisabled &&
+                            'text-foreground hover:bg-muted',
                           isSelected && 'bg-foreground text-background',
                           isToday && !isSelected && 'ring-1 ring-foreground/30',
-                          isDisabled && 'cursor-not-allowed opacity-30'
+                          isDisabled && 'cursor-not-allowed opacity-30',
                         )}
                         aria-label={date}
                         aria-pressed={isSelected}
@@ -332,7 +341,7 @@ export function DatePicker({
                           <span
                             className={cn(
                               'absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full',
-                              isCurrentMonth ? 'bg-foreground/60' : 'bg-muted-foreground/40'
+                              isCurrentMonth ? 'bg-foreground/60' : 'bg-muted-foreground/40',
                             )}
                           />
                         )}

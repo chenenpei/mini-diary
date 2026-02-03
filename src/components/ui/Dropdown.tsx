@@ -1,9 +1,9 @@
 'use client'
 
+import { MoreHorizontal } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'motion/react'
-import { MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DropdownItem {
@@ -38,12 +38,7 @@ interface DropdownProps {
  * - 点击外部关闭
  * - 支持键盘导航 (ESC 关闭)
  */
-export function Dropdown({
-  items,
-  trigger,
-  triggerClassName,
-  menuClassName,
-}: DropdownProps) {
+export function Dropdown({ items, trigger, triggerClassName, menuClassName }: DropdownProps) {
   const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -94,7 +89,7 @@ export function Dropdown({
         onClick={handleToggle}
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
-          triggerClassName
+          triggerClassName,
         )}
         aria-label={t('moreActions')}
         aria-expanded={isOpen}
@@ -108,7 +103,7 @@ export function Dropdown({
           <motion.div
             className={cn(
               'absolute right-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-md bg-background py-1 shadow-lg border border-border',
-              menuClassName
+              menuClassName,
             )}
             initial={{ opacity: 0, scale: 0.95, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -122,9 +117,7 @@ export function Dropdown({
                 onClick={() => handleItemClick(item)}
                 className={cn(
                   'flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-muted',
-                  item.destructive
-                    ? 'text-destructive hover:text-destructive'
-                    : 'text-foreground'
+                  item.destructive ? 'text-destructive hover:text-destructive' : 'text-foreground',
                 )}
               >
                 {item.icon}

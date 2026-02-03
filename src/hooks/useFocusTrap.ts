@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -37,7 +37,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>({
   const getFocusableElements = useCallback(() => {
     if (!containerRef.current) return []
     return Array.from(
-      containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
     ).filter((el) => el.offsetParent !== null) // Filter out hidden elements
   }, [])
 

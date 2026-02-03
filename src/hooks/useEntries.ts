@@ -122,13 +122,7 @@ export function useDeleteEntry() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      date,
-    }: {
-      id: string
-      date: string
-    }) => {
+    mutationFn: async ({ id, date }: { id: string; date: string }) => {
       await entriesRepository.delete(id)
       return { id, date }
     },

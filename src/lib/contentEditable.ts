@@ -125,10 +125,7 @@ export function markdownToHtml(markdown: string): string {
  */
 function processInlineMarkdown(text: string): string {
   // 转义 HTML 特殊字符
-  let result = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+  let result = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
   // **text** → <strong>text</strong>
   result = result.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')

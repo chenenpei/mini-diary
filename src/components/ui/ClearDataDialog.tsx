@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { AlertTriangle, Loader2, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'motion/react'
-import { AlertTriangle, X, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ClearDataDialogProps {
@@ -145,9 +145,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                   transition={{ duration: 0.15 }}
                   className="space-y-4"
                 >
-                  <p className="text-center text-sm text-muted-foreground">
-                    {t('clearWarning')}
-                  </p>
+                  <p className="text-center text-sm text-muted-foreground">{t('clearWarning')}</p>
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -191,7 +189,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                       'focus:outline-none focus:ring-1',
                       isInputValid
                         ? 'border-green-500 focus:ring-green-500'
-                        : 'border-border focus:ring-foreground'
+                        : 'border-border focus:ring-foreground',
                     )}
                     autoComplete="off"
                   />

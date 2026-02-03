@@ -24,12 +24,7 @@ function Skeleton({ className }: SkeletonProps) {
  */
 export function DiaryCardSkeleton({ className }: SkeletonProps) {
   return (
-    <div
-      className={cn(
-        'rounded-md border border-border bg-surface p-4 sm:p-5',
-        className
-      )}
-    >
+    <div className={cn('rounded-md border border-border bg-surface p-4 sm:p-5', className)}>
       {/* Time */}
       <Skeleton className="h-4 w-12" />
 
@@ -76,7 +71,7 @@ export function ImageSkeleton({ className }: SkeletonProps) {
     <div
       className={cn(
         'relative flex aspect-square w-20 items-center justify-center overflow-hidden rounded-sm bg-muted',
-        className
+        className,
       )}
     >
       {/* Small spinner */}

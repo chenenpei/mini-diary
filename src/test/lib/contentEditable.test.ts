@@ -1,10 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import {
-  markdownToHtml,
-  htmlToMarkdown,
-  sanitizeHtml,
-  getTextLength,
-} from '@/lib/contentEditable'
+import { describe, expect, it } from 'vitest'
+import { getTextLength, htmlToMarkdown, markdownToHtml, sanitizeHtml } from '@/lib/contentEditable'
 
 describe('contentEditable utilities', () => {
   describe('sanitizeHtml', () => {
@@ -40,49 +35,37 @@ describe('contentEditable utilities', () => {
     })
 
     it('should convert bold text', () => {
-      expect(markdownToHtml('Hello **world**')).toBe(
-        '<p>Hello <strong>world</strong></p>'
-      )
+      expect(markdownToHtml('Hello **world**')).toBe('<p>Hello <strong>world</strong></p>')
     })
 
     it('should convert italic text', () => {
-      expect(markdownToHtml('Hello *world*')).toBe(
-        '<p>Hello <em>world</em></p>'
-      )
+      expect(markdownToHtml('Hello *world*')).toBe('<p>Hello <em>world</em></p>')
     })
 
     it('should convert bold and italic together', () => {
       expect(markdownToHtml('**bold** and *italic*')).toBe(
-        '<p><strong>bold</strong> and <em>italic</em></p>'
+        '<p><strong>bold</strong> and <em>italic</em></p>',
       )
     })
 
     it('should convert unordered list', () => {
       const markdown = '- item 1\n- item 2'
-      expect(markdownToHtml(markdown)).toBe(
-        '<ul><li>item 1</li><li>item 2</li></ul>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<ul><li>item 1</li><li>item 2</li></ul>')
     })
 
     it('should convert ordered list', () => {
       const markdown = '1. item 1\n2. item 2'
-      expect(markdownToHtml(markdown)).toBe(
-        '<ol><li>item 1</li><li>item 2</li></ol>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<ol><li>item 1</li><li>item 2</li></ol>')
     })
 
     it('should handle paragraph followed by list', () => {
       const markdown = 'Hello\n- item 1\n- item 2'
-      expect(markdownToHtml(markdown)).toBe(
-        '<p>Hello</p><ul><li>item 1</li><li>item 2</li></ul>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<p>Hello</p><ul><li>item 1</li><li>item 2</li></ul>')
     })
 
     it('should handle list followed by paragraph', () => {
       const markdown = '- item 1\n- item 2\nHello'
-      expect(markdownToHtml(markdown)).toBe(
-        '<ul><li>item 1</li><li>item 2</li></ul><p>Hello</p>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<ul><li>item 1</li><li>item 2</li></ul><p>Hello</p>')
     })
 
     it('should handle empty lines as paragraph separators', () => {
@@ -93,31 +76,25 @@ describe('contentEditable utilities', () => {
 
     it('should escape HTML special characters', () => {
       expect(markdownToHtml('<script>alert(1)</script>')).toBe(
-        '<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>'
+        '<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>',
       )
     })
 
     it('should handle bold text in list items', () => {
       const markdown = '- **bold** item'
-      expect(markdownToHtml(markdown)).toBe(
-        '<ul><li><strong>bold</strong> item</li></ul>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<ul><li><strong>bold</strong> item</li></ul>')
     })
 
     it('should skip blank line before list (no extra <p><br></p>)', () => {
       // Blank line before list should not generate empty paragraph in editor
       const markdown = 'Hello\n\n- item 1\n- item 2'
-      expect(markdownToHtml(markdown)).toBe(
-        '<p>Hello</p><ul><li>item 1</li><li>item 2</li></ul>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<p>Hello</p><ul><li>item 1</li><li>item 2</li></ul>')
     })
 
     it('should skip blank line after list (no extra <p><br></p>)', () => {
       // Blank line after list should not generate empty paragraph in editor
       const markdown = '- item 1\n- item 2\n\nHello'
-      expect(markdownToHtml(markdown)).toBe(
-        '<ul><li>item 1</li><li>item 2</li></ul><p>Hello</p>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<ul><li>item 1</li><li>item 2</li></ul><p>Hello</p>')
     })
 
     it('should skip blank line between paragraphs (no extra <p><br></p>)', () => {
@@ -135,9 +112,7 @@ describe('contentEditable utilities', () => {
     it('should preserve multiple visible blank lines', () => {
       // 三个空行 = 一个段落分隔 + 两个可见空行
       const markdown = 'Line 1\n\n\n\nLine 2'
-      expect(markdownToHtml(markdown)).toBe(
-        '<p>Line 1</p><p><br></p><p><br></p><p>Line 2</p>'
-      )
+      expect(markdownToHtml(markdown)).toBe('<p>Line 1</p><p><br></p><p><br></p><p>Line 2</p>')
     })
   })
 
@@ -151,21 +126,15 @@ describe('contentEditable utilities', () => {
     })
 
     it('should convert strong to bold markdown', () => {
-      expect(htmlToMarkdown('<p>Hello <strong>world</strong></p>')).toBe(
-        'Hello **world**'
-      )
+      expect(htmlToMarkdown('<p>Hello <strong>world</strong></p>')).toBe('Hello **world**')
     })
 
     it('should convert b tag to bold markdown', () => {
-      expect(htmlToMarkdown('<p>Hello <b>world</b></p>')).toBe(
-        'Hello **world**'
-      )
+      expect(htmlToMarkdown('<p>Hello <b>world</b></p>')).toBe('Hello **world**')
     })
 
     it('should convert em to italic markdown', () => {
-      expect(htmlToMarkdown('<p>Hello <em>world</em></p>')).toBe(
-        'Hello *world*'
-      )
+      expect(htmlToMarkdown('<p>Hello <em>world</em></p>')).toBe('Hello *world*')
     })
 
     it('should convert i tag to italic markdown', () => {
@@ -223,9 +192,7 @@ describe('contentEditable utilities', () => {
     it('should handle complex nested content', () => {
       const html =
         '<p>Start <strong>bold</strong> and <em>italic</em></p><ul><li>item 1</li><li>item 2</li></ul><p>End</p>'
-      expect(htmlToMarkdown(html)).toBe(
-        'Start **bold** and *italic*\n\n- item 1\n- item 2\n\nEnd'
-      )
+      expect(htmlToMarkdown(html)).toBe('Start **bold** and *italic*\n\n- item 1\n- item 2\n\nEnd')
     })
   })
 

@@ -90,13 +90,7 @@ export function useDeleteImage() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      entryId,
-    }: {
-      id: string
-      entryId: string
-    }) => {
+    mutationFn: async ({ id, entryId }: { id: string; entryId: string }) => {
       await imagesRepository.delete(id)
       return { id, entryId }
     },
@@ -149,13 +143,7 @@ export function useDeleteEntryWithImages() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({
-      entryId,
-      date,
-    }: {
-      entryId: string
-      date: string
-    }) => {
+    mutationFn: async ({ entryId, date }: { entryId: string; date: string }) => {
       // Delete images first, then entry
       await imagesRepository.deleteByEntryId(entryId)
       // Note: Entry deletion is handled separately by useDeleteEntry

@@ -61,7 +61,7 @@ export async function exportAllData(): Promise<ExportData> {
       blob: await blobToBase64(image.blob),
       thumbnail: await blobToBase64(image.thumbnail),
       createdAt: image.createdAt,
-    }))
+    })),
   )
 
   return {
@@ -111,7 +111,9 @@ function validateImportData(data: unknown): data is ExportData {
  * 导入数据
  * 策略: 遇到 ID 冲突时保留更新时间较新的版本
  */
-export async function importData(file: File): Promise<{ entriesCount: number; imagesCount: number }> {
+export async function importData(
+  file: File,
+): Promise<{ entriesCount: number; imagesCount: number }> {
   const text = await file.text()
   const data = JSON.parse(text)
 

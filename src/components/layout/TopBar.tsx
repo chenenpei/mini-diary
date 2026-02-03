@@ -1,9 +1,9 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { Menu, Search } from 'lucide-react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 
 interface TopBarProps extends ComponentPropsWithoutRef<'header'> {
   /** Left action button click handler (menu) */
@@ -42,7 +42,7 @@ export function TopBar({
     <header
       className={cn(
         'sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4',
-        className
+        className,
       )}
       {...props}
     >

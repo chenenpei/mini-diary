@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { ThemeMode } from '@/components/layout'
 
 const THEME_STORAGE_KEY = 'mini-diary-theme'

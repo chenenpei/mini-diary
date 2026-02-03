@@ -1,14 +1,14 @@
 'use client'
 
+import { Pencil, Trash2 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'motion/react'
+import { Dropdown } from '@/components/ui'
 import i18n from '@/i18n'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
-import { Pencil, Trash2 } from 'lucide-react'
 import { MarkdownContent } from './MarkdownContent'
-import { Dropdown } from '@/components/ui'
 
 const MAX_IMAGES = 3
 
@@ -40,7 +40,14 @@ interface DiaryCardProps {
  */
 const DOUBLE_TAP_DELAY = 300
 
-export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelete, className }: DiaryCardProps) {
+export function DiaryCard({
+  entry,
+  imageUrls = [],
+  onImageClick,
+  onEdit,
+  onDelete,
+  className,
+}: DiaryCardProps) {
   const { t } = useTranslation('common')
   const { t: tImage } = useTranslation('image')
   const lastTapRef = useRef<number>(0)
@@ -76,7 +83,7 @@ export function DiaryCard({ entry, imageUrls = [], onImageClick, onEdit, onDelet
     <motion.article
       className={cn(
         'relative cursor-pointer rounded-lg bg-card px-4 pb-4 pt-3 shadow-sm ring-1 ring-black/5 dark:border dark:border-border sm:px-5 sm:pb-5 sm:pt-3.5',
-        className
+        className,
       )}
       onDoubleClick={() => onEdit?.(entry)}
       onClick={handleTap}

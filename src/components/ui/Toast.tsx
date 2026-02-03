@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useCallback, useState, createContext, useContext } from 'react'
+import { AlertCircle, CheckCircle, Info, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'motion/react'
-import { X, CheckCircle, AlertCircle, Info } from 'lucide-react'
 import { cn, generateId } from '@/lib/utils'
 
 type ToastType = 'success' | 'error' | 'info'
@@ -96,7 +96,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
       transition={{ duration: 0.25, ease: easing.smooth }}
       className={cn(
         'flex items-center gap-3 rounded-md border border-border bg-background px-4 py-3 shadow-md',
-        'min-w-[280px] max-w-[400px]'
+        'min-w-[280px] max-w-[400px]',
       )}
       role="alert"
       aria-live="polite"

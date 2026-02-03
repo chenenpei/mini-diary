@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import { Lightbox } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
-import { motion } from 'motion/react'
-import { DiaryCard, cardListVariants } from './DiaryCard'
-import { Lightbox } from '@/components/ui'
+import { cardListVariants, DiaryCard } from './DiaryCard'
 
 interface DiaryListProps {
   /** List of diary entries */

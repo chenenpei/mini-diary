@@ -1,10 +1,10 @@
 'use client'
 
+import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'motion/react'
-import { cn } from '@/lib/utils'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { cn } from '@/lib/utils'
 
 interface ConfirmDialogProps {
   /** Whether the dialog is open */
@@ -109,10 +109,14 @@ export function ConfirmDialog({
             aria-describedby="confirm-dialog-message"
           >
             {/* Title */}
-            <h2 id="confirm-dialog-title" className="text-lg font-semibold text-foreground">{title}</h2>
+            <h2 id="confirm-dialog-title" className="text-lg font-semibold text-foreground">
+              {title}
+            </h2>
 
             {/* Message */}
-            <p id="confirm-dialog-message" className="mt-2 text-sm text-muted-foreground">{message}</p>
+            <p id="confirm-dialog-message" className="mt-2 text-sm text-muted-foreground">
+              {message}
+            </p>
 
             {/* Actions */}
             <div className="mt-6 flex justify-end gap-3">
@@ -132,7 +136,7 @@ export function ConfirmDialog({
                   'rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
                   destructive
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:opacity-80'
-                    : 'bg-primary text-primary-foreground hover:bg-primary/90 active:opacity-80'
+                    : 'bg-primary text-primary-foreground hover:bg-primary/90 active:opacity-80',
                 )}
               >
                 {isLoading ? t('processing') : displayConfirmText}
@@ -176,7 +180,7 @@ export function useConfirmDialog() {
         ...options,
       })
     },
-    []
+    [],
   )
 
   const close = useCallback(() => {

@@ -1,10 +1,10 @@
 'use client'
 
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import type { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '@/i18n'
 import { cn } from '@/lib/utils'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { ComponentPropsWithoutRef } from 'react'
 
 interface DateNavigatorProps extends ComponentPropsWithoutRef<'nav'> {
   /** Current selected date (YYYY-MM-DD) */
@@ -74,7 +74,7 @@ export function DateNavigator({
         disabled={disableNext}
         className={cn(
           'touch-target flex items-center justify-center rounded-sm text-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
-          disableNext ? 'cursor-not-allowed opacity-60' : 'hover:bg-surface active:opacity-60'
+          disableNext ? 'cursor-not-allowed opacity-60' : 'hover:bg-surface active:opacity-60',
         )}
         aria-label={t('nextDay')}
       >

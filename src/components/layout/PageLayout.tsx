@@ -1,8 +1,8 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
 interface PageLayoutProps extends ComponentPropsWithoutRef<'main'> {
   /** Page content */
@@ -32,7 +32,7 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
       className={cn(
         'flex-1 bg-surface dark:bg-background px-5 pb-24 pt-5 sm:px-6 lg:px-8',
         'mx-auto max-w-[600px]',
-        className
+        className,
       )}
       {...props}
     >
@@ -46,7 +46,7 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
 
   return (
     <motion.div
-      className='flex-1 bg-surface dark:bg-background'
+      className="flex-1 bg-surface dark:bg-background"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}

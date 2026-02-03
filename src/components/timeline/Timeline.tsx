@@ -1,25 +1,30 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSwipeable } from 'react-swipeable'
-import { TopBar, FAB, PageLayout, Drawer } from '@/components/layout'
+import { Drawer, FAB, PageLayout, TopBar } from '@/components/layout'
 import {
   DateNavigator,
   DiaryList,
   DiaryListSkeleton,
+  dateUtils,
   EmptyState,
   SparseHint,
-  dateUtils,
 } from '@/components/timeline'
-import { ConfirmDialog, DatePicker, ClearDataDialog, useToast } from '@/components/ui'
-import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry, useDistinctDates } from '@/hooks/useEntries'
-import { useImagesByIds, useDeleteImagesByEntry } from '@/hooks/useImages'
-import { useTheme, useStorageEstimate } from '@/hooks'
-import { downloadExport, importData, clearAllData } from '@/lib/dataTransfer'
+import { ClearDataDialog, ConfirmDialog, DatePicker, useToast } from '@/components/ui'
+import { useStorageEstimate, useTheme } from '@/hooks'
+import {
+  useDeleteEntry,
+  useDistinctDates,
+  useEntriesByDate,
+  usePrefetchEntriesByDate,
+} from '@/hooks/useEntries'
+import { useDeleteImagesByEntry, useImagesByIds } from '@/hooks/useImages'
+import { clearAllData, downloadExport, importData } from '@/lib/dataTransfer'
 import type { DiaryEntry } from '@/types'
 
 interface TimelineProps {
@@ -54,10 +59,7 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
 
   // 获取有日记的日期列表
   const { data: distinctDates } = useDistinctDates()
-  const datesWithEntriesSet = useMemo(
-    () => new Set(distinctDates ?? []),
-    [distinctDates]
-  )
+  const datesWithEntriesSet = useMemo(() => new Set(distinctDates ?? []), [distinctDates])
 
   // Theme
   const { themeMode, setTheme } = useTheme()
@@ -89,8 +91,14 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
     for (const entry of entries) {
       const entryImages = images.filter((img) => entry.imageIds.includes(img.id))
       if (entryImages.length > 0) {
-        thumbnailMap.set(entry.id, entryImages.map((img) => URL.createObjectURL(img.thumbnail)))
-        fullMap.set(entry.id, entryImages.map((img) => URL.createObjectURL(img.blob)))
+        thumbnailMap.set(
+          entry.id,
+          entryImages.map((img) => URL.createObjectURL(img.thumbnail)),
+        )
+        fullMap.set(
+          entry.id,
+          entryImages.map((img) => URL.createObjectURL(img.blob)),
+        )
       }
     }
     return { thumbnailUrlsMap: thumbnailMap, fullImageUrlsMap: fullMap }
@@ -209,7 +217,13 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
         const result = await importData(file)
         await queryClient.invalidateQueries({ queryKey: ['entries'] })
         await queryClient.invalidateQueries({ queryKey: ['images'] })
-        addToast(tData('importSuccess', { entryCount: result.entriesCount, imageCount: result.imagesCount }), 'success')
+        addToast(
+          tData('importSuccess', {
+            entryCount: result.entriesCount,
+            imageCount: result.imagesCount,
+          }),
+          'success',
+        )
       } catch (error) {
         addToast(error instanceof Error ? error.message : tData('importFailed'), 'error')
       } finally {
@@ -238,11 +252,7 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // 忽略输入框、文本区域和可编辑元素内的按键
       const target = e.target as HTMLElement
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return
       }
 
@@ -267,7 +277,15 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isDrawerOpen, showDatePicker, deleteTarget, showClearDialog, isToday, handlePreviousDay, handleNextDay])
+  }, [
+    isDrawerOpen,
+    showDatePicker,
+    deleteTarget,
+    showClearDialog,
+    isToday,
+    handlePreviousDay,
+    handleNextDay,
+  ])
 
   return (
     <div className="flex h-dvh flex-col overflow-y-auto bg-background" {...swipeHandlers}>

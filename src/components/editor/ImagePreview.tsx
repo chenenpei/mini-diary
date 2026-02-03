@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
 import { X } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Lightbox } from '@/components/ui'
+import { cn } from '@/lib/utils'
 
 interface ExistingImage {
   id: string
@@ -117,40 +117,24 @@ interface ImageThumbnailProps {
   onRemove?: (() => void) | undefined
 }
 
-function ImageThumbnail({
-  src,
-  isProcessing,
-  error,
-  onClick,
-  onRemove,
-}: ImageThumbnailProps) {
+function ImageThumbnail({ src, isProcessing, error, onClick, onRemove }: ImageThumbnailProps) {
   const { t } = useTranslation('image')
 
   return (
     <div className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted">
       {onClick ? (
-        <button
-          type="button"
-          onClick={onClick}
-          className="h-full w-full"
-        >
+        <button type="button" onClick={onClick} className="h-full w-full">
           <img
             src={src}
             alt=""
-            className={cn(
-              'h-full w-full object-cover',
-              isProcessing && 'opacity-50'
-            )}
+            className={cn('h-full w-full object-cover', isProcessing && 'opacity-50')}
           />
         </button>
       ) : (
         <img
           src={src}
           alt=""
-          className={cn(
-            'h-full w-full object-cover',
-            isProcessing && 'opacity-50'
-          )}
+          className={cn('h-full w-full object-cover', isProcessing && 'opacity-50')}
         />
       )}
 

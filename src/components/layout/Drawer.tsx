@@ -1,14 +1,25 @@
 'use client'
 
-import { useEffect, useCallback, useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { X, Download, Upload, Moon, Sun, Monitor, Trash2, HardDrive, Languages, Info } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import {
+  Download,
+  HardDrive,
+  Info,
+  Languages,
+  Monitor,
+  Moon,
+  Sun,
+  Trash2,
+  Upload,
+  X,
+} from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useLocale } from '@/i18n/useLocale'
-import type { Locale } from '@/i18n'
 import { InfoDialog } from '@/components/ui/InfoDialog'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import type { Locale } from '@/i18n'
+import { useLocale } from '@/i18n/useLocale'
+import { cn } from '@/lib/utils'
 
 // 动画缓动函数
 const easing = {
@@ -190,7 +201,7 @@ export function Drawer({
                         'flex flex-1 flex-col items-center gap-1 rounded-md border p-3 transition-colors',
                         themeMode === option.value
                           ? 'border-foreground bg-surface'
-                          : 'border-border hover:bg-surface'
+                          : 'border-border hover:bg-surface',
                       )}
                     >
                       {option.icon}
@@ -216,7 +227,7 @@ export function Drawer({
                         'flex flex-1 flex-col items-center gap-1 rounded-md border p-3 transition-colors',
                         locale === option.value
                           ? 'border-foreground bg-surface'
-                          : 'border-border hover:bg-surface'
+                          : 'border-border hover:bg-surface',
                       )}
                     >
                       <span className="text-base">{option.flag}</span>
@@ -252,7 +263,9 @@ export function Drawer({
                       <div className="text-sm font-medium text-foreground">
                         {isExporting ? tData('exporting') : tData('export')}
                       </div>
-                      <div className="text-xs text-muted-foreground">{tData('exportDescription')}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {tData('exportDescription')}
+                      </div>
                     </div>
                   </button>
 
@@ -268,7 +281,9 @@ export function Drawer({
                       <div className="text-sm font-medium text-foreground">
                         {isImporting ? tData('importing') : tData('import')}
                       </div>
-                      <div className="text-xs text-muted-foreground">{tData('importDescription')}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {tData('importDescription')}
+                      </div>
                     </div>
                   </button>
 
@@ -281,7 +296,9 @@ export function Drawer({
                     <Trash2 className="h-5 w-5 text-red-500" />
                     <div className="flex-1">
                       <div className="text-sm font-medium text-red-500">{tData('clearAll')}</div>
-                      <div className="text-xs text-muted-foreground">{tData('clearDescription')}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {tData('clearDescription')}
+                      </div>
                     </div>
                   </button>
                 </div>
@@ -290,9 +307,7 @@ export function Drawer({
 
             {/* 底部版本信息 */}
             <div className="absolute bottom-0 left-0 right-0 border-t border-border bg-background p-4">
-              <div className="text-center text-xs text-muted-foreground">
-                MiniDiary v1.0.0
-              </div>
+              <div className="text-center text-xs text-muted-foreground">MiniDiary v1.0.0</div>
             </div>
           </motion.aside>
 

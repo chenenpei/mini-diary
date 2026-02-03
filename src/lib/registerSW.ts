@@ -39,7 +39,7 @@ export function registerServiceWorker(): void {
       () => {
         void register()
       },
-      { once: true }
+      { once: true },
     )
   }
 }

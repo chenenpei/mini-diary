@@ -49,7 +49,7 @@ describe('entriesRepository', () => {
         entriesRepository.create({
           content: longContent,
           date: '2024-01-15',
-        })
+        }),
       ).rejects.toThrow('Content exceeds maximum length')
     })
 
@@ -59,7 +59,7 @@ describe('entriesRepository', () => {
           content: 'Test',
           date: '2024-01-15',
           imageIds: ['1', '2', '3', '4'],
-        })
+        }),
       ).rejects.toThrow('Cannot attach more than 3 images')
     })
 
@@ -68,7 +68,7 @@ describe('entriesRepository', () => {
         entriesRepository.create({
           content: 'Test',
           date: '2024/01/15',
-        })
+        }),
       ).rejects.toThrow('Date must be in YYYY-MM-DD format')
     })
   })
@@ -167,7 +167,7 @@ describe('entriesRepository', () => {
         entriesRepository.update({
           id: 'non-existent',
           content: 'Test',
-        })
+        }),
       ).rejects.toThrow('Entry with id non-existent not found')
     })
   })

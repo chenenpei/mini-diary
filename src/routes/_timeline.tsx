@@ -1,6 +1,6 @@
 'use client'
 
-import { createFileRoute, Outlet, useRouterState, useMatches } from '@tanstack/react-router'
+import { createFileRoute, Outlet, useMatches, useRouterState } from '@tanstack/react-router'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Timeline } from '@/components/timeline'
 
@@ -23,7 +23,7 @@ function TimelineLayout() {
   // 获取当前匹配的路由，用于判断是否显示覆盖层
   const matches = useMatches()
   const isOverlayRoute = matches.some(
-    (match) => match.routeId.includes('/entry/new') || match.routeId.includes('/entry/$id')
+    (match) => match.routeId.includes('/entry/new') || match.routeId.includes('/entry/$id'),
   )
 
   return (

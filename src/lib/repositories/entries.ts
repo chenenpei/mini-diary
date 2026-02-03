@@ -172,8 +172,6 @@ export const entriesRepository = {
    */
   async search(query: string): Promise<DiaryEntry[]> {
     const lowerQuery = query.toLowerCase()
-    return db.entries
-      .filter((entry) => entry.content.toLowerCase().includes(lowerQuery))
-      .toArray()
+    return db.entries.filter((entry) => entry.content.toLowerCase().includes(lowerQuery)).toArray()
   },
 }

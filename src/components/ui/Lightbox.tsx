@@ -1,12 +1,12 @@
 'use client'
 
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'motion/react'
 import { useSwipeable } from 'react-swipeable'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { cn } from '@/lib/utils'
 
 interface LightboxProps {
   /** Array of image URLs */
@@ -30,13 +30,7 @@ interface LightboxProps {
  * - 支持键盘导航 (左右箭头, ESC 关闭)
  * - 点击背景关闭
  */
-export function Lightbox({
-  images,
-  currentIndex,
-  isOpen,
-  onClose,
-  onIndexChange,
-}: LightboxProps) {
+export function Lightbox({ images, currentIndex, isOpen, onClose, onIndexChange }: LightboxProps) {
   const { t } = useTranslation('image')
   const { t: tCommon } = useTranslation('common')
 
@@ -169,7 +163,7 @@ export function Lightbox({
               disabled={!hasPrev}
               className={cn(
                 'absolute left-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
-                hasPrev ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30'
+                hasPrev ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30',
               )}
               aria-label={t('prev')}
             >
@@ -188,7 +182,7 @@ export function Lightbox({
               disabled={!hasNext}
               className={cn(
                 'absolute right-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors',
-                hasNext ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30'
+                hasNext ? 'hover:bg-white/20' : 'cursor-not-allowed opacity-30',
               )}
               aria-label={t('next')}
             >
@@ -197,10 +191,7 @@ export function Lightbox({
           )}
 
           {/* Image with swipe support */}
-          <div
-            {...swipeHandlers}
-            className="flex h-full w-full items-center justify-center"
-          >
+          <div {...swipeHandlers} className="flex h-full w-full items-center justify-center">
             <motion.img
               key={currentIndex}
               src={images[currentIndex]}

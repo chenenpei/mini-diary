@@ -2,7 +2,12 @@
  * Image compression utilities using Canvas API
  */
 
-export type ImageProcessingErrorKey = 'canvasError' | 'compressionFailed' | 'processFailed' | 'unsupportedFormat' | 'sizeTooLarge'
+export type ImageProcessingErrorKey =
+  | 'canvasError'
+  | 'compressionFailed'
+  | 'processFailed'
+  | 'unsupportedFormat'
+  | 'sizeTooLarge'
 
 /**
  * Custom error class for image processing errors
@@ -50,7 +55,10 @@ interface ProcessedImage {
   thumbnail: Blob
 }
 
-export type ImageValidationErrorKey = Extract<ImageProcessingErrorKey, 'unsupportedFormat' | 'sizeTooLarge'>
+export type ImageValidationErrorKey = Extract<
+  ImageProcessingErrorKey,
+  'unsupportedFormat' | 'sizeTooLarge'
+>
 
 /**
  * Validate image file
@@ -74,7 +82,7 @@ export function validateImage(file: File): { valid: boolean; errorKey?: ImageVal
 function calculateDimensions(
   width: number,
   height: number,
-  config: ImageConfig
+  config: ImageConfig,
 ): { width: number; height: number } {
   let newWidth = width
   let newHeight = height
@@ -95,18 +103,11 @@ function calculateDimensions(
 /**
  * Compress image using Canvas API
  */
-async function compressWithCanvas(
-  file: File,
-  config: ImageConfig
-): Promise<Blob> {
+async function compressWithCanvas(file: File, config: ImageConfig): Promise<Blob> {
   // Create image bitmap from file
   const bitmap = await createImageBitmap(file)
 
-  const { width, height } = calculateDimensions(
-    bitmap.width,
-    bitmap.height,
-    config
-  )
+  const { width, height } = calculateDimensions(bitmap.width, bitmap.height, config)
 
   // Use OffscreenCanvas if available, fallback to regular canvas
   if (typeof OffscreenCanvas !== 'undefined') {
@@ -144,7 +145,7 @@ async function compressWithCanvas(
         }
       },
       config.outputFormat,
-      config.quality
+      config.quality,
     )
   })
 }

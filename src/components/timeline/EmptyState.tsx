@@ -1,8 +1,8 @@
 'use client'
 
+import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { motion } from 'motion/react'
 
 interface EmptyStateProps {
   /** Main title */
@@ -21,11 +21,7 @@ interface EmptyStateProps {
  * - 黑白线条插画，简洁几何形状
  * - 文案简短直接，不超过 15 字
  */
-export function EmptyState({
-  title,
-  description,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ title, description, className }: EmptyStateProps) {
   const { t } = useTranslation('timeline')
   const displayTitle = title ?? t('emptyTitle')
   const displayDescription = description ?? t('emptyDescription')
@@ -83,16 +79,11 @@ interface SparseHintProps {
  * - 使用 Tertiary 色，降低视觉权重
  * - 不强制用户多写，仅轻提示
  */
-export function SparseHint({
-  text,
-  className,
-}: SparseHintProps) {
+export function SparseHint({ text, className }: SparseHintProps) {
   const { t } = useTranslation('timeline')
   const displayText = text ?? t('sparseHint')
 
   return (
-    <p className={cn('py-4 text-center text-sm text-muted-foreground', className)}>
-      {displayText}
-    </p>
+    <p className={cn('py-4 text-center text-sm text-muted-foreground', className)}>{displayText}</p>
   )
 }

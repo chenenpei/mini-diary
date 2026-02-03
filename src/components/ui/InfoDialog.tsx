@@ -1,7 +1,7 @@
 'use client'
 
+import { AnimatePresence, motion } from 'motion/react'
 import { useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
 
 interface InfoDialogProps {
   /** 是否打开 */
@@ -25,13 +25,7 @@ interface InfoDialogProps {
  * - 支持 ESC 键关闭
  * - 点击背景关闭
  */
-export function InfoDialog({
-  isOpen,
-  title,
-  items,
-  closeText,
-  onClose,
-}: InfoDialogProps) {
+export function InfoDialog({ isOpen, title, items, closeText, onClose }: InfoDialogProps) {
   // ESC 键关闭
   useEffect(() => {
     if (!isOpen) return
@@ -82,10 +76,7 @@ export function InfoDialog({
             {/* 内容列表 */}
             <ul className="mt-4 space-y-2">
               {items.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2 text-sm text-muted-foreground"
-                >
+                <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />
                   <span>{item}</span>
                 </li>

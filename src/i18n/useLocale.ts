@@ -1,6 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
-import i18n from './index'
-import { type Locale, getStoredLocale, setStoredLocale } from './index'
+import { useCallback, useEffect, useState } from 'react'
+import i18n, { getStoredLocale, type Locale, setStoredLocale } from './index'
 
 export function useLocale() {
   const [locale, setLocaleState] = useState<Locale>(() => {

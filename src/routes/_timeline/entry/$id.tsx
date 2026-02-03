@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DiaryEditor, EditorHeader, EditorToolbar } from '@/components/editor'
 import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
 import { Skeleton } from '@/components/timeline'
-import { ConfirmDialog } from '@/components/ui'
+import { ConfirmDialog, useToast } from '@/components/ui'
 import { useEntry, useUpdateEntry } from '@/hooks/useEntries'
-import { useImagesByIds, useCreateImages, useDeleteImage } from '@/hooks/useImages'
-import { useToast } from '@/components/ui'
+import { useCreateImages, useDeleteImage, useImagesByIds } from '@/hooks/useImages'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
 import { revokeImageUrl } from '@/lib/image'
 
@@ -92,17 +91,17 @@ function EditEntryPage() {
         thumbnail: result.thumbnail,
       })
       setNewImages((prev) =>
-        prev.map((img) => (img.id === imageId ? { ...img, isProcessing: false } : img))
+        prev.map((img) => (img.id === imageId ? { ...img, isProcessing: false } : img)),
       )
     },
-    []
+    [],
   )
 
   const handleImageError = useCallback((imageId: string, errorMsg: string) => {
     setNewImages((prev) =>
       prev.map((img) =>
-        img.id === imageId ? { ...img, isProcessing: false, error: errorMsg } : img
-      )
+        img.id === imageId ? { ...img, isProcessing: false, error: errorMsg } : img,
+      ),
     )
   }, [])
 
@@ -186,7 +185,17 @@ function EditEntryPage() {
     } catch {
       addToast(t('saveFailed'), 'error')
     }
-  }, [entry, content, removedImageIds, updateEntry, createImages, deleteImage, navigate, t, addToast])
+  }, [
+    entry,
+    content,
+    removedImageIds,
+    updateEntry,
+    createImages,
+    deleteImage,
+    navigate,
+    t,
+    addToast,
+  ])
 
   const imageCount = existingImages.length + newImages.length
 
@@ -235,7 +244,9 @@ function EditEntryPage() {
             <p className="text-muted-foreground">{t('notFound')}</p>
             <button
               type="button"
-              onClick={() => navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })}
+              onClick={() =>
+                navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
+              }
               className="mt-4 text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             >
               {tCommon('backToHome')}

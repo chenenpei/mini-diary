@@ -1,11 +1,11 @@
 'use client'
 
-import { useRef, useCallback } from 'react'
+import { Bold, ImagePlus, List, ListOrdered } from 'lucide-react'
+import { useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ImagePlus, Bold, List, ListOrdered } from 'lucide-react'
-import { cn, generateId } from '@/lib/utils'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
-import { processImage, createImageUrl, validateImage, ImageProcessingError } from '@/lib/image'
+import { createImageUrl, ImageProcessingError, processImage, validateImage } from '@/lib/image'
+import { cn, generateId } from '@/lib/utils'
 
 interface ImageItem {
   id: string
@@ -121,14 +121,13 @@ export function EditorToolbar({
           const { blob, thumbnail } = await processImage(imageItem.file)
           onImageProcessed?.(imageItem.id, { file: imageItem.file, blob, thumbnail })
         } catch (err) {
-          const errorMessage = err instanceof ImageProcessingError
-            ? tImage(err.errorKey)
-            : tImage('processFailed')
+          const errorMessage =
+            err instanceof ImageProcessingError ? tImage(err.errorKey) : tImage('processFailed')
           onImageError?.(imageItem.id, errorMessage)
         }
       }
     },
-    [remainingSlots, onImagesAdd, onImageProcessed, onImageError, tImage]
+    [remainingSlots, onImagesAdd, onImageProcessed, onImageError, tImage],
   )
 
   // 触发文件选择
@@ -140,12 +139,11 @@ export function EditorToolbar({
     <div
       className={cn(
         'fixed left-0 right-0 z-50 flex h-12 items-center justify-start gap-1 border-t border-border bg-background/95 px-4 backdrop-blur-sm',
-        className
+        className,
       )}
       style={{
         bottom: keyboardHeight,
-        paddingBottom:
-          keyboardHeight === 0 ? 'env(safe-area-inset-bottom, 0px)' : 0,
+        paddingBottom: keyboardHeight === 0 ? 'env(safe-area-inset-bottom, 0px)' : 0,
       }}
     >
       {/* 图片按钮 */}
@@ -160,18 +158,10 @@ export function EditorToolbar({
       <div className="mx-1 h-5 w-px bg-border" />
 
       {/* 加粗按钮 */}
-      <ToolbarButton
-        icon={<Bold className="h-4 w-4" />}
-        label={t('bold')}
-        onClick={handleBold}
-      />
+      <ToolbarButton icon={<Bold className="h-4 w-4" />} label={t('bold')} onClick={handleBold} />
 
       {/* 无序列表按钮 */}
-      <ToolbarButton
-        icon={<List className="h-4 w-4" />}
-        label={t('list')}
-        onClick={handleList}
-      />
+      <ToolbarButton icon={<List className="h-4 w-4" />} label={t('list')} onClick={handleList} />
 
       {/* 序号列表按钮 */}
       <ToolbarButton
@@ -200,12 +190,7 @@ interface ToolbarButtonProps {
   disabled?: boolean
 }
 
-function ToolbarButton({
-  icon,
-  label,
-  onClick,
-  disabled,
-}: ToolbarButtonProps) {
+function ToolbarButton({ icon, label, onClick, disabled }: ToolbarButtonProps) {
   // 在 mousedown 时阻止默认行为防止焦点丢失
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
@@ -219,9 +204,7 @@ function ToolbarButton({
       disabled={disabled}
       className={cn(
         'flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-md px-2.5 text-foreground transition-colors',
-        disabled
-          ? 'cursor-not-allowed opacity-60'
-          : 'hover:bg-muted active:opacity-70'
+        disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-muted active:opacity-70',
       )}
     >
       {icon}

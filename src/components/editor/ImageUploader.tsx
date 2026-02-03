@@ -1,11 +1,17 @@
 'use client'
 
-import { useCallback, useRef, useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { ImagePlus, X } from 'lucide-react'
-import { cn, generateId } from '@/lib/utils'
-import { processImage, createImageUrl, revokeImageUrl, validateImage, ImageProcessingError } from '@/lib/image'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Lightbox } from '@/components/ui'
+import {
+  createImageUrl,
+  ImageProcessingError,
+  processImage,
+  revokeImageUrl,
+  validateImage,
+} from '@/lib/image'
+import { cn, generateId } from '@/lib/utils'
 
 const MAX_IMAGES = 3
 
@@ -50,9 +56,9 @@ export function ImageUploader({
 }: ImageUploaderProps) {
   const { t } = useTranslation('image')
   const [images, setImages] = useState<ImageItem[]>([])
-  const processedImagesRef = useRef<
-    Map<string, { file: File; blob: Blob; thumbnail: Blob }>
-  >(new Map())
+  const processedImagesRef = useRef<Map<string, { file: File; blob: Blob; thumbnail: Blob }>>(
+    new Map(),
+  )
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Lightbox state
@@ -107,9 +113,13 @@ export function ImageUploader({
             setImages((prev) =>
               prev.map((img) =>
                 img.id === imageItem.id
-                  ? { ...img, isProcessing: false, error: t(validation.errorKey ?? 'validationFailed') }
-                  : img
-              )
+                  ? {
+                      ...img,
+                      isProcessing: false,
+                      error: t(validation.errorKey ?? 'validationFailed'),
+                    }
+                  : img,
+              ),
             )
             continue
           }
@@ -123,20 +133,15 @@ export function ImageUploader({
           })
 
           setImages((prev) =>
-            prev.map((img) =>
-              img.id === imageItem.id ? { ...img, isProcessing: false } : img
-            )
+            prev.map((img) => (img.id === imageItem.id ? { ...img, isProcessing: false } : img)),
           )
         } catch (err) {
-          const errorMessage = err instanceof ImageProcessingError
-            ? t(err.errorKey)
-            : t('processFailed')
+          const errorMessage =
+            err instanceof ImageProcessingError ? t(err.errorKey) : t('processFailed')
           setImages((prev) =>
             prev.map((img) =>
-              img.id === imageItem.id
-                ? { ...img, isProcessing: false, error: errorMessage }
-                : img
-            )
+              img.id === imageItem.id ? { ...img, isProcessing: false, error: errorMessage } : img,
+            ),
           )
         }
       }
@@ -145,7 +150,7 @@ export function ImageUploader({
       const validImages = Array.from(processedImagesRef.current.values())
       onImagesChange?.(validImages)
     },
-    [remainingSlots, onImagesChange, t]
+    [remainingSlots, onImagesChange, t],
   )
 
   const handleRemove = useCallback(
@@ -162,7 +167,7 @@ export function ImageUploader({
       const validImages = Array.from(processedImagesRef.current.values())
       onImagesChange?.(validImages)
     },
-    [onImagesChange]
+    [onImagesChange],
   )
 
   return (
@@ -171,20 +176,9 @@ export function ImageUploader({
       <div className="flex flex-wrap gap-2">
         {/* Existing images */}
         {existingImages.map((existing, index) => (
-          <div
-            key={existing.id}
-            className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted"
-          >
-            <button
-              type="button"
-              onClick={() => handleImageClick(index)}
-              className="h-full w-full"
-            >
-              <img
-                src={existing.url}
-                alt=""
-                className="h-full w-full object-cover"
-              />
+          <div key={existing.id} className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted">
+            <button type="button" onClick={() => handleImageClick(index)} className="h-full w-full">
+              <img src={existing.url} alt="" className="h-full w-full object-cover" />
             </button>
             <button
               type="button"
@@ -200,36 +194,26 @@ export function ImageUploader({
         {/* New images */}
         {images.map((image, index) => {
           // Calculate the lightbox index (after existing images)
-          const lightboxIdx = existingImages.length + images
-            .slice(0, index)
-            .filter((img) => !img.isProcessing && !img.error).length
+          const lightboxIdx =
+            existingImages.length +
+            images.slice(0, index).filter((img) => !img.isProcessing && !img.error).length
           const canPreview = !image.isProcessing && !image.error
 
           return (
-            <div
-              key={image.id}
-              className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted"
-            >
+            <div key={image.id} className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted">
               {canPreview ? (
                 <button
                   type="button"
                   onClick={() => handleImageClick(lightboxIdx)}
                   className="h-full w-full"
                 >
-                  <img
-                    src={image.previewUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={image.previewUrl} alt="" className="h-full w-full object-cover" />
                 </button>
               ) : (
                 <img
                   src={image.previewUrl}
                   alt=""
-                  className={cn(
-                    'h-full w-full object-cover',
-                    image.isProcessing && 'opacity-50'
-                  )}
+                  className={cn('h-full w-full object-cover', image.isProcessing && 'opacity-50')}
                 />
               )}
 

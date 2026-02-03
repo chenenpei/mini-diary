@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { ToastProvider } from '@/components/ui'
 import { registerServiceWorker } from '@/lib/registerSW'
 import '@/i18n'
@@ -19,7 +19,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content',
+        content:
+          'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content',
       },
       {
         name: 'theme-color',
