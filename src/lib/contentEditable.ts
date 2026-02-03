@@ -306,3 +306,18 @@ export function getTextLength(html: string): number {
   template.innerHTML = DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR })
   return template.content.textContent?.length ?? 0
 }
+
+/**
+ * Check if HTML contains structural content (lists, horizontal rules)
+ * that should prevent showing placeholder even when text is empty
+ */
+export function hasStructuralContent(html: string): boolean {
+  if (!html || !html.trim()) return false
+
+  const clean = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['ul', 'ol', 'hr'],
+    KEEP_CONTENT: false,
+  })
+
+  return /<(ul|ol|hr)/i.test(clean)
+}

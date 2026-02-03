@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { getTextLength, htmlToMarkdown, markdownToHtml, sanitizeHtml } from '@/lib/contentEditable'
+import {
+  getTextLength,
+  hasStructuralContent,
+  htmlToMarkdown,
+  markdownToHtml,
+  sanitizeHtml,
+} from '@/lib/contentEditable'
 
 describe('contentEditable utilities', () => {
   describe('sanitizeHtml', () => {
@@ -250,6 +256,40 @@ describe('contentEditable utilities', () => {
 
     it('should count list items correctly', () => {
       expect(getTextLength('<ul><li>item 1</li><li>item 2</li></ul>')).toBe(12)
+    })
+  })
+
+  describe('hasStructuralContent', () => {
+    it('should return false for empty string', () => {
+      expect(hasStructuralContent('')).toBe(false)
+    })
+
+    it('should return false for whitespace only', () => {
+      expect(hasStructuralContent('   ')).toBe(false)
+    })
+
+    it('should return false for empty paragraph', () => {
+      expect(hasStructuralContent('<p></p>')).toBe(false)
+    })
+
+    it('should return false for paragraph with only br', () => {
+      expect(hasStructuralContent('<p><br></p>')).toBe(false)
+    })
+
+    it('should return true for unordered list', () => {
+      expect(hasStructuralContent('<ul><li>item</li></ul>')).toBe(true)
+    })
+
+    it('should return true for ordered list', () => {
+      expect(hasStructuralContent('<ol><li>item</li></ol>')).toBe(true)
+    })
+
+    it('should return true for hr', () => {
+      expect(hasStructuralContent('<hr>')).toBe(true)
+    })
+
+    it('should return true for empty list (key case for placeholder bug)', () => {
+      expect(hasStructuralContent('<ul><li><br></li></ul>')).toBe(true)
     })
   })
 })
