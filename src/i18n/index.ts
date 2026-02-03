@@ -11,6 +11,7 @@ import zhData from './locales/zh-CN/data.json'
 import zhDate from './locales/zh-CN/date.json'
 import zhImage from './locales/zh-CN/image.json'
 import zhTimeline from './locales/zh-CN/timeline.json'
+import zhPrompts from './locales/zh-CN/prompts.json'
 
 // 英文翻译
 import enCommon from './locales/en/common.json'
@@ -22,6 +23,7 @@ import enData from './locales/en/data.json'
 import enDate from './locales/en/date.json'
 import enImage from './locales/en/image.json'
 import enTimeline from './locales/en/timeline.json'
+import enPrompts from './locales/en/prompts.json'
 
 const LOCALE_STORAGE_KEY = 'mini-diary-locale'
 
@@ -49,6 +51,7 @@ const resources = {
     date: zhDate,
     image: zhImage,
     timeline: zhTimeline,
+    prompts: zhPrompts,
   },
   en: {
     common: enCommon,
@@ -60,6 +63,7 @@ const resources = {
     date: enDate,
     image: enImage,
     timeline: enTimeline,
+    prompts: enPrompts,
   },
 }
 
@@ -68,7 +72,7 @@ i18n.use(initReactI18next).init({
   lng: getStoredLocale() ?? 'zh-CN',
   fallbackLng: 'zh-CN',
   defaultNS: 'common',
-  ns: ['common', 'entry', 'editor', 'settings', 'search', 'data', 'date', 'image', 'timeline'],
+  ns: ['common', 'entry', 'editor', 'settings', 'search', 'data', 'date', 'image', 'timeline', 'prompts'],
   interpolation: {
     escapeValue: false, // React 已处理 XSS
   },
