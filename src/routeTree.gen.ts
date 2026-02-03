@@ -10,63 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as EntryNewRouteImport } from './routes/entry/new'
-import { Route as EntryIdRouteImport } from './routes/entry/$id'
+import { Route as TimelineRouteImport } from './routes/_timeline'
+import { Route as TimelineIndexRouteImport } from './routes/_timeline/index'
+import { Route as TimelineEntryNewRouteImport } from './routes/_timeline/entry/new'
+import { Route as TimelineEntryIdRouteImport } from './routes/_timeline/entry/$id'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/_timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TimelineIndexRoute = TimelineIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => TimelineRoute,
 } as any)
-const EntryNewRoute = EntryNewRouteImport.update({
+const TimelineEntryNewRoute = TimelineEntryNewRouteImport.update({
   id: '/entry/new',
   path: '/entry/new',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => TimelineRoute,
 } as any)
-const EntryIdRoute = EntryIdRouteImport.update({
+const TimelineEntryIdRoute = TimelineEntryIdRouteImport.update({
   id: '/entry/$id',
   path: '/entry/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => TimelineRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/search': typeof SearchRoute
-  '/entry/$id': typeof EntryIdRoute
-  '/entry/new': typeof EntryNewRoute
+  '/': typeof TimelineIndexRoute
+  '/entry/$id': typeof TimelineEntryIdRoute
+  '/entry/new': typeof TimelineEntryNewRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/search': typeof SearchRoute
-  '/entry/$id': typeof EntryIdRoute
-  '/entry/new': typeof EntryNewRoute
+  '/': typeof TimelineIndexRoute
+  '/entry/$id': typeof TimelineEntryIdRoute
+  '/entry/new': typeof TimelineEntryNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_timeline': typeof TimelineRouteWithChildren
   '/search': typeof SearchRoute
-  '/entry/$id': typeof EntryIdRoute
-  '/entry/new': typeof EntryNewRoute
+  '/_timeline/': typeof TimelineIndexRoute
+  '/_timeline/entry/$id': typeof TimelineEntryIdRoute
+  '/_timeline/entry/new': typeof TimelineEntryNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/search' | '/entry/$id' | '/entry/new'
+  fullPaths: '/search' | '/' | '/entry/$id' | '/entry/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/search' | '/entry/$id' | '/entry/new'
-  id: '__root__' | '/' | '/search' | '/entry/$id' | '/entry/new'
+  to: '/search' | '/' | '/entry/$id' | '/entry/new'
+  id:
+    | '__root__'
+    | '/_timeline'
+    | '/search'
+    | '/_timeline/'
+    | '/_timeline/entry/$id'
+    | '/_timeline/entry/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  TimelineRoute: typeof TimelineRouteWithChildren
   SearchRoute: typeof SearchRoute
-  EntryIdRoute: typeof EntryIdRoute
-  EntryNewRoute: typeof EntryNewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -78,35 +88,56 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_timeline': {
+      id: '/_timeline'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof TimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_timeline/': {
+      id: '/_timeline/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof TimelineIndexRouteImport
+      parentRoute: typeof TimelineRoute
     }
-    '/entry/new': {
-      id: '/entry/new'
+    '/_timeline/entry/new': {
+      id: '/_timeline/entry/new'
       path: '/entry/new'
       fullPath: '/entry/new'
-      preLoaderRoute: typeof EntryNewRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof TimelineEntryNewRouteImport
+      parentRoute: typeof TimelineRoute
     }
-    '/entry/$id': {
-      id: '/entry/$id'
+    '/_timeline/entry/$id': {
+      id: '/_timeline/entry/$id'
       path: '/entry/$id'
       fullPath: '/entry/$id'
-      preLoaderRoute: typeof EntryIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof TimelineEntryIdRouteImport
+      parentRoute: typeof TimelineRoute
     }
   }
 }
 
+interface TimelineRouteChildren {
+  TimelineIndexRoute: typeof TimelineIndexRoute
+  TimelineEntryIdRoute: typeof TimelineEntryIdRoute
+  TimelineEntryNewRoute: typeof TimelineEntryNewRoute
+}
+
+const TimelineRouteChildren: TimelineRouteChildren = {
+  TimelineIndexRoute: TimelineIndexRoute,
+  TimelineEntryIdRoute: TimelineEntryIdRoute,
+  TimelineEntryNewRoute: TimelineEntryNewRoute,
+}
+
+const TimelineRouteWithChildren = TimelineRoute._addFileChildren(
+  TimelineRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  TimelineRoute: TimelineRouteWithChildren,
   SearchRoute: SearchRoute,
-  EntryIdRoute: EntryIdRoute,
-  EntryNewRoute: EntryNewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

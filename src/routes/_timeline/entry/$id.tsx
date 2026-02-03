@@ -27,7 +27,7 @@ interface ImageItem {
   error: string | undefined
 }
 
-export const Route = createFileRoute('/entry/$id')({
+export const Route = createFileRoute('/_timeline/entry/$id')({
   component: EditEntryPage,
 })
 
@@ -130,13 +130,13 @@ function EditEntryPage() {
       setShowCancelConfirm(true)
       return
     }
-    navigate({ to: '/', search: { date: entry?.date, scrollTo: entry?.id } })
-  }, [isDirty, navigate, entry?.date, entry?.id])
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
+  }, [isDirty, navigate])
 
   const handleCancelConfirm = useCallback(() => {
     setShowCancelConfirm(false)
-    navigate({ to: '/', search: { date: entry?.date, scrollTo: entry?.id } })
-  }, [navigate, entry?.date, entry?.id])
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
+  }, [navigate])
 
   const handleCancelCancel = useCallback(() => {
     setShowCancelConfirm(false)
@@ -147,7 +147,7 @@ function EditEntryPage() {
 
     // 没有内容时直接返回（相当于取消）
     if (!content.trim()) {
-      navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
+      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
       return
     }
 
@@ -182,7 +182,7 @@ function EditEntryPage() {
       })
 
       setIsDirty(false)
-      navigate({ to: '/', search: { date: entry.date, scrollTo: entry.id } })
+      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
     } catch {
       addToast(t('saveFailed'), 'error')
     }
@@ -236,7 +236,7 @@ function EditEntryPage() {
             <button
               type="button"
               onClick={() => navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })}
-              className="mt-4 text-primary hover:underline"
+              className="mt-4 text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             >
               {tCommon('backToHome')}
             </button>

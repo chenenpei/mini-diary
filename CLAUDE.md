@@ -55,7 +55,6 @@ src/
 ├── hooks/              # React Hooks
 │   ├── useEntries.ts   # 日记条目 hooks (TanStack Query)
 │   ├── useImages.ts    # 图片 hooks (TanStack Query)
-│   ├── useTimelineAnimationPolicy.ts  # 时间线入场动画策略 (何时播放)
 │   └── useKeyboardHeight.ts  # 键盘高度监听 (移动端适配)
 ├── types/              # TypeScript 类型定义
 │   └── index.ts        # 核心类型
@@ -98,7 +97,7 @@ interface ImageRecord {
 9. **Commit 信息**：使用中文
 10. **小步提交**：每完成一个独立任务立即提交，不要积攒多个任务一起提交
 11. **动画性能**：仅对合成器属性 (`transform`, `opacity`) 进行动画，禁止对布局属性 (`width`, `height`, `margin`, `padding`) 进行动画
-12. **时间线动画策略**：入场动画仅在「首次进入首页 / 日期切换」时播放；从编辑/新建返回或同一天新增条目不播放，由 `useTimelineAnimationPolicy` 统一决策
+12. **编辑器覆盖层模式**：编辑器使用 Layout Route + Outlet 覆盖层模式实现，时间线始终保持挂载以保留滚动位置；编辑器打开时使用 `inert` 属性禁用时间线交互
 13. **提交前检查**：每次提交 commit 前，先确认是否需要更新 `spec/` 目录下的文档和 `CLAUDE.md`
 
 ## 移动端适配

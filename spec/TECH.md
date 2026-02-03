@@ -55,12 +55,15 @@
 ## 2. 项目结构
 
 ```
-app/
+src/
 ├── routes/                 # TanStack Start 文件路由
 │   ├── __root.tsx          # 根布局（主题、错误边界）
-│   ├── index.tsx           # 首页/时间线
-│   ├── editor.new.tsx      # 新建日记
-│   ├── editor.$id.tsx      # 编辑日记
+│   ├── _timeline.tsx       # 时间线布局路由（渲染 Timeline + Outlet 覆盖层）
+│   ├── _timeline/
+│   │   ├── index.tsx       # 首页（空组件，仅定义 search params）
+│   │   └── entry/
+│   │       ├── new.tsx     # 新建日记（覆盖层）
+│   │       └── $id.tsx     # 编辑日记（覆盖层）
 │   └── search.tsx          # 搜索页面
 ├── components/
 │   ├── ui/                 # shadcn/ui 基础组件
@@ -93,7 +96,7 @@ app/
 ├── hooks/                  # 自定义 Hooks
 │   ├── useEntries.ts
 │   ├── useImages.ts
-│   ├── useTimelineAnimationPolicy.ts  # 时间线入场动画策略
+│   ├── useKeyboardHeight.ts  # 键盘高度监听（移动端适配）
 │   └── useTheme.ts
 ├── utils/                  # 纯工具函数
 │   ├── date.ts

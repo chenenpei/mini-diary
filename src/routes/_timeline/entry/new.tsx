@@ -31,7 +31,7 @@ interface NewEntrySearch {
   date: string | undefined
 }
 
-export const Route = createFileRoute('/entry/new')({
+export const Route = createFileRoute('/_timeline/entry/new')({
   validateSearch: (search: Record<string, unknown>): NewEntrySearch => ({
     date: typeof search.date === 'string' ? search.date : undefined,
   }),
@@ -147,7 +147,7 @@ function NewEntryPage() {
         })
       }
 
-      navigate({ to: '/', search: { date: entryDate, scrollTo: entry.id } })
+      navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
     } catch {
       addToast(t('saveFailed'), 'error')
     }

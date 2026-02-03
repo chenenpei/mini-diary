@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -18,39 +18,39 @@ import {
 import { ConfirmDialog, DatePicker, ClearDataDialog, useToast } from '@/components/ui'
 import { useEntriesByDate, usePrefetchEntriesByDate, useDeleteEntry, useDistinctDates } from '@/hooks/useEntries'
 import { useImagesByIds, useDeleteImagesByEntry } from '@/hooks/useImages'
-import { useTheme, useStorageEstimate, useTimelineAnimationPolicy } from '@/hooks'
+import { useTheme, useStorageEstimate } from '@/hooks'
 import { downloadExport, importData, clearAllData } from '@/lib/dataTransfer'
 import type { DiaryEntry } from '@/types'
 
-export const Route = createFileRoute('/')({
-  component: HomePage,
-  validateSearch: (search: Record<string, unknown>) => ({
-    date: typeof search.date === 'string' ? search.date : undefined,
-    scrollTo: typeof search.scrollTo === 'string' ? search.scrollTo : undefined,
-  }),
-})
+interface TimelineProps {
+  initialDate?: string | undefined
+  scrollToId?: string | undefined
+}
 
-function HomePage() {
+export function Timeline({ initialDate, scrollToId }: TimelineProps) {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { t: tData } = useTranslation('data')
   const { t: tEntry } = useTranslation('entry')
-  const { date: urlDate, scrollTo } = Route.useSearch()
 
-  // 初始化时使用 URL 中的日期，否则使用今天
-  const [currentDate, setCurrentDate] = useState(() => urlDate ?? dateUtils.getToday())
+  // 初始化时使用传入的日期，否则使用今天
+  const [currentDate, setCurrentDate] = useState(() => initialDate ?? dateUtils.getToday())
+
+  // 当 URL 中的日期变化时（从搜索跳转），更新当前日期
+  useEffect(() => {
+    if (initialDate && initialDate !== currentDate) {
+      setCurrentDate(initialDate)
+    }
+  }, [initialDate, currentDate])
+
+  // 滚动完成后清除 URL 参数
+  const handleScrollComplete = useCallback(() => {
+    navigate({ to: '/', search: { date: undefined, scrollTo: undefined }, replace: true })
+  }, [navigate])
   const { data: entries, isLoading } = useEntriesByDate(currentDate)
   const prefetchEntries = usePrefetchEntriesByDate()
   const isToday = dateUtils.isToday(currentDate)
-  const { shouldAnimatePage, shouldAnimateEntries } = useTimelineAnimationPolicy(currentDate, scrollTo)
-
-  // URL 日期变化时更新状态
-  useEffect(() => {
-    if (urlDate && urlDate !== currentDate) {
-      setCurrentDate(urlDate)
-    }
-  }, [urlDate, currentDate])
 
   // 获取有日记的日期列表
   const { data: distinctDates } = useDistinctDates()
@@ -58,11 +58,6 @@ function HomePage() {
     () => new Set(distinctDates ?? []),
     [distinctDates]
   )
-
-  // 滚动完成后清除 URL 参数
-  const handleScrollComplete = useCallback(() => {
-    navigate({ to: '/', search: { date: undefined, scrollTo: undefined }, replace: true })
-  }, [navigate])
 
   // Theme
   const { themeMode, setTheme } = useTheme()
@@ -286,7 +281,7 @@ function HomePage() {
         />
       </TopBar>
 
-      <PageLayout animate={shouldAnimatePage}>
+      <PageLayout>
         {isLoading ? (
           <DiaryListSkeleton />
         ) : !entries || entries.length === 0 ? (
@@ -295,12 +290,11 @@ function HomePage() {
           <>
             <DiaryList
               entries={entries}
-              animateEntries={shouldAnimateEntries}
               onEdit={handleEditEntry}
               onDelete={handleDeleteClick}
               thumbnailUrlsMap={thumbnailUrlsMap}
               fullImageUrlsMap={fullImageUrlsMap}
-              scrollToId={scrollTo}
+              scrollToId={scrollToId}
               onScrollComplete={handleScrollComplete}
             />
             {entries.length < 3 && <SparseHint />}
@@ -308,7 +302,7 @@ function HomePage() {
         )}
       </PageLayout>
 
-      <FAB icon={<Plus className="h-6 w-6" />} onClick={handleCreateEntry} />
+      <FAB icon={<Plus className="h-6 w-6" aria-hidden="true" />} onClick={handleCreateEntry} />
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}
