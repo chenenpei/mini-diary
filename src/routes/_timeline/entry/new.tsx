@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DiaryEditor, EditorHeader, EditorToolbar } from '@/components/editor'
 import type { DiaryEditorRef } from '@/components/editor/DiaryEditor'
-import { ConfirmDialog } from '@/components/ui'
+import { dateUtils } from '@/components/timeline'
+import { ConfirmDialog, useToast } from '@/components/ui'
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries'
 import { useCreateImages } from '@/hooks/useImages'
-import { useToast } from '@/components/ui'
 import { useKeyboardHeight } from '@/hooks/useKeyboardHeight'
-import { dateUtils } from '@/components/timeline'
+import { useRandomPrompt } from '@/hooks/useRandomPrompt'
 import { revokeImageUrl } from '@/lib/image'
 
 interface ProcessedImage {
@@ -45,6 +45,7 @@ function NewEntryPage() {
   const { addToast } = useToast()
   const { date } = Route.useSearch()
   const entryDate = date ?? dateUtils.getToday()
+  const randomPrompt = useRandomPrompt()
 
   const [content, setContent] = useState('')
   const [isDirty, setIsDirty] = useState(false)
@@ -77,15 +78,15 @@ function NewEntryPage() {
         thumbnail: result.thumbnail,
       })
       setImages((prev) =>
-        prev.map((img) => (img.id === id ? { ...img, isProcessing: false } : img))
+        prev.map((img) => (img.id === id ? { ...img, isProcessing: false } : img)),
       )
     },
-    []
+    [],
   )
 
   const handleImageError = useCallback((id: string, error: string) => {
     setImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, isProcessing: false, error } : img))
+      prev.map((img) => (img.id === id ? { ...img, isProcessing: false, error } : img)),
     )
   }, [])
 
@@ -203,6 +204,7 @@ function NewEntryPage() {
           onChange={handleContentChange}
           newImages={images}
           onNewImageRemove={handleNewImageRemove}
+          placeholder={randomPrompt}
           autoFocus
         />
       </main>

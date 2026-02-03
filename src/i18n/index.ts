@@ -1,29 +1,27 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-
-// 中文翻译
-import zhCommon from './locales/zh-CN/common.json'
-import zhEntry from './locales/zh-CN/entry.json'
-import zhEditor from './locales/zh-CN/editor.json'
-import zhSettings from './locales/zh-CN/settings.json'
-import zhSearch from './locales/zh-CN/search.json'
-import zhData from './locales/zh-CN/data.json'
-import zhDate from './locales/zh-CN/date.json'
-import zhImage from './locales/zh-CN/image.json'
-import zhTimeline from './locales/zh-CN/timeline.json'
-import zhPrompts from './locales/zh-CN/prompts.json'
-
 // 英文翻译
 import enCommon from './locales/en/common.json'
-import enEntry from './locales/en/entry.json'
-import enEditor from './locales/en/editor.json'
-import enSettings from './locales/en/settings.json'
-import enSearch from './locales/en/search.json'
 import enData from './locales/en/data.json'
 import enDate from './locales/en/date.json'
+import enEditor from './locales/en/editor.json'
+import enEntry from './locales/en/entry.json'
 import enImage from './locales/en/image.json'
-import enTimeline from './locales/en/timeline.json'
 import enPrompts from './locales/en/prompts.json'
+import enSearch from './locales/en/search.json'
+import enSettings from './locales/en/settings.json'
+import enTimeline from './locales/en/timeline.json'
+// 中文翻译
+import zhCommon from './locales/zh-CN/common.json'
+import zhData from './locales/zh-CN/data.json'
+import zhDate from './locales/zh-CN/date.json'
+import zhEditor from './locales/zh-CN/editor.json'
+import zhEntry from './locales/zh-CN/entry.json'
+import zhImage from './locales/zh-CN/image.json'
+import zhPrompts from './locales/zh-CN/prompts.json'
+import zhSearch from './locales/zh-CN/search.json'
+import zhSettings from './locales/zh-CN/settings.json'
+import zhTimeline from './locales/zh-CN/timeline.json'
 
 const LOCALE_STORAGE_KEY = 'mini-diary-locale'
 
@@ -72,7 +70,18 @@ i18n.use(initReactI18next).init({
   lng: getStoredLocale() ?? 'zh-CN',
   fallbackLng: 'zh-CN',
   defaultNS: 'common',
-  ns: ['common', 'entry', 'editor', 'settings', 'search', 'data', 'date', 'image', 'timeline', 'prompts'],
+  ns: [
+    'common',
+    'entry',
+    'editor',
+    'settings',
+    'search',
+    'data',
+    'date',
+    'image',
+    'timeline',
+    'prompts',
+  ],
   interpolation: {
     escapeValue: false, // React 已处理 XSS
   },
