@@ -3,16 +3,16 @@
  *
  * 支持的格式 (与工具栏一致):
  * - 加粗: **text** ↔ <strong>text</strong>
+ * - 斜体: *text* ↔ <em>text</em>
  * - 无序列表: - item ↔ <ul><li>item</li></ul>
  * - 有序列表: 1. item ↔ <ol><li>item</li></ol>
- *
- * 其他格式 (斜体等) 保持原样传递
+ * - 分割线: --- ↔ <hr>
  */
 
 import DOMPurify from 'dompurify'
 
 // 配置 DOMPurify 只允许受限标签
-const ALLOWED_TAGS = ['p', 'br', 'strong', 'b', 'em', 'i', 'ul', 'ol', 'li', 'div']
+const ALLOWED_TAGS = ['p', 'br', 'strong', 'b', 'em', 'i', 'ul', 'ol', 'li', 'div', 'hr']
 const ALLOWED_ATTR: string[] = []
 
 /**
@@ -45,6 +45,21 @@ export function markdownToHtml(markdown: string): string {
   let lastWasBlank = false // 追踪上一行是否是空行
 
   for (const line of lines) {
+    // 检查分割线 (---, ***, ___)
+    if (/^(-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+      lastWasBlank = false
+      if (inUnorderedList) {
+        result.push('</ul>')
+        inUnorderedList = false
+      }
+      if (inOrderedList) {
+        result.push('</ol>')
+        inOrderedList = false
+      }
+      result.push('<hr>')
+      continue
+    }
+
     // 检查无序列表
     if (line.startsWith('- ')) {
       lastWasBlank = false
@@ -251,6 +266,14 @@ function nodeToMarkdown(node: Node, isTopLevel = false): string {
       case 'br':
         result.push('\n')
         lastWasBlock = false
+        break
+
+      case 'hr':
+        if (isTopLevel && lastWasBlock) {
+          result.push('\n')
+        }
+        result.push('---\n')
+        lastWasBlock = true
         break
 
       default:

@@ -60,6 +60,6 @@ export const markdownComponents: Components = {
   code: ({ children }) => <span>{children}</span>,
   pre: ({ children }) => <div>{children}</div>,
 
-  // Disable horizontal rule
-  hr: () => null,
+  // Supported: horizontal rule
+  hr: () => <hr className="my-4 border-t border-border" />,
 }

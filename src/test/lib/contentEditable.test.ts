@@ -120,6 +120,27 @@ describe('contentEditable utilities', () => {
       const markdown = 'Line 1\n\n\n\nLine 2'
       expect(markdownToHtml(markdown)).toBe('<p>Line 1</p><p><br></p><p><br></p><p>Line 2</p>')
     })
+
+    it('should convert --- to hr', () => {
+      expect(markdownToHtml('---')).toBe('<hr>')
+    })
+
+    it('should convert *** to hr', () => {
+      expect(markdownToHtml('***')).toBe('<hr>')
+    })
+
+    it('should convert ___ to hr', () => {
+      expect(markdownToHtml('___')).toBe('<hr>')
+    })
+
+    it('should handle hr between paragraphs', () => {
+      const markdown = 'Line 1\n---\nLine 2'
+      expect(markdownToHtml(markdown)).toBe('<p>Line 1</p><hr><p>Line 2</p>')
+    })
+
+    it('should handle hr with extra dashes', () => {
+      expect(markdownToHtml('-----')).toBe('<hr>')
+    })
   })
 
   describe('htmlToMarkdown', () => {
@@ -200,6 +221,15 @@ describe('contentEditable utilities', () => {
         '<p>Start <strong>bold</strong> and <em>italic</em></p><ul><li>item 1</li><li>item 2</li></ul><p>End</p>'
       expect(htmlToMarkdown(html)).toBe('Start **bold** and *italic*\n\n- item 1\n- item 2\n\nEnd')
     })
+
+    it('should convert hr to ---', () => {
+      expect(htmlToMarkdown('<hr>')).toBe('---')
+    })
+
+    it('should handle hr between paragraphs', () => {
+      const html = '<p>Line 1</p><hr><p>Line 2</p>'
+      expect(htmlToMarkdown(html)).toBe('Line 1\n\n---\n\nLine 2')
+    })
   })
 
   describe('roundtrip conversion', () => {
@@ -229,6 +259,12 @@ describe('contentEditable utilities', () => {
       {
         input: 'Start **bold** and *italic*\n- item 1\n- item 2\nEnd',
         expected: 'Start **bold** and *italic*\n\n- item 1\n- item 2\n\nEnd',
+      },
+      // Horizontal rule
+      { input: '---', expected: '---' },
+      {
+        input: 'Line 1\n---\nLine 2',
+        expected: 'Line 1\n\n---\n\nLine 2',
       },
     ]
 
