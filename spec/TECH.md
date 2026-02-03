@@ -491,6 +491,8 @@ new Intl.DateTimeFormat(locale, {
 |------|------|
 | `lib/contentEditable.ts` | Markdown ↔ HTML 转换 + 清理 |
 | `components/editor/DiaryEditor.tsx` | contenteditable 编辑器组件 |
+| `components/editor/editorUtils.ts` | DOM 操作辅助函数（光标、格式化、列表） |
+| `components/editor/EditorHeader.tsx` | 编辑器顶部栏（取消/保存按钮） |
 | `components/timeline/MarkdownContent.tsx` | Markdown 预处理 + 渲染 |
 
 ### HTML ↔ Markdown 转换
@@ -585,6 +587,45 @@ export function preprocessMarkdown(markdown: string): string {
 | A↵↵B | `A\n\nB` | A（空）B | A（空）B |
 | A↵↵↵B | `A\n\n\nB` | A（空行）B | A（空行）B |
 | A↵↵↵↵B | `A\n\n\n\nB` | A（两空行）B | A（两空行）B |
+
+### 编辑器快捷输入
+
+#### Markdown 格式快捷键
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Cmd/Ctrl + B` | 加粗选中文本 |
+| `Cmd/Ctrl + I` | 斜体选中文本 |
+
+#### 自动格式转换
+
+输入时自动转换 Markdown 语法为富文本：
+
+| 输入 | 转换结果 |
+|------|----------|
+| `**text**` | **text**（加粗） |
+| `*text*` | *text*（斜体） |
+| `- ` (行首) | 无序列表项 |
+| `1. ` (行首) | 有序列表项 |
+
+**实现细节**：
+- 使用 `document.execCommand` API 应用格式
+- 自动列表转换支持普通空格和非断空格（`\u00A0`，浏览器在某些情况下插入）
+- 配置驱动设计，便于扩展新的快捷输入
+
+#### 列表退出行为
+
+| 操作 | 行为 |
+|------|------|
+| 空列表项中按 Enter | 退出列表，插入新段落 |
+| 列表项开头按 Backspace | 退出列表，保留内容为普通段落 |
+
+### 水平分隔线
+
+- **编辑器中**：`---` 保持为文本，不转换为 `<hr>`
+- **时间线渲染**：`---` 由 react-markdown 渲染为 `<hr>` 分隔线
+
+这种设计让用户可以在编辑器中输入 `---` 而不触发意外的格式转换，同时在时间线展示时获得视觉分隔效果。
 
 ### 安全措施
 

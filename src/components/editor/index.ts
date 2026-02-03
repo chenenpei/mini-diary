@@ -1,4 +1,5 @@
-export { DiaryEditor, EditorHeader } from './DiaryEditor'
+export { DiaryEditor } from './DiaryEditor'
+export { EditorHeader } from './EditorHeader'
 export { EditorToolbar } from './EditorToolbar'
 export { ImagePreview } from './ImagePreview'
 export { ImageUploader } from './ImageUploader'

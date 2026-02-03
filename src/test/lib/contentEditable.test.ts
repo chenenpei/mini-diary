@@ -296,10 +296,6 @@ describe('contentEditable utilities', () => {
       expect(hasStructuralContent('<ol><li>item</li></ol>')).toBe(true)
     })
 
-    it('should return true for hr', () => {
-      expect(hasStructuralContent('<hr>')).toBe(true)
-    })
-
     it('should return true for empty list (key case for placeholder bug)', () => {
       expect(hasStructuralContent('<ul><li><br></li></ul>')).toBe(true)
     })

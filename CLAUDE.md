@@ -51,6 +51,7 @@ src/
 │   ├── repositories/   # 数据访问层
 │   │   ├── entries.ts  # 日记条目 CRUD
 │   │   └── images.ts   # 图片记录 CRUD
+│   ├── contentEditable.ts  # Markdown ↔ HTML 转换
 │   └── utils.ts        # 工具函数 (cn)
 ├── hooks/              # React Hooks
 │   ├── useEntries.ts   # 日记条目 hooks (TanStack Query)
@@ -91,7 +92,7 @@ interface ImageRecord {
 3. **Repository 模式**：IndexedDB 访问通过 `lib/repositories/*`
 4. **TanStack Query**：数据库状态管理，5 分钟 staleTime
 5. **图片必须压缩**：存储前压缩 + 生成缩略图 (Canvas API)
-6. **Markdown 受限**：仅支持加粗、斜体、列表
+6. **Markdown 受限**：仅支持加粗、斜体、列表、水平分隔线（`---` 仅在时间线渲染）
 7. **测试文件**：放在 `src/test/` 目录，按源码结构组织
 8. **纯函数必须测试**：所有复杂的纯函数（尤其是字符串/数据转换函数）必须补充单元测试，不要依赖手动测试
 9. **Commit 信息**：使用中文

@@ -6,7 +6,8 @@
  * - 斜体: *text* ↔ <em>text</em>
  * - 无序列表: - item ↔ <ul><li>item</li></ul>
  * - 有序列表: 1. item ↔ <ol><li>item</li></ol>
- * - 分割线: --- ↔ <hr>
+ *
+ * 注意: 分割线 (---) 仅在时间线渲染，编辑器中保持为文本
  */
 
 import DOMPurify from 'dompurify'
@@ -202,7 +203,7 @@ function nodeToMarkdown(node: Node, isTopLevel = false): string {
         if (isTopLevel && lastWasBlock) {
           result.push('\n')
         }
-        result.push(processUnorderedList(element))
+        result.push(processList(element, false))
         lastWasBlock = true
         break
 
@@ -210,7 +211,7 @@ function nodeToMarkdown(node: Node, isTopLevel = false): string {
         if (isTopLevel && lastWasBlock) {
           result.push('\n')
         }
-        result.push(processOrderedList(element))
+        result.push(processList(element, true))
         lastWasBlock = true
         break
 
@@ -253,14 +254,6 @@ function nodeToMarkdown(node: Node, isTopLevel = false): string {
         lastWasBlock = false
         break
 
-      case 'hr':
-        if (isTopLevel && lastWasBlock) {
-          result.push('\n')
-        }
-        result.push('---\n')
-        lastWasBlock = true
-        break
-
       default:
         // 其他标签只取内容
         result.push(nodeToMarkdown(element))
@@ -272,33 +265,22 @@ function nodeToMarkdown(node: Node, isTopLevel = false): string {
 }
 
 /**
- * 处理无序列表
+ * 处理列表（无序或有序）
+ * @param list - ul 或 ol 元素
+ * @param ordered - 是否是有序列表
  */
-function processUnorderedList(ul: Element): string {
+function processList(list: Element, ordered: boolean): string {
   const items: string[] = []
-  for (const li of Array.from(ul.children)) {
+  let counter = 1
+  for (const li of Array.from(list.children)) {
     if (li.tagName.toLowerCase() === 'li') {
-      items.push(`- ${nodeToMarkdown(li).trim()}`)
+      const prefix = ordered ? `${counter}.` : '-'
+      items.push(`${prefix} ${nodeToMarkdown(li).trim()}`)
+      if (ordered) counter++
     }
   }
   // 末尾加换行，配合 nodeToMarkdown 中块级元素前的换行，形成空行
   // 这样 Markdown 解析器才能正确识别列表结束
-  return `${items.join('\n')}\n`
-}
-
-/**
- * 处理有序列表
- */
-function processOrderedList(ol: Element): string {
-  const items: string[] = []
-  let counter = 1
-  for (const li of Array.from(ol.children)) {
-    if (li.tagName.toLowerCase() === 'li') {
-      items.push(`${counter}. ${nodeToMarkdown(li).trim()}`)
-      counter++
-    }
-  }
-  // 末尾加换行，配合 nodeToMarkdown 中块级元素前的换行，形成空行
   return `${items.join('\n')}\n`
 }
 
@@ -316,16 +298,16 @@ export function getTextLength(html: string): number {
 }
 
 /**
- * Check if HTML contains structural content (lists, horizontal rules)
+ * Check if HTML contains structural content (lists)
  * that should prevent showing placeholder even when text is empty
  */
 export function hasStructuralContent(html: string): boolean {
   if (!html || !html.trim()) return false
 
   const clean = DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['ul', 'ol', 'hr'],
+    ALLOWED_TAGS: ['ul', 'ol'],
     KEEP_CONTENT: false,
   })
 
-  return /<(ul|ol|hr)/i.test(clean)
+  return /<(ul|ol)/i.test(clean)
 }
