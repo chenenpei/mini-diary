@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { DiaryEntry, ImageManifest } from '@/types'
-import { mergeEntries, mergeImages, detectChanges } from '@/lib/sync'
+import { mergeEntries, mergeImages, detectChanges, validateCloudData } from '@/lib/sync'
 
 function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry {
   return {
@@ -14,6 +14,16 @@ function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry 
 }
 
 describe('sync', () => {
+  function makeCloudData(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+    return {
+      version: 1,
+      syncedAt: '2024-01-15T00:00:00.000Z',
+      entries: [],
+      imageManifest: [],
+      ...overrides,
+    }
+  }
+
   describe('mergeEntries', () => {
     it('should keep cloud entry when cloud is newer', () => {
       const local = [makeEntry({ id: 'a', updatedAt: 1000, content: 'old' })]
@@ -163,6 +173,111 @@ describe('sync', () => {
     it('should return no-change when timestamps equal lastSyncedAt', () => {
       const result = detectChanges(1000, 1000, 1000)
       expect(result).toBe('no-change')
+    })
+  })
+
+  describe('validateCloudData', () => {
+    it('should accept valid cloud data', () => {
+      const data = makeCloudData({
+        entries: [
+          {
+            id: 'a',
+            content: 'hello',
+            date: '2024-01-15',
+            createdAt: 1000,
+            updatedAt: 1000,
+            imageIds: [],
+          },
+        ],
+        imageManifest: [{ id: 'img-1', entryId: 'a', createdAt: 1000 }],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.errors).toEqual([])
+      expect(result.warnings).toEqual([])
+    })
+
+    it('should reject non-object data', () => {
+      const result = validateCloudData('not an object')
+
+      expect(result.valid).toBe(false)
+      expect(result.errors).toContain('Data is not an object')
+    })
+
+    it('should reject null', () => {
+      const result = validateCloudData(null)
+
+      expect(result.valid).toBe(false)
+      expect(result.errors).toContain('Data is not an object')
+    })
+
+    it('should reject unsupported version', () => {
+      const result = validateCloudData(makeCloudData({ version: 99 }))
+
+      expect(result.valid).toBe(false)
+      expect(result.errors[0]).toContain('version')
+    })
+
+    it('should reject missing version', () => {
+      const data = makeCloudData()
+      delete data.version
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(false)
+    })
+
+    it('should reject missing entries array', () => {
+      const data = makeCloudData()
+      delete data.entries
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(false)
+      expect(result.errors[0]).toContain('entries')
+    })
+
+    it('should reject missing imageManifest array', () => {
+      const data = makeCloudData()
+      delete data.imageManifest
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(false)
+      expect(result.errors[0]).toContain('imageManifest')
+    })
+
+    it('should warn about entries with missing fields', () => {
+      const data = makeCloudData({
+        entries: [{ id: 'a' }],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings.length).toBeGreaterThan(0)
+      expect(result.warnings[0]).toContain('Entry 0')
+    })
+
+    it('should warn about imageManifest with missing fields', () => {
+      const data = makeCloudData({
+        imageManifest: [{ id: 'img-1' }],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings.length).toBeGreaterThan(0)
+      expect(result.warnings[0]).toContain('ImageManifest 0')
+    })
+
+    it('should accept valid data with empty arrays', () => {
+      const result = validateCloudData(makeCloudData())
+
+      expect(result.valid).toBe(true)
+      expect(result.errors).toEqual([])
     })
   })
 })
