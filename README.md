@@ -13,6 +13,8 @@
 - 🖼️ **图片支持** - 每条日记最多 3 张图片，自动压缩
 - 📤 **数据导出** - 支持 JSON 格式导出备份
 - 🔍 **全文搜索** - 快速查找历史记录
+- ☁️ **云同步** - 通过 Google Drive 跨设备同步，数据保存在你的私人网盘
+- 🌐 **多语言** - 支持中文 / English
 
 ## 技术栈
 
@@ -55,11 +57,13 @@ src/
 │   ├── ui/             # 通用 UI 组件
 │   ├── timeline/       # 时间线相关组件
 │   ├── editor/         # 编辑器组件
+│   ├── sync/           # 云同步组件
 │   └── layout/         # 布局组件
 ├── lib/
 │   ├── db.ts           # Dexie 数据库实例
 │   ├── repositories/   # 数据访问层
-│   ├── dataTransfer.ts # 导入导出功能
+│   ├── sync/           # 同步核心逻辑
+│   ├── cloud/          # 云存储适配层
 │   └── utils.ts        # 工具函数
 ├── hooks/              # TanStack Query Hooks
 └── types/              # TypeScript 类型定义
@@ -70,6 +74,7 @@ src/
 - [PRD.md](spec/PRD.md) - 产品需求文档
 - [TECH.md](spec/TECH.md) - 技术架构文档
 - [DESIGN.md](spec/DESIGN.md) - 设计规范文档
+- [cloud-sync-design.md](spec/cloud-sync-design.md) - 云同步设计文档
 
 ## 许可证
 
