@@ -15,6 +15,7 @@ dist-ssr
 # Environment
 .env
 .env.*
+!.env.example
 *.local
 
 # IDE & OS

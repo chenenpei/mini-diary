@@ -63,7 +63,7 @@ export function useSyncFlow() {
       } else {
         setState({
           status: 'error',
-          error: { kind: 'network', message: String(error) },
+          error: { kind: 'auth', message: String(error) },
         })
       }
     }
