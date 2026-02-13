@@ -10,7 +10,7 @@
 | Phase 1 | 数据模型变更（软删除、settings） | ✅ 已完成 | `docs/plans/2026-02-13-phase1-soft-delete.md` |
 | Phase 2 | 同步核心逻辑（合并、变更检测、数据验证） | ✅ 已完成 | `docs/plans/2026-02-13-phase2-sync-logic.md` |
 | Phase 3 | 云存储适配层（Google Drive API） | ✅ 已完成 | `docs/plans/2026-02-13-phase3-cloud-adapter.md` |
-| Phase 4 | 同步 UI（设置页、进度展示、冲突弹窗） | ⚪ 未开始 | `docs/plans/2026-02-13-phase4-sync-ui.md` |
+| Phase 4 | 同步 UI（设置页、进度展示、冲突弹窗） | ✅ 已完成 | `docs/plans/2026-02-13-phase4-sync-ui.md` |
 | Phase 5 | 健壮性（重试、备份恢复、启动检查） | ✅ 已完成 | `docs/plans/2026-02-13-phase5-robustness.md` |
 
 ## Phase 1 详情
@@ -78,6 +78,33 @@
 | 4 | Google Drive 适配器（REST API v3 + 安全修复） | ✅ 已完成 |
 | 5 | Auth 模块（GIS token provider + 并发防护） | ✅ 已完成 |
 | 6 | SyncManager（push/pull/merge 编排） | ✅ 已完成 |
+
+## Phase 4 详情
+
+**范围：** 同步设置页面、实时进度展示、冲突解决弹窗、完成/错误状态、无障碍优化。
+
+**关键决策：**
+- useSyncFlow 状态机 hook 管理所有 UI 状态（idle/connecting/connected/syncing/conflict/complete/error）
+- 动态 import SyncManager 和 GoogleDriveAdapter 保持初始包体积小
+- SyncProgress 用 ref 追踪已见阶段动态构建步骤列表
+- 进度条用 scaleX transform 动画（符合仅 transform/opacity 规则）
+- ConflictDialog 完全遵循 ConfirmDialog 模式（focus trap、ESC 键、背景点击）
+- 支持 prefers-reduced-motion：禁用弹跳/脉冲动画，保留 fade
+- isSyncError 类型守卫替代 `as SyncError` 断言
+- 组件 unmount 时 abort 进行中的同步操作防止内存泄漏
+
+**Task 进度：**
+
+| Task | 内容 | 状态 |
+|------|------|------|
+| 1 | i18n keys + sync 路由 + Drawer 入口 | ✅ 已完成 |
+| 2 | useSyncFlow 状态管理 hook（测试 + 实现） | ✅ 已完成 |
+| 3 | 空白状态（服务选择）和连接中状态 | ✅ 已完成 |
+| 4 | 已连接状态显示 | ✅ 已完成 |
+| 5 | SyncProgress 组件（步骤指示器 + 进度条 + 重试倒计时） | ✅ 已完成 |
+| 6 | 完成和错误状态（成功动画 + 部分失败提示 + 错误恢复） | ✅ 已完成 |
+| 7 | ConflictDialog（变更摘要 + 合并/覆盖选择） | ✅ 已完成 |
+| 8 | 无障碍和动画优化（ARIA、reduced motion、focus） | ✅ 已完成 |
 
 ## Phase 5 详情
 

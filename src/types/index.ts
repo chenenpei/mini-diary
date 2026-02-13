@@ -252,7 +252,13 @@ export type SyncPhase =
   | { phase: 'uploading-images'; current: number; total: number }
   | { phase: 'verifying'; message: string }
   | { phase: 'cleanup'; message: string }
-  | { phase: 'retrying'; failedPhase: string; attempt: number; maxAttempts: number; nextRetryIn: number }
+  | {
+      phase: 'retrying'
+      failedPhase: string
+      attempt: number
+      maxAttempts: number
+      nextRetryIn: number
+    }
   | { phase: 'done'; summary: SyncSummary }
   | { phase: 'error'; error: SyncError; failedAt: string }
 

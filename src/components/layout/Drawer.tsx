@@ -253,12 +253,8 @@ export function Drawer({
                 >
                   <Cloud className="h-5 w-5 text-foreground" />
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-foreground">
-                      {tSync('title')}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {tSync('description')}
-                    </div>
+                    <div className="text-sm font-medium text-foreground">{tSync('title')}</div>
+                    <div className="text-xs text-muted-foreground">{tSync('description')}</div>
                   </div>
                 </button>
               </section>

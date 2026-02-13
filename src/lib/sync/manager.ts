@@ -116,7 +116,11 @@ export class SyncManager {
     // Phase: checking
     checkAborted(signal)
     this.reportPhase('push', 1, { phase: 'checking', message: 'Reading cloud data...' })
-    const cloudData = await this.retryableCall(() => this.adapter.readJson(CLOUD_JSON_PATH), 'checking', signal)
+    const cloudData = await this.retryableCall(
+      () => this.adapter.readJson(CLOUD_JSON_PATH),
+      'checking',
+      signal,
+    )
     checkAborted(signal)
 
     // Determine operation
@@ -233,7 +237,11 @@ export class SyncManager {
       entries: input.localEntries,
       imageManifest: input.localImageManifest,
     }
-    await this.retryableCall(() => this.adapter.writeJson(CLOUD_JSON_PATH, cloudData), 'uploading-entries', signal)
+    await this.retryableCall(
+      () => this.adapter.writeJson(CLOUD_JSON_PATH, cloudData),
+      'uploading-entries',
+      signal,
+    )
     checkAborted(signal)
 
     // Phase: uploading-images
@@ -257,8 +265,16 @@ export class SyncManager {
 
       try {
         const { blob, thumbnail } = await input.getImageBlobs(manifest.id)
-        await this.retryableCall(() => this.adapter.uploadImage(imagePath(manifest.id), blob), 'uploading-images', signal)
-        await this.retryableCall(() => this.adapter.uploadImage(thumbnailPath(manifest.id), thumbnail), 'uploading-images', signal)
+        await this.retryableCall(
+          () => this.adapter.uploadImage(imagePath(manifest.id), blob),
+          'uploading-images',
+          signal,
+        )
+        await this.retryableCall(
+          () => this.adapter.uploadImage(thumbnailPath(manifest.id), thumbnail),
+          'uploading-images',
+          signal,
+        )
         imagesUploaded++
       } catch {
         failedImages.push(manifest.id)
@@ -359,8 +375,16 @@ export class SyncManager {
       )
 
       try {
-        const blob = await this.retryableCall(() => this.adapter.downloadImage(imagePath(manifest.id)), 'downloading-images', signal)
-        const thumbnail = await this.retryableCall(() => this.adapter.downloadImage(thumbnailPath(manifest.id)), 'downloading-images', signal)
+        const blob = await this.retryableCall(
+          () => this.adapter.downloadImage(imagePath(manifest.id)),
+          'downloading-images',
+          signal,
+        )
+        const thumbnail = await this.retryableCall(
+          () => this.adapter.downloadImage(thumbnailPath(manifest.id)),
+          'downloading-images',
+          signal,
+        )
         downloadedImages.push({
           id: manifest.id,
           entryId: manifest.entryId,
@@ -472,8 +496,16 @@ export class SyncManager {
       }
 
       try {
-        const blob = await this.retryableCall(() => this.adapter.downloadImage(imagePath(imageId)), 'downloading-images', signal)
-        const thumbnail = await this.retryableCall(() => this.adapter.downloadImage(thumbnailPath(imageId)), 'downloading-images', signal)
+        const blob = await this.retryableCall(
+          () => this.adapter.downloadImage(imagePath(imageId)),
+          'downloading-images',
+          signal,
+        )
+        const thumbnail = await this.retryableCall(
+          () => this.adapter.downloadImage(thumbnailPath(imageId)),
+          'downloading-images',
+          signal,
+        )
         downloadedImages.push({
           id: imageId,
           entryId: cloudManifestEntry.entryId,
@@ -537,7 +569,11 @@ export class SyncManager {
       entries: mergedEntries,
       imageManifest: mergedManifest,
     }
-    await this.retryableCall(() => this.adapter.writeJson(CLOUD_JSON_PATH, mergedCloudData), 'uploading-entries', signal)
+    await this.retryableCall(
+      () => this.adapter.writeJson(CLOUD_JSON_PATH, mergedCloudData),
+      'uploading-entries',
+      signal,
+    )
     checkAborted(signal)
 
     // Phase: uploading-images
@@ -559,8 +595,16 @@ export class SyncManager {
 
       try {
         const { blob, thumbnail } = await input.getImageBlobs(imageId)
-        await this.retryableCall(() => this.adapter.uploadImage(imagePath(imageId), blob), 'uploading-images', signal)
-        await this.retryableCall(() => this.adapter.uploadImage(thumbnailPath(imageId), thumbnail), 'uploading-images', signal)
+        await this.retryableCall(
+          () => this.adapter.uploadImage(imagePath(imageId), blob),
+          'uploading-images',
+          signal,
+        )
+        await this.retryableCall(
+          () => this.adapter.uploadImage(thumbnailPath(imageId), thumbnail),
+          'uploading-images',
+          signal,
+        )
         imagesUploaded++
       } catch {
         failedImages.push(imageId)
@@ -676,8 +720,15 @@ export class SyncManager {
     }
   }
 
-  private async cleanupOrphanedImages(validManifest: ImageManifest[], signal?: AbortSignal): Promise<void> {
-    const cloudFiles = await this.retryableCall(() => this.adapter.listFiles(IMAGES_FOLDER), 'cleanup', signal)
+  private async cleanupOrphanedImages(
+    validManifest: ImageManifest[],
+    signal?: AbortSignal,
+  ): Promise<void> {
+    const cloudFiles = await this.retryableCall(
+      () => this.adapter.listFiles(IMAGES_FOLDER),
+      'cleanup',
+      signal,
+    )
     const validPaths = new Set<string>()
     for (const m of validManifest) {
       validPaths.add(imagePath(m.id))

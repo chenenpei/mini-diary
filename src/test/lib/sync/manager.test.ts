@@ -824,9 +824,7 @@ describe('SyncManager', () => {
     it('should retry adapter.readJson on network error and succeed', async () => {
       const adapter = createMockAdapter()
       const error = { kind: 'network', message: 'timeout' }
-      adapter.readJson
-        .mockRejectedValueOnce(error)
-        .mockResolvedValueOnce(null)
+      adapter.readJson.mockRejectedValueOnce(error).mockResolvedValueOnce(null)
       adapter.writeJson.mockResolvedValue(undefined)
       adapter.listFiles.mockResolvedValue([])
       adapter.deleteFiles.mockResolvedValue(undefined)
@@ -922,9 +920,7 @@ describe('SyncManager', () => {
       const onProgress = vi.fn()
       const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
-      await expect(
-        manager.sync(makeDefaultInput()),
-      ).rejects.toMatchObject({ kind: 'auth' })
+      await expect(manager.sync(makeDefaultInput())).rejects.toMatchObject({ kind: 'auth' })
 
       expect(adapter.readJson).toHaveBeenCalledOnce()
     })
@@ -941,9 +937,7 @@ describe('SyncManager', () => {
       const onProgress = vi.fn()
       const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
-      await manager.sync(
-        makeDefaultInput({ localEntries: [makeEntry({ id: 'a' })] }),
-      )
+      await manager.sync(makeDefaultInput({ localEntries: [makeEntry({ id: 'a' })] }))
 
       const retryPhases = onProgress.mock.calls.filter(
         (call) => (call[0] as SyncProgress).currentPhase.phase === 'retrying',

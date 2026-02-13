@@ -38,9 +38,7 @@ describe('useSyncFlow', () => {
   })
 
   it('should start in connected state when provider exists', async () => {
-    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue(
-      'google-drive',
-    )
+    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue('google-drive')
     vi.mocked(settingsRepository.getLastSyncedAt).mockResolvedValue(1000)
 
     const { result } = renderHook(() => useSyncFlow())
@@ -51,9 +49,7 @@ describe('useSyncFlow', () => {
   })
 
   it('should include lastSyncedAt in connected state', async () => {
-    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue(
-      'google-drive',
-    )
+    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue('google-drive')
     vi.mocked(settingsRepository.getLastSyncedAt).mockResolvedValue(1000)
 
     const { result } = renderHook(() => useSyncFlow())
@@ -68,9 +64,7 @@ describe('useSyncFlow', () => {
   })
 
   it('should transition to idle after disconnect', async () => {
-    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue(
-      'google-drive',
-    )
+    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue('google-drive')
 
     const { result } = renderHook(() => useSyncFlow())
 
@@ -87,9 +81,7 @@ describe('useSyncFlow', () => {
   })
 
   it('should transition to connected after dismiss from complete', async () => {
-    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue(
-      'google-drive',
-    )
+    vi.mocked(settingsRepository.getCloudProvider).mockResolvedValue('google-drive')
 
     const { result } = renderHook(() => useSyncFlow())
 
