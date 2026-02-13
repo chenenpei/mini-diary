@@ -1,9 +1,27 @@
-import type { CloudData, SyncError } from '@/types'
 import type { CloudAdapter, TokenProvider } from '@/lib/cloud/types'
+import { validateCloudData } from '@/lib/sync'
+import type { CloudData, SyncError } from '@/types'
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3/files'
 const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3/files'
 const BOUNDARY = 'sync_boundary'
+
+function escapeQueryValue(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+}
+
+function parseDriveFileList(data: unknown): Array<{ id: string; name: string }> {
+  if (typeof data !== 'object' || data === null || !('files' in data)) return []
+  const files = (data as Record<string, unknown>).files
+  if (!Array.isArray(files)) return []
+  return files.filter(
+    (f): f is { id: string; name: string } =>
+      typeof f === 'object' &&
+      f !== null &&
+      typeof (f as Record<string, unknown>).id === 'string' &&
+      typeof (f as Record<string, unknown>).name === 'string',
+  )
+}
 
 export class GoogleDriveAdapter implements CloudAdapter {
   constructor(private getToken: TokenProvider) {}
@@ -16,12 +34,20 @@ export class GoogleDriveAdapter implements CloudAdapter {
     const response = await this.fetchWithErrorHandling(`${DRIVE_API}/${fileId}?alt=media`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    return (await response.json()) as CloudData
+    const raw: unknown = await response.json()
+    const validation = validateCloudData(raw)
+    if (!validation.valid) {
+      throw {
+        kind: 'data_corrupt',
+        message: `Invalid cloud data: ${validation.errors.join(', ')}`,
+      } satisfies SyncError
+    }
+    return raw as CloudData
   }
 
   async writeJson(path: string, data: CloudData): Promise<void> {
-    const token = await this.getToken()
     const fileId = await this.findFileId(path)
+    const token = await this.getToken()
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' })
 
     if (fileId) {
@@ -32,8 +58,8 @@ export class GoogleDriveAdapter implements CloudAdapter {
   }
 
   async uploadImage(path: string, blob: Blob): Promise<void> {
-    const token = await this.getToken()
     const fileId = await this.findFileId(path)
+    const token = await this.getToken()
     const contentType = blob.type || 'application/octet-stream'
 
     if (fileId) {
@@ -61,7 +87,7 @@ export class GoogleDriveAdapter implements CloudAdapter {
 
   async listFiles(folderPath: string): Promise<string[]> {
     const token = await this.getToken()
-    const query = `name contains '${folderPath}'`
+    const query = `name contains '${escapeQueryValue(folderPath)}'`
     const params = new URLSearchParams({
       q: query,
       spaces: 'appDataFolder',
@@ -71,8 +97,8 @@ export class GoogleDriveAdapter implements CloudAdapter {
     const response = await this.fetchWithErrorHandling(`${DRIVE_API}?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    const data = (await response.json()) as { files: Array<{ id: string; name: string }> }
-    return data.files.map((f) => f.name)
+    const files = parseDriveFileList(await response.json())
+    return files.map((f) => f.name)
   }
 
   async deleteFiles(paths: string[]): Promise<void> {
@@ -90,7 +116,7 @@ export class GoogleDriveAdapter implements CloudAdapter {
 
   private async findFileId(name: string): Promise<string | null> {
     const token = await this.getToken()
-    const query = `name='${name}'`
+    const query = `name='${escapeQueryValue(name)}'`
     const params = new URLSearchParams({
       q: query,
       spaces: 'appDataFolder',
@@ -100,8 +126,8 @@ export class GoogleDriveAdapter implements CloudAdapter {
     const response = await this.fetchWithErrorHandling(`${DRIVE_API}?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
-    const data = (await response.json()) as { files: Array<{ id: string; name: string }> }
-    return data.files[0]?.id ?? null
+    const files = parseDriveFileList(await response.json())
+    return files[0]?.id ?? null
   }
 
   private async createFile(

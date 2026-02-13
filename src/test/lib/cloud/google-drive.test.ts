@@ -46,7 +46,7 @@ describe('GoogleDriveAdapter', () => {
       expect(result).toBeNull()
       expect(fetchSpy).toHaveBeenCalledTimes(1)
       expect(fetchSpy).toHaveBeenCalledWith(
-        expect.stringContaining("name%3D%27diary.json%27"),
+        expect.stringContaining('name%3D%27diary.json%27'),
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer mock-access-token',
@@ -146,6 +146,31 @@ describe('GoogleDriveAdapter', () => {
       await expect(adapter.readJson('diary.json')).rejects.toMatchObject({
         kind: 'network',
       })
+    })
+
+    it('should throw SyncError with data_corrupt kind when cloud data is invalid', async () => {
+      // findFileId returns existing file
+      fetchSpy.mockResolvedValueOnce(
+        jsonResponse({ files: [{ id: 'file-123', name: 'diary.json' }] }),
+      )
+      // download file content - invalid data (missing required fields)
+      fetchSpy.mockResolvedValueOnce(jsonResponse({ invalid: 'data' }))
+
+      await expect(adapter.readJson('diary.json')).rejects.toMatchObject({
+        kind: 'data_corrupt',
+        message: expect.stringContaining('Invalid cloud data'),
+      })
+    })
+
+    it('should escape single quotes in file name for findFileId query', async () => {
+      fetchSpy.mockResolvedValueOnce(jsonResponse({ files: [] }))
+
+      await adapter.readJson("file'name.json")
+
+      const url = fetchSpy.mock.calls[0]?.[0] as string
+      // The query should contain the escaped single quote: name='file\'name.json'
+      // URL-encoded, \' becomes %5C%27
+      expect(url).toContain('%5C%27')
     })
   })
 
@@ -266,7 +291,7 @@ describe('GoogleDriveAdapter', () => {
 
       expect(result).toEqual(['images/abc.jpg', 'images/def.jpg'])
       expect(fetchSpy).toHaveBeenCalledWith(
-        expect.stringContaining("name+contains+%27images%2F%27"),
+        expect.stringContaining('name+contains+%27images%2F%27'),
         expect.any(Object),
       )
     })
@@ -277,6 +302,17 @@ describe('GoogleDriveAdapter', () => {
       const result = await adapter.listFiles('images/')
 
       expect(result).toEqual([])
+    })
+
+    it('should escape single quotes in folder path for query', async () => {
+      fetchSpy.mockResolvedValueOnce(jsonResponse({ files: [] }))
+
+      await adapter.listFiles("folder'name/")
+
+      const url = fetchSpy.mock.calls[0]?.[0] as string
+      // The query should contain the escaped single quote
+      // URL-encoded, \' becomes %5C%27
+      expect(url).toContain('%5C%27')
     })
   })
 
