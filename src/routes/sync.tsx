@@ -48,7 +48,7 @@ function SyncPage() {
         </button>
         <span className="text-lg font-medium text-foreground">{t('title')}</span>
       </header>
-      <main className="flex-1 p-4">
+      <main className="flex-1 px-5 pt-5 pb-24 sm:px-6 lg:px-8">
         {state.status === 'recovery' && (
           <RecoveryBanner info={state.info} onRestore={restoreBackup} onDismiss={dismissRecovery} />
         )}
@@ -160,7 +160,7 @@ function ConnectedView({
   const providerLabel = provider === 'google-drive' ? t('googleDrive') : provider
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 py-16">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <CheckCircle className="h-4 w-4" />
         <span>{providerLabel}</span>
