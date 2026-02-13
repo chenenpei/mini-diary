@@ -8,7 +8,7 @@
 | 阶段 | 内容 | 状态 | 实现计划 |
 |------|------|------|----------|
 | Phase 1 | 数据模型变更（软删除、settings） | ✅ 已完成 | `docs/plans/2026-02-13-phase1-soft-delete.md` |
-| Phase 2 | 同步核心逻辑（合并、变更检测、数据验证） | ⚪ 未开始 | — |
+| Phase 2 | 同步核心逻辑（合并、变更检测、数据验证） | ✅ 已完成 | `docs/plans/2026-02-13-phase2-sync-logic.md` |
 | Phase 3 | 云存储适配层（Google Drive / OneDrive API） | ⚪ 未开始 | — |
 | Phase 4 | 同步 UI（设置页、进度展示、冲突弹窗） | ⚪ 未开始 | — |
 | Phase 5 | 健壮性（重试、备份恢复、启动检查） | ⚪ 未开始 | — |
@@ -33,6 +33,26 @@
 | 3 | 查询过滤（测试 + 实现） | ✅ 已完成 |
 | 4 | 同步辅助方法（测试 + 实现） | ✅ 已完成 |
 | 5 | 墓碑清理（测试 + 实现） | ✅ 已完成 |
+
+## Phase 2 详情
+
+**范围：** 4 个纯函数（无 DB、无网络），放在 `src/lib/sync.ts`。
+
+**关键决策：**
+- 纯函数优先，SyncBackup 放 Phase 5
+- 使用 `isRecord` 类型守卫代替 `as` 断言
+- mergeEntries 用 updatedAt last-write-wins 策略，自然处理软删除传播
+- validateCloudData 区分 errors（结构性问题）和 warnings（字段缺失）
+
+**Task 进度：**
+
+| Task | 内容 | 状态 |
+|------|------|------|
+| 1 | 类型定义（CloudData, ImageManifest 等） | ✅ 已完成 |
+| 2 | mergeEntries（测试 + 实现） | ✅ 已完成 |
+| 3 | mergeImages（测试 + 实现） | ✅ 已完成 |
+| 4 | detectChanges（测试 + 实现） | ✅ 已完成 |
+| 5 | validateCloudData（测试 + 实现） | ✅ 已完成 |
 
 ## 如何恢复
 
