@@ -4,6 +4,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SyncProgressView } from '@/components/sync/SyncProgress'
 import { useSyncFlow } from '@/hooks/useSyncFlow'
 
 export const Route = createFileRoute('/sync')({
@@ -14,7 +15,7 @@ function SyncPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('sync')
   const { t: tCommon } = useTranslation('common')
-  const { state, connect, sync, disconnect } = useSyncFlow()
+  const { state, connect, sync, cancel, disconnect } = useSyncFlow()
 
   const handleBack = useCallback(() => {
     navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
@@ -45,7 +46,7 @@ function SyncPage() {
           />
         )}
         {state.status === 'syncing' && (
-          <p className="text-sm text-muted-foreground">{t('preparing')}</p>
+          <SyncProgressView progress={state.progress} onCancel={cancel} />
         )}
         {state.status === 'conflict' && (
           <p className="text-sm text-muted-foreground">{t('conflictTitle')}</p>
@@ -63,11 +64,7 @@ function SyncPage() {
 
 // ─── Idle View ───
 
-function IdleView({
-  onConnect,
-}: {
-  onConnect: (provider: 'google-drive') => void
-}) {
+function IdleView({ onConnect }: { onConnect: (provider: 'google-drive') => void }) {
   const { t } = useTranslation('sync')
 
   return (
@@ -83,9 +80,7 @@ function IdleView({
           {t('googleDrive')}
         </button>
         <div className="flex w-full items-center justify-between rounded-md border border-border p-4 opacity-50">
-          <span className="text-sm font-medium text-foreground">
-            {t('oneDrive')}
-          </span>
+          <span className="text-sm font-medium text-foreground">{t('oneDrive')}</span>
           <span className="rounded-full bg-surface px-2 py-0.5 text-xs text-muted-foreground">
             {t('comingSoon')}
           </span>
