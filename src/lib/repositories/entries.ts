@@ -45,7 +45,9 @@ export const entriesRepository = {
    * Get a single entry by ID
    */
   async getById(id: string): Promise<DiaryEntry | undefined> {
-    return db.entries.get(id)
+    const entry = await db.entries.get(id)
+    if (entry?.deletedAt) return undefined
+    return entry
   },
 
   /**
@@ -53,7 +55,7 @@ export const entriesRepository = {
    * @param order - 'asc' for oldest first, 'desc' for newest first (default)
    */
   async getByDate(date: string, order: 'asc' | 'desc' = 'desc'): Promise<DiaryEntry[]> {
-    const collection = db.entries.where('date').equals(date)
+    const collection = db.entries.where('date').equals(date).filter(isNotDeleted)
     if (order === 'desc') {
       return collection.reverse().sortBy('createdAt')
     }
@@ -67,6 +69,7 @@ export const entriesRepository = {
     return db.entries
       .where('date')
       .between(query.startDate, query.endDate, true, true)
+      .filter(isNotDeleted)
       .sortBy('date')
   },
 
@@ -74,29 +77,35 @@ export const entriesRepository = {
    * Get all entries, sorted by date descending
    */
   async getAll(): Promise<DiaryEntry[]> {
-    return db.entries.orderBy('date').reverse().toArray()
+    return db.entries.orderBy('date').reverse().filter(isNotDeleted).toArray()
   },
 
   /**
    * Get entries with pagination
    */
   async getPaginated(limit: number, offset = 0): Promise<DiaryEntry[]> {
-    return db.entries.orderBy('date').reverse().offset(offset).limit(limit).toArray()
+    return db.entries
+      .orderBy('date')
+      .reverse()
+      .filter(isNotDeleted)
+      .offset(offset)
+      .limit(limit)
+      .toArray()
   },
 
   /**
    * Get total count of entries
    */
   async count(): Promise<number> {
-    return db.entries.count()
+    return db.entries.filter(isNotDeleted).count()
   },
 
   /**
    * Get distinct dates that have entries
    */
   async getDistinctDates(): Promise<string[]> {
-    const entries = await db.entries.orderBy('date').uniqueKeys()
-    return entries as string[]
+    const entries = await db.entries.orderBy('date').filter(isNotDeleted).toArray()
+    return [...new Set(entries.map((e) => e.date))]
   },
 
   /**
@@ -183,6 +192,8 @@ export const entriesRepository = {
    */
   async search(query: string): Promise<DiaryEntry[]> {
     const lowerQuery = query.toLowerCase()
-    return db.entries.filter((entry) => entry.content.toLowerCase().includes(lowerQuery)).toArray()
+    return db.entries
+      .filter((entry) => isNotDeleted(entry) && entry.content.toLowerCase().includes(lowerQuery))
+      .toArray()
   },
 }

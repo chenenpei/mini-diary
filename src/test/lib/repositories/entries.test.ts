@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { db } from '@/lib/db'
 import { entriesRepository } from '@/lib/repositories/entries'
+import type { DiaryEntry } from '@/types'
 
 describe('entriesRepository', () => {
   beforeEach(async () => {
@@ -274,6 +275,78 @@ describe('entriesRepository', () => {
 
         const raw = await db.entries.get(entry.id)
         expect(raw!.updatedAt).toBeGreaterThan(originalUpdatedAt)
+      })
+    })
+
+    describe('when querying with deleted entries', () => {
+      let activeEntry: DiaryEntry
+      let deletedEntry: DiaryEntry
+
+      beforeEach(async () => {
+        activeEntry = await entriesRepository.create({
+          content: 'Active entry',
+          date: '2024-01-15',
+        })
+        deletedEntry = await entriesRepository.create({
+          content: 'Deleted entry',
+          date: '2024-01-15',
+        })
+        await entriesRepository.delete(deletedEntry.id)
+      })
+
+      it('getById should not return deleted entry', async () => {
+        const found = await entriesRepository.getById(deletedEntry.id)
+        expect(found).toBeUndefined()
+      })
+
+      it('getByDate should exclude deleted entries', async () => {
+        const entries = await entriesRepository.getByDate('2024-01-15')
+        expect(entries).toHaveLength(1)
+        expect(entries[0]!.id).toBe(activeEntry.id)
+      })
+
+      it('getAll should exclude deleted entries', async () => {
+        const entries = await entriesRepository.getAll()
+        expect(entries).toHaveLength(1)
+        expect(entries[0]!.id).toBe(activeEntry.id)
+      })
+
+      it('getPaginated should exclude deleted entries', async () => {
+        const entries = await entriesRepository.getPaginated(10)
+        expect(entries).toHaveLength(1)
+        expect(entries[0]!.id).toBe(activeEntry.id)
+      })
+
+      it('getByDateRange should exclude deleted entries', async () => {
+        const entries = await entriesRepository.getByDateRange({
+          startDate: '2024-01-01',
+          endDate: '2024-01-31',
+        })
+        expect(entries).toHaveLength(1)
+        expect(entries[0]!.id).toBe(activeEntry.id)
+      })
+
+      it('search should exclude deleted entries', async () => {
+        const results = await entriesRepository.search('entry')
+        expect(results).toHaveLength(1)
+        expect(results[0]!.id).toBe(activeEntry.id)
+      })
+
+      it('count should exclude deleted entries', async () => {
+        const count = await entriesRepository.count()
+        expect(count).toBe(1)
+      })
+
+      it('getDistinctDates should exclude dates with only deleted entries', async () => {
+        const anotherDeleted = await entriesRepository.create({
+          content: 'Another deleted',
+          date: '2024-01-20',
+        })
+        await entriesRepository.delete(anotherDeleted.id)
+
+        const dates = await entriesRepository.getDistinctDates()
+        expect(dates).toContain('2024-01-15')
+        expect(dates).not.toContain('2024-01-20')
       })
     })
   })
