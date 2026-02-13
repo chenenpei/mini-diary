@@ -58,6 +58,7 @@ function SyncPage() {
           <ConnectedView
             provider={state.provider}
             lastSyncedAt={state.lastSyncedAt}
+            localCount={state.localCount}
             onSync={sync}
             onDisconnect={disconnect}
           />
@@ -139,11 +140,13 @@ function ConnectingView() {
 function ConnectedView({
   provider,
   lastSyncedAt,
+  localCount,
   onSync,
   onDisconnect,
 }: {
   provider: string
   lastSyncedAt?: number | undefined
+  localCount: number
   onSync: () => void
   onDisconnect: () => void
 }) {
@@ -168,6 +171,7 @@ function ConnectedView({
           }).format(lastSyncedAt)}
         </p>
       )}
+      <p className="text-sm text-muted-foreground">{t('localCount', { count: localCount })}</p>
       <button
         type="button"
         onClick={onSync}

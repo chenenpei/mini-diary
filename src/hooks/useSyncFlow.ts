@@ -9,7 +9,7 @@ import type { ConflictInfo, SyncError, SyncProgress, SyncSummary } from '@/types
 export type SyncFlowState =
   | { status: 'idle' }
   | { status: 'connecting' }
-  | { status: 'connected'; provider: string; lastSyncedAt?: number }
+  | { status: 'connected'; provider: string; lastSyncedAt?: number; localCount: number }
   | { status: 'syncing'; progress: SyncProgress }
   | { status: 'conflict'; info: ConflictInfo }
   | { status: 'complete'; summary: SyncSummary }
@@ -40,9 +40,12 @@ export function useSyncFlow() {
     const provider = await settingsRepository.getCloudProvider()
     if (provider) {
       const lastSyncedAt = await settingsRepository.getLastSyncedAt()
+      const { entriesRepository } = await import('@/lib/repositories/entries')
+      const localCount = await entriesRepository.count()
       setState({
         status: 'connected',
         provider,
+        localCount,
         ...(lastSyncedAt !== undefined ? { lastSyncedAt } : {}),
       })
     } else {
@@ -65,7 +68,9 @@ export function useSyncFlow() {
       const tokenProvider = createGoogleTokenProvider(import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '')
       await tokenProvider()
       await settingsRepository.setCloudProvider(provider)
-      setState({ status: 'connected', provider })
+      const { entriesRepository } = await import('@/lib/repositories/entries')
+      const localCount = await entriesRepository.count()
+      setState({ status: 'connected', provider, localCount })
     } catch (error) {
       if (isSyncError(error)) {
         setState({ status: 'error', error })
