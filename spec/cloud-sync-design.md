@@ -327,7 +327,7 @@ function mergeImages(
 │  user@gmail.com                 │
 │                                 │
 │  上次同步: 2026-02-04 10:30    │
-│  本地 42 条 · 云端 42 条        │
+│  本地 42 条                     │
 │                                 │
 │  ┌─────────────────────────┐   │
 │  │        同步数据          │   │
@@ -579,6 +579,7 @@ interface SyncSummary {
   imagesDownloaded: number
   imagesFailed: number   // 重试耗尽仍失败的图片数
   duration: number       // 毫秒
+  noChange?: boolean     // 本地和云端一致，无需同步
 }
 ```
 
@@ -810,17 +811,47 @@ function validateCloudData(data: unknown): ValidationResult {
 
 ### 启动时检查
 
+进入同步页面时，检查是否有残留备份（表示上次同步异常中断）：
+
 ```typescript
-async function checkPendingRecovery(): Promise<void> {
-  const backup = await db.syncBackup.get('latest')
-  if (backup) {
-    // 上次同步可能异常中断
-    // 检查本地数据一致性
-    // 如有问题，提示用户：「上次同步未完成，已恢复到同步前状态」
-    // 恢复完成后删除快照
+async function checkPendingRecovery(): Promise<RecoveryInfo | null> {
+  const backup = await backupsRepository.getBackup()
+  if (!backup) return null
+  return {
+    entryCount: backup.entries.length,
+    imageCount: backup.imageManifest.length,
+    createdAt: backup.createdAt,
   }
 }
+
+async function restoreFromBackup(): Promise<void> {
+  const backup = await backupsRepository.getBackup()
+  if (!backup) return
+  await db.transaction('rw', db.entries, async () => {
+    await db.entries.clear()
+    if (backup.entries.length > 0) {
+      await db.entries.bulkPut(backup.entries)
+    }
+  })
+  await backupsRepository.deleteBackup()
+}
 ```
+
+**恢复 UI：**
+
+如果检测到残留备份，在同步页面显示恢复横幅：
+
+```
+┌─────────────────────────────────────┐
+│ ⚠ 上次同步未完成                    │
+│ 检测到上次同步中断，已恢复到同步前状态。│
+│                                     │
+│  [恢复备份 (42 条日记)]  [忽略]       │
+└─────────────────────────────────────┘
+```
+
+- 「恢复备份」：从快照恢复条目，删除快照，然后进入正常流程
+- 「忽略」：删除快照（不恢复），直接进入正常流程
 
 ---
 
