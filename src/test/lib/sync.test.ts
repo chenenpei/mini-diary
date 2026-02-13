@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import { detectChanges, mergeEntries, mergeImages, validateCloudData } from '@/lib/sync'
 import type { DiaryEntry, ImageManifest } from '@/types'
-import { mergeEntries, mergeImages, detectChanges, validateCloudData } from '@/lib/sync'
 
 function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry {
   return {
@@ -106,9 +106,7 @@ describe('sync', () => {
         { id: 'img-1', entryId: 'a', createdAt: 1000 },
         { id: 'img-2', entryId: 'a', createdAt: 1000 },
       ]
-      const cloud: ImageManifest[] = [
-        { id: 'img-1', entryId: 'a', createdAt: 1000 },
-      ]
+      const cloud: ImageManifest[] = [{ id: 'img-1', entryId: 'a', createdAt: 1000 }]
 
       const result = mergeImages(local, cloud)
 
@@ -118,9 +116,7 @@ describe('sync', () => {
 
     it('should identify images to download (cloud only)', () => {
       const local: ImageManifest[] = []
-      const cloud: ImageManifest[] = [
-        { id: 'img-1', entryId: 'a', createdAt: 1000 },
-      ]
+      const cloud: ImageManifest[] = [{ id: 'img-1', entryId: 'a', createdAt: 1000 }]
 
       const result = mergeImages(local, cloud)
 
@@ -129,9 +125,7 @@ describe('sync', () => {
     })
 
     it('should not include images present in both', () => {
-      const manifest: ImageManifest[] = [
-        { id: 'img-1', entryId: 'a', createdAt: 1000 },
-      ]
+      const manifest: ImageManifest[] = [{ id: 'img-1', entryId: 'a', createdAt: 1000 }]
 
       const result = mergeImages(manifest, manifest)
 
@@ -195,29 +189,37 @@ describe('sync', () => {
       const result = validateCloudData(data)
 
       expect(result.valid).toBe(true)
-      expect(result.errors).toEqual([])
       expect(result.warnings).toEqual([])
+      if (result.valid) {
+        expect(result.data).toEqual(data)
+      }
     })
 
     it('should reject non-object data', () => {
       const result = validateCloudData('not an object')
 
       expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Data is not an object')
+      if (!result.valid) {
+        expect(result.errors).toContain('Data is not an object')
+      }
     })
 
     it('should reject null', () => {
       const result = validateCloudData(null)
 
       expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Data is not an object')
+      if (!result.valid) {
+        expect(result.errors).toContain('Data is not an object')
+      }
     })
 
     it('should reject unsupported version', () => {
       const result = validateCloudData(makeCloudData({ version: 99 }))
 
       expect(result.valid).toBe(false)
-      expect(result.errors[0]).toContain('version')
+      if (!result.valid) {
+        expect(result.errors[0]).toContain('version')
+      }
     })
 
     it('should reject missing version', () => {
@@ -236,7 +238,9 @@ describe('sync', () => {
       const result = validateCloudData(data)
 
       expect(result.valid).toBe(false)
-      expect(result.errors[0]).toContain('entries')
+      if (!result.valid) {
+        expect(result.errors[0]).toContain('entries')
+      }
     })
 
     it('should reject missing imageManifest array', () => {
@@ -246,7 +250,9 @@ describe('sync', () => {
       const result = validateCloudData(data)
 
       expect(result.valid).toBe(false)
-      expect(result.errors[0]).toContain('imageManifest')
+      if (!result.valid) {
+        expect(result.errors[0]).toContain('imageManifest')
+      }
     })
 
     it('should warn about entries with missing fields', () => {
@@ -274,10 +280,13 @@ describe('sync', () => {
     })
 
     it('should accept valid data with empty arrays', () => {
-      const result = validateCloudData(makeCloudData())
+      const data = makeCloudData()
+      const result = validateCloudData(data)
 
       expect(result.valid).toBe(true)
-      expect(result.errors).toEqual([])
+      if (result.valid) {
+        expect(result.data).toEqual(data)
+      }
     })
   })
 })

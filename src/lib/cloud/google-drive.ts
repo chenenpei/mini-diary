@@ -10,6 +10,13 @@ function escapeQueryValue(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
 }
 
+const VALID_CONTENT_TYPE = /^[\w.+-]+\/[\w.+-]+$/
+
+export function sanitizeContentType(contentType: string): string {
+  if (VALID_CONTENT_TYPE.test(contentType)) return contentType
+  return 'application/octet-stream'
+}
+
 function parseDriveFileList(data: unknown): Array<{ id: string; name: string }> {
   if (typeof data !== 'object' || data === null || !('files' in data)) return []
   const files = (data as Record<string, unknown>).files
@@ -42,7 +49,7 @@ export class GoogleDriveAdapter implements CloudAdapter {
         message: `Invalid cloud data: ${validation.errors.join(', ')}`,
       } satisfies SyncError
     }
-    return raw as CloudData
+    return validation.data
   }
 
   async writeJson(path: string, data: CloudData): Promise<void> {
@@ -60,7 +67,7 @@ export class GoogleDriveAdapter implements CloudAdapter {
   async uploadImage(path: string, blob: Blob): Promise<void> {
     const fileId = await this.findFileId(path)
     const token = await this.getToken()
-    const contentType = blob.type || 'application/octet-stream'
+    const contentType = sanitizeContentType(blob.type || 'application/octet-stream')
 
     if (fileId) {
       await this.updateFile(fileId, path, blob, contentType, token)

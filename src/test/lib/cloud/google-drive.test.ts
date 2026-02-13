@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest'
-import { GoogleDriveAdapter } from '@/lib/cloud/google-drive'
+import { GoogleDriveAdapter, sanitizeContentType } from '@/lib/cloud/google-drive'
 import type { CloudData } from '@/types'
 
 function makeCloudData(overrides: Partial<CloudData> = {}): CloudData {
@@ -171,6 +171,17 @@ describe('GoogleDriveAdapter', () => {
       // The query should contain the escaped single quote: name='file\'name.json'
       // URL-encoded, \' becomes %5C%27
       expect(url).toContain('%5C%27')
+    })
+
+    it('should escape backslashes in file name for findFileId query', async () => {
+      fetchSpy.mockResolvedValueOnce(jsonResponse({ files: [] }))
+
+      await adapter.readJson('file\\name.json')
+
+      const url = fetchSpy.mock.calls[0]?.[0] as string
+      // Backslash \ should be escaped to \\
+      // URL-encoded, \\ becomes %5C%5C
+      expect(url).toContain('%5C%5C')
     })
   })
 
@@ -362,5 +373,40 @@ describe('GoogleDriveAdapter', () => {
 
       expect(fetchSpy).not.toHaveBeenCalled()
     })
+  })
+})
+
+describe('sanitizeContentType', () => {
+  it('should accept valid image content types', () => {
+    expect(sanitizeContentType('image/jpeg')).toBe('image/jpeg')
+    expect(sanitizeContentType('image/png')).toBe('image/png')
+    expect(sanitizeContentType('image/webp')).toBe('image/webp')
+  })
+
+  it('should accept application content types', () => {
+    expect(sanitizeContentType('application/json')).toBe('application/json')
+    expect(sanitizeContentType('application/octet-stream')).toBe('application/octet-stream')
+  })
+
+  it('should accept content types with dots and plus signs', () => {
+    expect(sanitizeContentType('application/vnd.api+json')).toBe('application/vnd.api+json')
+    expect(sanitizeContentType('image/svg+xml')).toBe('image/svg+xml')
+  })
+
+  it('should reject content types with header injection attempts', () => {
+    expect(sanitizeContentType('image/jpeg\r\nX-Injected: true')).toBe('application/octet-stream')
+    expect(sanitizeContentType('image/jpeg\nX-Injected: true')).toBe('application/octet-stream')
+  })
+
+  it('should reject empty string', () => {
+    expect(sanitizeContentType('')).toBe('application/octet-stream')
+  })
+
+  it('should reject content types with spaces', () => {
+    expect(sanitizeContentType('image/ jpeg')).toBe('application/octet-stream')
+  })
+
+  it('should reject content types without slash', () => {
+    expect(sanitizeContentType('imagejpeg')).toBe('application/octet-stream')
   })
 })

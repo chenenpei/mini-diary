@@ -1,4 +1,11 @@
-import type { ChangeState, DiaryEntry, ImageManifest, ImageMergeResult, ValidationResult } from '@/types'
+import type {
+  ChangeState,
+  CloudData,
+  DiaryEntry,
+  ImageManifest,
+  ImageMergeResult,
+  ValidationResult,
+} from '@/types'
 
 /**
  * Merge local and cloud entries by keeping the newer version (by updatedAt)
@@ -65,7 +72,7 @@ export function validateCloudData(data: unknown): ValidationResult {
   const warnings: string[] = []
 
   if (!isRecord(data)) {
-    return { valid: false, errors: ['Data is not an object'], warnings }
+    return { valid: false, errors: ['Data is not an object'], warnings: [] }
   }
 
   if (!('version' in data) || data.version !== 1) {
@@ -112,5 +119,9 @@ export function validateCloudData(data: unknown): ValidationResult {
     }
   }
 
-  return { valid: errors.length === 0, errors, warnings }
+  if (errors.length > 0) {
+    return { valid: false, errors, warnings }
+  }
+  // Safe assertion: all runtime checks above have validated the structure
+  return { valid: true, data: data as unknown as CloudData, warnings }
 }

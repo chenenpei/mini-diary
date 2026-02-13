@@ -206,13 +206,11 @@ export interface ImageManifest {
 }
 
 /**
- * Result of cloud data validation
+ * Result of cloud data validation (discriminated union)
  */
-export interface ValidationResult {
-  valid: boolean
-  errors: string[]
-  warnings: string[]
-}
+export type ValidationResult =
+  | { valid: true; data: CloudData; warnings: string[] }
+  | { valid: false; errors: string[]; warnings: string[] }
 
 /**
  * Result of image merge operation
