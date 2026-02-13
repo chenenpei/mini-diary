@@ -46,17 +46,31 @@ src/
 │   ├── ui/             # shadcn/ui 组件
 │   ├── timeline/       # 时间线组件
 │   ├── editor/         # 编辑器组件
+│   ├── sync/           # 云同步组件
 │   └── layout/         # 布局组件
 ├── lib/
 │   ├── db.ts           # Dexie 数据库实例
 │   ├── repositories/   # 数据访问层
-│   │   ├── entries.ts  # 日记条目 CRUD
-│   │   └── images.ts   # 图片记录 CRUD
+│   │   ├── entries.ts  # 日记条目 CRUD（含软删除）
+│   │   ├── images.ts   # 图片记录 CRUD
+│   │   ├── settings.ts # 应用设置（同步配置等）
+│   │   └── backups.ts  # 同步备份管理
+│   ├── sync/           # 同步核心逻辑
+│   │   ├── manager.ts  # SyncManager 编排器
+│   │   ├── progress.ts # 进度计算（阶段权重）
+│   │   ├── retry.ts    # 重试机制（指数退避）
+│   │   └── recovery.ts # 启动恢复检查
+│   ├── cloud/          # 云存储适配层
+│   │   ├── types.ts    # CloudAdapter 接口
+│   │   ├── google-drive.ts  # Google Drive 适配器
+│   │   └── auth.ts     # GIS OAuth 认证
+│   ├── sync.ts         # 同步纯函数（合并、变更检测、验证）
 │   ├── contentEditable.ts  # Markdown ↔ HTML 转换
 │   └── utils.ts        # 工具函数 (cn)
 ├── hooks/              # React Hooks
 │   ├── useEntries.ts   # 日记条目 hooks (TanStack Query)
 │   ├── useImages.ts    # 图片 hooks (TanStack Query)
+│   ├── useSyncFlow.ts  # 同步状态机 hook
 │   └── useKeyboardHeight.ts  # 键盘高度监听 (移动端适配)
 ├── types/              # TypeScript 类型定义
 │   └── index.ts        # 核心类型
@@ -75,6 +89,7 @@ interface DiaryEntry {
   createdAt: number    // Unix 时间戳 (ms)
   updatedAt: number
   imageIds: string[]   // max 3
+  deletedAt?: number   // 软删除时间戳（云同步用）
 }
 
 interface ImageRecord {
@@ -123,3 +138,4 @@ interface ImageRecord {
 | 数据导入/导出 | |
 | 主题切换 | |
 | 语言切换 | |
+| 云同步（Google Drive） | |

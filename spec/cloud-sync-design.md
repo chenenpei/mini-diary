@@ -520,25 +520,32 @@ function mergeImages(
 
 ```typescript
 type SyncPhase =
-  | { phase: 'preparing'; message: '准备同步...' }
-  | { phase: 'checking'; message: '检查云端状态...' }
-  | { phase: 'downloading-entries'; message: '下载日记数据...' }
+  | { phase: 'preparing'; message: string }
+  | { phase: 'checking'; message: string }
+  | { phase: 'downloading-entries'; message: string }
   | { phase: 'downloading-images'; current: number; total: number }
-  | { phase: 'merging'; message: '合并数据...' }
-  | { phase: 'uploading-entries'; message: '上传日记数据...' }
+  | { phase: 'merging'; message: string }
+  | { phase: 'uploading-entries'; message: string }
   | { phase: 'uploading-images'; current: number; total: number }
-  | { phase: 'verifying'; message: '验证数据完整性...' }
+  | { phase: 'verifying'; message: string }
+  | { phase: 'cleanup'; message: string }           // 墓碑清理
+  | { phase: 'retrying'; failedPhase: string;        // 重试中
+      attempt: number; maxAttempts: number; nextRetryIn: number }
   | { phase: 'done'; summary: SyncSummary }
   | { phase: 'error'; error: SyncError; failedAt: string }
 ```
+
+> **实现说明**：`message` 使用 i18n key 而非硬编码中文，支持多语言。`cleanup` 阶段在同步末尾执行墓碑清理。`retrying` 阶段在自动重试时展示倒计时。
 
 ### 不同操作的阶段序列
 
 | 操作 | 阶段序列 |
 |------|----------|
-| Push | preparing → checking → uploading-entries → uploading-images → verifying → done |
-| Pull | preparing → checking → downloading-entries → downloading-images → verifying → done |
-| Merge | preparing → checking → downloading-entries → downloading-images → merging → uploading-entries → uploading-images → verifying → done |
+| Push | preparing → checking → uploading-entries → uploading-images → verifying → cleanup → done |
+| Pull | preparing → checking → downloading-entries → downloading-images → verifying → cleanup → done |
+| Merge | preparing → checking → downloading-entries → downloading-images → merging → uploading-entries → uploading-images → verifying → cleanup → done |
+
+> 可重试的阶段失败时，会插入 `retrying` 阶段并展示倒计时，重试成功后继续原阶段序列。
 
 ### 进度计算
 
@@ -570,7 +577,8 @@ interface SyncSummary {
   entriesSynced: number
   imagesUploaded: number
   imagesDownloaded: number
-  duration: number  // 毫秒
+  imagesFailed: number   // 重试耗尽仍失败的图片数
+  duration: number       // 毫秒
 }
 ```
 
@@ -581,6 +589,11 @@ interface SyncSummary {
 ### 错误分类
 
 ```typescript
+interface SyncError {
+  kind: SyncErrorKind
+  message: string
+}
+
 type SyncErrorKind =
   | 'network'       // 网络超时、断连
   | 'server'        // 5xx 服务端错误
@@ -759,19 +772,21 @@ Merge 比 Pull 多一步本地数据合并：
 ### 数据完整性验证
 
 ```typescript
-interface ValidationResult {
-  valid: boolean
-  errors: string[]
-}
+// 判别联合类型，成功时直接拿到 CloudData，无需 as 断言
+type ValidationResult =
+  | { valid: true; data: CloudData; warnings: string[] }
+  | { valid: false; errors: string[]; warnings: string[] }
 
 function validateCloudData(data: unknown): ValidationResult {
-  // 1. 检查顶层结构
+  // 1. 检查顶层结构（isRecord 类型守卫）
   // 2. 检查 version 字段
   // 3. 检查每个 entry 的必填字段
   // 4. 检查 imageManifest 中的 ID 在 entries 的 imageIds 中存在
   // 5. 检查日期格式、时间戳合理性
 }
 ```
+
+> **实现说明**：区分 errors（结构性问题，判定 `valid: false`）和 warnings（字段缺失等可恢复问题，跳过该条目但不阻止同步）。使用 `isRecord` 类型守卫代替 `as` 断言，符合项目编码规范。
 
 | 检查项 | 失败处理 |
 |--------|----------|
