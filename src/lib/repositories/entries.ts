@@ -196,4 +196,18 @@ export const entriesRepository = {
       .filter((entry) => isNotDeleted(entry) && entry.content.toLowerCase().includes(lowerQuery))
       .toArray()
   },
+
+  /**
+   * Get all entries including soft-deleted (for sync)
+   */
+  async getAllIncludeDeleted(): Promise<DiaryEntry[]> {
+    return db.entries.toArray()
+  },
+
+  /**
+   * Get only soft-deleted entries (for sync)
+   */
+  async getDeleted(): Promise<DiaryEntry[]> {
+    return db.entries.filter((e) => e.deletedAt !== undefined).toArray()
+  },
 }

@@ -349,5 +349,27 @@ describe('entriesRepository', () => {
         expect(dates).not.toContain('2024-01-20')
       })
     })
+
+    describe('sync helpers', () => {
+      it('getAllIncludeDeleted should return all entries including deleted', async () => {
+        await entriesRepository.create({ content: 'Active', date: '2024-01-15' })
+        const deleted = await entriesRepository.create({ content: 'Deleted', date: '2024-01-16' })
+        await entriesRepository.delete(deleted.id)
+
+        const all = await entriesRepository.getAllIncludeDeleted()
+        expect(all).toHaveLength(2)
+      })
+
+      it('getDeleted should return only deleted entries', async () => {
+        await entriesRepository.create({ content: 'Active', date: '2024-01-15' })
+        const deleted = await entriesRepository.create({ content: 'Deleted', date: '2024-01-16' })
+        await entriesRepository.delete(deleted.id)
+
+        const deletedEntries = await entriesRepository.getDeleted()
+        expect(deletedEntries).toHaveLength(1)
+        expect(deletedEntries[0]!.id).toBe(deleted.id)
+        expect(deletedEntries[0]!.deletedAt).toBeGreaterThan(0)
+      })
+    })
   })
 })
