@@ -57,6 +57,12 @@ export interface AppSettings {
   lastBackupAt?: number
   /** Last successful sync timestamp */
   lastSyncedAt?: number
+  /** Cloud storage provider */
+  cloudProvider?: 'google-drive'
+  /** Cloud OAuth access token */
+  cloudAccessToken?: string
+  /** Cloud token expiration timestamp */
+  cloudTokenExpiresAt?: number
 }
 
 // ============================================
@@ -220,3 +226,84 @@ export interface ImageMergeResult {
  * Change detection state
  */
 export type ChangeState = 'no-change' | 'local-only' | 'cloud-only' | 'both-changed'
+
+// ============================================
+// Sync Progress Types
+// ============================================
+
+/**
+ * Sync phase discriminated union
+ */
+export type SyncPhase =
+  | { phase: 'preparing'; message: string }
+  | { phase: 'checking'; message: string }
+  | { phase: 'downloading-entries'; message: string }
+  | { phase: 'downloading-images'; current: number; total: number }
+  | { phase: 'merging'; message: string }
+  | { phase: 'uploading-entries'; message: string }
+  | { phase: 'uploading-images'; current: number; total: number }
+  | { phase: 'verifying'; message: string }
+  | { phase: 'cleanup'; message: string }
+  | { phase: 'done'; summary: SyncSummary }
+  | { phase: 'error'; error: SyncError; failedAt: string }
+
+export interface SyncProgress {
+  currentPhase: SyncPhase
+  completedPhases: number
+  totalPhases: number
+  percent: number
+}
+
+export interface SyncSummary {
+  direction: 'push' | 'pull' | 'merge'
+  entriesSynced: number
+  imagesUploaded: number
+  imagesDownloaded: number
+  duration: number
+}
+
+export interface SyncError {
+  kind: SyncErrorKind
+  message: string
+}
+
+export type SyncErrorKind =
+  | 'network'
+  | 'server'
+  | 'rate_limit'
+  | 'auth'
+  | 'data_corrupt'
+  | 'quota'
+  | 'cancelled'
+
+// ============================================
+// Sync Conflict Types
+// ============================================
+
+export interface ConflictInfo {
+  localChanges: { added: number; modified: number; deleted: number }
+  cloudChanges: { added: number; modified: number; deleted: number }
+}
+
+export type ConflictResolver = (info: ConflictInfo) => Promise<'merge' | 'pull' | 'push' | 'cancel'>
+
+// ============================================
+// Sync Operation Types
+// ============================================
+
+export type SyncOperation = 'push' | 'pull' | 'merge'
+
+export interface SyncInput {
+  localEntries: DiaryEntry[]
+  localImageManifest: ImageManifest[]
+  lastSyncedAt: number | undefined
+  getImageBlobs: (id: string) => Promise<{ blob: Blob; thumbnail: Blob }>
+  onConflict: ConflictResolver
+}
+
+export interface SyncResult {
+  entries: DiaryEntry[]
+  downloadedImages: Array<{ id: string; entryId: string; blob: Blob; thumbnail: Blob }>
+  lastSyncedAt: number
+  summary: SyncSummary
+}
