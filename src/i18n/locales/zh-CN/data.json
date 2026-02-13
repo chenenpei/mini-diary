@@ -23,6 +23,9 @@
   "confirmDeleteText": "确认删除",
   "finalConfirmation": "最后确认：点击下方按钮将立即删除所有数据。",
   "clearSuccess": "已清空所有数据",
+  "clearScope": "清理范围",
+  "clearLocal": "本地数据",
+  "clearCloudOption": "云端数据（Google Drive）",
   "invalidBackupFormat": "无效的备份文件格式",
   "invalidJsonFile": "无效的 JSON 文件",
   "fileReadFailed": "文件读取失败"

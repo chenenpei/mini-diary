@@ -4,11 +4,11 @@ import { AlertTriangle, Loader2, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { settingsRepository } from '@/lib/repositories/settings'
 
 interface ClearDataDialogProps {
   isOpen: boolean
-  onConfirm: () => Promise<void>
+  onConfirm: (options: { clearLocal: boolean; clearCloud: boolean }) => Promise<void>
   onCancel: () => void
 }
 
@@ -21,7 +21,7 @@ const easing = {
  * ClearDataDialog - 清空数据确认对话框
  *
  * 三步确认流程:
- * 1. 显示警告信息
+ * 1. 显示警告信息 + 清理范围选择
  * 2. 输入确认文字
  * 3. 最终确认按钮
  */
@@ -31,16 +31,26 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSyncConnected, setIsSyncConnected] = useState(false)
+  const [clearLocal, setClearLocal] = useState(true)
+  const [clearCloud, setClearCloud] = useState(false)
 
   // Confirmation text varies by language (Chinese: "确认删除", English: "DELETE ALL")
   const confirmText = t('confirmDeleteText')
 
-  // 重置状态
+  // 重置状态 & 检查同步连接
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      settingsRepository.getCloudProvider().then((provider) => {
+        setIsSyncConnected(provider !== null)
+      })
+    } else {
       setStep(1)
       setInputValue('')
       setIsLoading(false)
+      setClearLocal(true)
+      setClearCloud(false)
+      setIsSyncConnected(false)
     }
   }, [isOpen])
 
@@ -74,13 +84,14 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
   const handleConfirm = useCallback(async () => {
     setIsLoading(true)
     try {
-      await onConfirm()
+      await onConfirm({ clearLocal, clearCloud })
     } finally {
       setIsLoading(false)
     }
-  }, [onConfirm])
+  }, [onConfirm, clearLocal, clearCloud])
 
   const isInputValid = inputValue === confirmText
+  const hasSelection = !isSyncConnected || clearLocal || clearCloud
 
   return (
     <AnimatePresence>
@@ -146,6 +157,38 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                   className="space-y-4"
                 >
                   <p className="text-center text-sm text-muted-foreground">{t('clearWarning')}</p>
+
+                  {/* 清理范围选择 */}
+                  {isSyncConnected && (
+                    <div className="space-y-2 rounded-md border border-border p-3">
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {t('clearScope')}
+                      </p>
+
+                      {/* 本地数据 */}
+                      <label className="flex items-center gap-2 text-sm text-foreground">
+                        <input
+                          type="checkbox"
+                          checked={clearLocal}
+                          onChange={(e) => setClearLocal(e.target.checked)}
+                          className="h-4 w-4 accent-foreground"
+                        />
+                        {t('clearLocal')}
+                      </label>
+
+                      {/* 云端数据 - 可选 */}
+                      <label className="flex items-center gap-2 text-sm text-foreground">
+                        <input
+                          type="checkbox"
+                          checked={clearCloud}
+                          onChange={(e) => setClearCloud(e.target.checked)}
+                          className="h-4 w-4 accent-foreground"
+                        />
+                        {t('clearCloudOption')}
+                      </label>
+                    </div>
+                  )}
+
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -157,7 +200,8 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     <button
                       type="button"
                       onClick={handleNextStep}
-                      className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90"
+                      disabled={!hasSelection}
+                      className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
                     >
                       {tCommon('continue')}
                     </button>
@@ -184,13 +228,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={confirmText}
-                    className={cn(
-                      'w-full rounded-sm border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground',
-                      'focus:outline-none focus:ring-1',
-                      isInputValid
-                        ? 'border-green-500 focus:ring-green-500'
-                        : 'border-border focus:ring-foreground',
-                    )}
+                    className="w-full rounded-sm border border-border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
                     autoComplete="off"
                   />
                   <div className="flex gap-3">

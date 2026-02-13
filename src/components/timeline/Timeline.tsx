@@ -238,14 +238,39 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
     setIsDrawerOpen(false)
   }, [])
 
-  const handleClearConfirm = useCallback(async () => {
-    await clearAllData()
-    await queryClient.invalidateQueries({ queryKey: ['entries'] })
-    await queryClient.invalidateQueries({ queryKey: ['images'] })
-    await queryClient.invalidateQueries({ queryKey: ['storage'] })
-    setShowClearDialog(false)
-    addToast(tData('clearSuccess'), 'success')
-  }, [queryClient, addToast, tData])
+  const handleClearConfirm = useCallback(
+    async (options: { clearLocal: boolean; clearCloud: boolean }) => {
+      if (options.clearLocal) {
+        await clearAllData()
+        await queryClient.invalidateQueries({ queryKey: ['entries'] })
+        await queryClient.invalidateQueries({ queryKey: ['images'] })
+        await queryClient.invalidateQueries({ queryKey: ['storage'] })
+      }
+
+      if (options.clearCloud) {
+        try {
+          const { GoogleDriveAdapter } = await import('@/lib/cloud/google-drive')
+          const { createGoogleTokenProvider } = await import('@/lib/cloud/auth')
+          const { settingsRepository } = await import('@/lib/repositories/settings')
+          const tokenProvider = createGoogleTokenProvider(
+            import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '',
+          )
+          const adapter = new GoogleDriveAdapter(tokenProvider)
+          const files = await adapter.listFiles('')
+          if (files.length > 0) {
+            await adapter.deleteFiles(files)
+          }
+          await settingsRepository.clearSyncSettings()
+        } catch {
+          // Token might be expired, but local data is already cleared
+        }
+      }
+
+      setShowClearDialog(false)
+      addToast(tData('clearSuccess'), 'success')
+    },
+    [queryClient, addToast, tData],
+  )
 
   // 键盘快捷键导航日期
   useEffect(() => {

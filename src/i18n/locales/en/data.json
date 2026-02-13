@@ -23,6 +23,9 @@
   "confirmDeleteText": "DELETE ALL",
   "finalConfirmation": "Final confirmation: Click the button below to delete all data immediately.",
   "clearSuccess": "All data has been cleared",
+  "clearScope": "Clear scope",
+  "clearLocal": "Local data",
+  "clearCloudOption": "Cloud data (Google Drive)",
   "invalidBackupFormat": "Invalid backup file format",
   "invalidJsonFile": "Invalid JSON file",
   "fileReadFailed": "Failed to read file"
