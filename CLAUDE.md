@@ -12,6 +12,7 @@
 - [PRD.md](spec/PRD.md) - 产品需求
 - [TECH.md](spec/TECH.md) - 技术架构
 - [DESIGN.md](spec/DESIGN.md) - 设计规范
+- [cloud-sync-design.md](spec/cloud-sync-design.md) - 云同步设计
 
 ## 技术栈
 
