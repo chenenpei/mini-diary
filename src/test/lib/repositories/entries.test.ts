@@ -413,8 +413,20 @@ describe('entriesRepository', () => {
           imageIds: ['img-1', 'img-2'],
         })
         await db.images.bulkAdd([
-          { id: 'img-1', entryId: entry.id, blob: new Blob(), thumbnail: new Blob(), createdAt: Date.now() },
-          { id: 'img-2', entryId: entry.id, blob: new Blob(), thumbnail: new Blob(), createdAt: Date.now() },
+          {
+            id: 'img-1',
+            entryId: entry.id,
+            blob: new Blob(),
+            thumbnail: new Blob(),
+            createdAt: Date.now(),
+          },
+          {
+            id: 'img-2',
+            entryId: entry.id,
+            blob: new Blob(),
+            thumbnail: new Blob(),
+            createdAt: Date.now(),
+          },
         ])
 
         const oldDeletedAt = Date.now() - THIRTY_DAYS - 1000

@@ -18,13 +18,8 @@ import {
   sanitizeHtml,
 } from '@/lib/contentEditable'
 import { cn } from '@/lib/utils'
+import { applyMarkdownFormat, convertToList, exitList, getListItemContext } from './editorUtils'
 import { ImagePreview } from './ImagePreview'
-import {
-  applyMarkdownFormat,
-  convertToList,
-  exitList,
-  getListItemContext,
-} from './editorUtils'
 
 const MAX_CONTENT_LENGTH = 10000
 

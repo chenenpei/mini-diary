@@ -1,6 +1,6 @@
-import type { SyncError } from '@/types'
 import type { TokenProvider } from '@/lib/cloud/types'
 import { settingsRepository } from '@/lib/repositories/settings'
+import type { SyncError } from '@/types'
 
 /** Buffer before token expiry to trigger refresh (5 minutes) */
 const TOKEN_EXPIRY_BUFFER = 5 * 60 * 1000
