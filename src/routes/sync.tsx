@@ -64,7 +64,7 @@ function SyncPage() {
           onResolve={resolveConflict}
         />
         {state.status === 'complete' && (
-          <SyncCompleteView summary={state.summary} onDismiss={dismiss} />
+          <SyncCompleteView summary={state.summary} onDismiss={dismiss} onRetryFailed={sync} />
         )}
         {state.status === 'error' && (
           <SyncErrorView

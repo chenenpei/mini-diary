@@ -15,12 +15,7 @@ export type SyncFlowState =
   | { status: 'error'; error: SyncError }
 
 function isSyncError(error: unknown): error is SyncError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'kind' in error &&
-    'message' in error
-  )
+  return typeof error === 'object' && error !== null && 'kind' in error && 'message' in error
 }
 
 // ─── Hook ───
@@ -32,15 +27,7 @@ export function useSyncFlow() {
     ((choice: 'merge' | 'pull' | 'push' | 'cancel') => void) | null
   >(null)
 
-  // Check connection on mount
-  useEffect(() => {
-    checkConnection()
-    return () => {
-      abortRef.current?.abort()
-    }
-  }, [])
-
-  async function checkConnection() {
+  const checkConnection = useCallback(async () => {
     const provider = await settingsRepository.getCloudProvider()
     if (provider) {
       const lastSyncedAt = await settingsRepository.getLastSyncedAt()
@@ -52,15 +39,21 @@ export function useSyncFlow() {
     } else {
       setState({ status: 'idle' })
     }
-  }
+  }, [])
+
+  // Check connection on mount
+  useEffect(() => {
+    checkConnection()
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [checkConnection])
 
   const connect = useCallback(async (provider: 'google-drive') => {
     setState({ status: 'connecting' })
     try {
       const { createGoogleTokenProvider } = await import('@/lib/cloud/auth')
-      const tokenProvider = createGoogleTokenProvider(
-        import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '',
-      )
+      const tokenProvider = createGoogleTokenProvider(import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '')
       await tokenProvider()
       await settingsRepository.setCloudProvider(provider)
       setState({ status: 'connected', provider })
@@ -91,9 +84,7 @@ export function useSyncFlow() {
       const { imagesRepository } = await import('@/lib/repositories/images')
       const { db } = await import('@/lib/db')
 
-      const tokenProvider = createGoogleTokenProvider(
-        import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '',
-      )
+      const tokenProvider = createGoogleTokenProvider(import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '')
       const adapter = new GoogleDriveAdapter(tokenProvider)
       const manager = new SyncManager(adapter, (progress) => {
         setState({ status: 'syncing', progress })
@@ -120,8 +111,7 @@ export function useSyncFlow() {
           lastSyncedAt,
           getImageBlobs: async (id) => {
             const record = await imagesRepository.getById(id)
-            if (!record)
-              throw { kind: 'data_corrupt', message: `Image not found: ${id}` }
+            if (!record) throw { kind: 'data_corrupt', message: `Image not found: ${id}` }
             return { blob: record.blob, thumbnail: record.thumbnail }
           },
           onConflict: (info) =>
@@ -174,15 +164,12 @@ export function useSyncFlow() {
     } finally {
       abortRef.current = null
     }
-  }, [])
+  }, [checkConnection])
 
-  const resolveConflict = useCallback(
-    (choice: 'merge' | 'pull' | 'push' | 'cancel') => {
-      conflictResolverRef.current?.(choice)
-      conflictResolverRef.current = null
-    },
-    [],
-  )
+  const resolveConflict = useCallback((choice: 'merge' | 'pull' | 'push' | 'cancel') => {
+    conflictResolverRef.current?.(choice)
+    conflictResolverRef.current = null
+  }, [])
 
   const cancel = useCallback(() => {
     abortRef.current?.abort()
@@ -199,7 +186,7 @@ export function useSyncFlow() {
 
   const dismiss = useCallback(() => {
     checkConnection()
-  }, [])
+  }, [checkConnection])
 
   return { state, connect, sync, resolveConflict, cancel, disconnect, dismiss }
 }

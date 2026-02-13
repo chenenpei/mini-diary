@@ -39,6 +39,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={onReauth}
+            // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
@@ -50,6 +51,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={onRetry}
+            // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
@@ -61,6 +63,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={onRetry}
+            // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
@@ -72,6 +75,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={() => window.open('https://drive.google.com/settings/storage', '_blank')}
+            // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >

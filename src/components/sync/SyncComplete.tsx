@@ -26,6 +26,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   const hasImageStats = summary.imagesUploaded > 0 || summary.imagesDownloaded > 0
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
     <div className="flex flex-1 flex-col items-center gap-6" role="status">
       {/* Success icon with spring bounce */}
       <motion.div
@@ -68,7 +69,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             animate={{ opacity: 1 }}
             transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.35 }}
           >
-            {`↑ ${summary.imagesUploaded} · ↓ ${summary.imagesDownloaded}`}
+            {`↑ ${t('imagesUploaded', { count: summary.imagesUploaded })} · ↓ ${t('imagesDownloaded', { count: summary.imagesDownloaded })}`}
           </motion.p>
         )}
 
@@ -83,7 +84,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       </div>
 
       {/* Partial failure warning */}
-      {summary.imagesFailed > 0 && (
+      {summary.imagesFailed > 0 && onRetryFailed && (
         <motion.div
           className="w-full rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-900 dark:bg-yellow-950"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
@@ -98,6 +99,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             <button
               type="button"
               onClick={onRetryFailed}
+              // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
               autoFocus
               className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
             >
@@ -125,6 +127,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           <button
             type="button"
             onClick={onDismiss}
+            // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >

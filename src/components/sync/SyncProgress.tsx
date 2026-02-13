@@ -2,7 +2,7 @@
 
 import { CheckCircle, Circle } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SyncProgress } from '@/types'
 
@@ -37,22 +37,24 @@ interface SyncProgressProps {
 export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
   const { t } = useTranslation('sync')
   const prefersReducedMotion = useReducedMotion()
-  const seenPhasesRef = useRef<string[]>([])
+  const [seenPhases, setSeenPhases] = useState<string[]>([])
 
   // Track phases as they appear (skip meta-phases)
-  const currentPhaseName = progress.currentPhase.phase
-  if (
-    currentPhaseName !== 'retrying' &&
-    currentPhaseName !== 'done' &&
-    currentPhaseName !== 'error'
-  ) {
-    const seen = seenPhasesRef.current
-    if (seen.length === 0 || seen[seen.length - 1] !== currentPhaseName) {
-      seenPhasesRef.current = [...seen, currentPhaseName]
+  useEffect(() => {
+    const currentPhaseName = progress.currentPhase.phase
+    if (
+      currentPhaseName !== 'retrying' &&
+      currentPhaseName !== 'done' &&
+      currentPhaseName !== 'error'
+    ) {
+      setSeenPhases((prev) => {
+        if (prev.length === 0 || prev[prev.length - 1] !== currentPhaseName) {
+          return [...prev, currentPhaseName]
+        }
+        return prev
+      })
     }
-  }
-
-  const seenPhases = seenPhasesRef.current
+  }, [progress.currentPhase.phase])
   const pendingCount = Math.max(0, progress.totalPhases - seenPhases.length)
 
   function getPhaseLabel(phase: string): string {
@@ -78,6 +80,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
   return (
     <div className="flex flex-1 flex-col gap-6">
       {/* Phase steps */}
+      {/* biome-ignore lint/a11y/useSemanticElements: div needed for flex layout */}
       <div className="flex flex-col gap-3" role="status" aria-live="polite">
         {seenPhases.map((phase, index) => {
           const isActive = index === seenPhases.length - 1
