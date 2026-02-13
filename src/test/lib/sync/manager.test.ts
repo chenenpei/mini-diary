@@ -83,7 +83,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const entries = [makeEntry({ id: 'a', updatedAt: 2000 })]
       const input = makeDefaultInput({ localEntries: entries })
@@ -110,7 +110,7 @@ describe('SyncManager', () => {
       const thumbnail = new Blob(['thumb'], { type: 'image/jpeg' })
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const manifest = [makeManifest({ id: 'img-1' })]
       const input = makeDefaultInput({
@@ -144,7 +144,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const localEntries = [makeEntry({ id: 'a', updatedAt: 2000, content: 'updated' })]
       const input = makeDefaultInput({
@@ -183,7 +183,7 @@ describe('SyncManager', () => {
         .mockResolvedValueOnce(downloadedThumb)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', updatedAt: 500 })],
@@ -218,7 +218,7 @@ describe('SyncManager', () => {
       adapter.readJson.mockResolvedValue(cloudData)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', updatedAt: 800 })],
@@ -263,7 +263,7 @@ describe('SyncManager', () => {
 
       const onConflict: ConflictResolver = vi.fn().mockResolvedValue('merge')
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries,
@@ -294,7 +294,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const localEntries = [makeEntry({ id: 'a', updatedAt: 2000, content: 'local' })]
       const input = makeDefaultInput({
@@ -321,7 +321,7 @@ describe('SyncManager', () => {
       adapter.downloadImage.mockResolvedValue(new Blob())
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', updatedAt: 2000, content: 'local' })],
@@ -345,7 +345,7 @@ describe('SyncManager', () => {
       adapter.readJson.mockResolvedValue(cloudData)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', updatedAt: 2000 })],
@@ -386,7 +386,7 @@ describe('SyncManager', () => {
 
       const onConflict = vi.fn().mockResolvedValue('merge')
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries,
@@ -435,7 +435,7 @@ describe('SyncManager', () => {
       adapter.uploadImage.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', updatedAt: 2000 })],
@@ -489,7 +489,7 @@ describe('SyncManager', () => {
       adapter.downloadImage.mockResolvedValue(new Blob(['data'], { type: 'image/jpeg' }))
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       // Temporarily mock mergeImages to inject a phantom image ID
       const syncModule = await import('@/lib/sync')
@@ -527,7 +527,7 @@ describe('SyncManager', () => {
     it('should throw cancelled error when signal is aborted before sync starts', async () => {
       const adapter = createMockAdapter()
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const controller = new AbortController()
       controller.abort()
@@ -554,7 +554,7 @@ describe('SyncManager', () => {
       })
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a' })],
@@ -587,7 +587,7 @@ describe('SyncManager', () => {
         progressValues.push(p.percent)
       })
 
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a' })],
       })
@@ -620,7 +620,7 @@ describe('SyncManager', () => {
         }
       })
 
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a' })],
       })
@@ -653,7 +653,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', imageIds: ['img-1'] })],
@@ -676,7 +676,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a', imageIds: ['img-1'] })],
@@ -704,7 +704,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       await manager.disconnect(true)
 
@@ -720,7 +720,7 @@ describe('SyncManager', () => {
       const adapter = createMockAdapter()
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       await manager.disconnect(false)
 
@@ -747,7 +747,7 @@ describe('SyncManager', () => {
       adapter.readJson.mockResolvedValue({ version: 99, bad: true })
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({ lastSyncedAt: 1000 })
 
@@ -774,7 +774,7 @@ describe('SyncManager', () => {
       adapter.deleteFiles.mockResolvedValue(undefined)
 
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'a' })],
@@ -800,7 +800,7 @@ describe('SyncManager', () => {
 
       const onConflict = vi.fn().mockResolvedValue('merge')
       const onProgress = vi.fn()
-      const manager = new SyncManager(adapter, onProgress)
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       const input = makeDefaultInput({
         localEntries: [makeEntry({ id: 'b' })],
@@ -813,6 +813,142 @@ describe('SyncManager', () => {
       // With no lastSyncedAt but both sides have data, should trigger merge
       expect(onConflict).toHaveBeenCalled()
       expect(result.summary.direction).toBe('merge')
+    })
+  })
+
+  // ============================================
+  // Retry behavior
+  // ============================================
+
+  describe('retry behavior', () => {
+    it('should retry adapter.readJson on network error and succeed', async () => {
+      const adapter = createMockAdapter()
+      const error = { kind: 'network', message: 'timeout' }
+      adapter.readJson
+        .mockRejectedValueOnce(error)
+        .mockResolvedValueOnce(null)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      const result = await manager.sync(
+        makeDefaultInput({ localEntries: [makeEntry({ id: 'a' })] }),
+      )
+
+      expect(adapter.readJson).toHaveBeenCalledTimes(2)
+      expect(result.summary.direction).toBe('push')
+    })
+
+    it('should retry image upload on network error', async () => {
+      const adapter = createMockAdapter()
+      const entries = [makeEntry({ id: 'a', imageIds: ['img-1'] })]
+      const manifest: ImageManifest[] = [{ id: 'img-1', entryId: 'a', createdAt: 1000 }]
+
+      adapter.readJson.mockResolvedValue(null)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+      adapter.uploadImage
+        .mockRejectedValueOnce({ kind: 'network', message: 'fail' })
+        .mockResolvedValue(undefined)
+
+      const getImageBlobs = vi.fn(async () => ({
+        blob: new Blob(['img']),
+        thumbnail: new Blob(['thumb']),
+      }))
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      const result = await manager.sync(
+        makeDefaultInput({
+          localEntries: entries,
+          localImageManifest: manifest,
+          getImageBlobs,
+        }),
+      )
+
+      expect(adapter.uploadImage.mock.calls.length).toBeGreaterThanOrEqual(3)
+      expect(result.summary.imagesUploaded).toBe(1)
+    })
+
+    it('should track failed images after retry exhaustion', async () => {
+      const adapter = createMockAdapter()
+      const entries = [makeEntry({ id: 'a', imageIds: ['img-1', 'img-2'] })]
+      const manifest: ImageManifest[] = [
+        { id: 'img-1', entryId: 'a', createdAt: 1000 },
+        { id: 'img-2', entryId: 'a', createdAt: 1000 },
+      ]
+
+      adapter.readJson.mockResolvedValue(null)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+      adapter.uploadImage.mockImplementation(async (path: string) => {
+        if (path.includes('img-1')) {
+          throw { kind: 'network', message: 'persistent failure' }
+        }
+      })
+
+      const getImageBlobs = vi.fn(async () => ({
+        blob: new Blob(['img']),
+        thumbnail: new Blob(['thumb']),
+      }))
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      const result = await manager.sync(
+        makeDefaultInput({
+          localEntries: entries,
+          localImageManifest: manifest,
+          getImageBlobs,
+        }),
+      )
+
+      expect(result.failedImages).toContain('img-1')
+      expect(result.summary.imagesFailed).toBe(1)
+      expect(result.summary.imagesUploaded).toBe(1)
+    })
+
+    it('should not retry auth errors', async () => {
+      const adapter = createMockAdapter()
+      const error = { kind: 'auth', message: '401' }
+      adapter.readJson.mockRejectedValue(error)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await expect(
+        manager.sync(makeDefaultInput()),
+      ).rejects.toMatchObject({ kind: 'auth' })
+
+      expect(adapter.readJson).toHaveBeenCalledOnce()
+    })
+
+    it('should report retry progress', async () => {
+      const adapter = createMockAdapter()
+      adapter.readJson
+        .mockRejectedValueOnce({ kind: 'network', message: 'fail' })
+        .mockResolvedValueOnce(null)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await manager.sync(
+        makeDefaultInput({ localEntries: [makeEntry({ id: 'a' })] }),
+      )
+
+      const retryPhases = onProgress.mock.calls.filter(
+        (call) => (call[0] as SyncProgress).currentPhase.phase === 'retrying',
+      )
+      expect(retryPhases.length).toBeGreaterThan(0)
     })
   })
 })
