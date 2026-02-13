@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { DiaryEntry } from '@/types'
-import { mergeEntries } from '@/lib/sync'
+import type { DiaryEntry, ImageManifest } from '@/types'
+import { mergeEntries, mergeImages } from '@/lib/sync'
 
 function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry {
   return {
@@ -87,6 +87,53 @@ describe('sync', () => {
     it('should handle both arrays empty', () => {
       const result = mergeEntries([], [])
       expect(result).toEqual([])
+    })
+  })
+
+  describe('mergeImages', () => {
+    it('should identify images to upload (local only)', () => {
+      const local: ImageManifest[] = [
+        { id: 'img-1', entryId: 'a', createdAt: 1000 },
+        { id: 'img-2', entryId: 'a', createdAt: 1000 },
+      ]
+      const cloud: ImageManifest[] = [
+        { id: 'img-1', entryId: 'a', createdAt: 1000 },
+      ]
+
+      const result = mergeImages(local, cloud)
+
+      expect(result.toUpload).toEqual(['img-2'])
+      expect(result.toDownload).toEqual([])
+    })
+
+    it('should identify images to download (cloud only)', () => {
+      const local: ImageManifest[] = []
+      const cloud: ImageManifest[] = [
+        { id: 'img-1', entryId: 'a', createdAt: 1000 },
+      ]
+
+      const result = mergeImages(local, cloud)
+
+      expect(result.toUpload).toEqual([])
+      expect(result.toDownload).toEqual(['img-1'])
+    })
+
+    it('should not include images present in both', () => {
+      const manifest: ImageManifest[] = [
+        { id: 'img-1', entryId: 'a', createdAt: 1000 },
+      ]
+
+      const result = mergeImages(manifest, manifest)
+
+      expect(result.toUpload).toEqual([])
+      expect(result.toDownload).toEqual([])
+    })
+
+    it('should handle empty manifests', () => {
+      const result = mergeImages([], [])
+
+      expect(result.toUpload).toEqual([])
+      expect(result.toDownload).toEqual([])
     })
   })
 })
