@@ -951,4 +951,129 @@ describe('SyncManager', () => {
       expect(retryPhases.length).toBeGreaterThan(0)
     })
   })
+
+  // ============================================
+  // Backup lifecycle
+  // ============================================
+
+  describe('backup lifecycle', () => {
+    it('should call createBackup before pull', async () => {
+      const createBackup = vi.fn(async () => {})
+      const deleteBackup = vi.fn(async () => {})
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(
+        makeCloudData({
+          syncedAt: new Date(2000).toISOString(),
+          entries: [makeEntry({ id: 'b' })],
+        }),
+      )
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await manager.sync(
+        makeDefaultInput({
+          lastSyncedAt: 1000,
+          createBackup,
+          deleteBackup,
+        }),
+      )
+
+      expect(createBackup).toHaveBeenCalledOnce()
+      expect(deleteBackup).toHaveBeenCalledOnce()
+      const createOrder = createBackup.mock.invocationCallOrder[0] ?? 0
+      const deleteOrder = deleteBackup.mock.invocationCallOrder[0] ?? 0
+      expect(createOrder).toBeLessThan(deleteOrder)
+    })
+
+    it('should call createBackup before merge', async () => {
+      const createBackup = vi.fn(async () => {})
+      const deleteBackup = vi.fn(async () => {})
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(
+        makeCloudData({
+          syncedAt: new Date(2000).toISOString(),
+          entries: [makeEntry({ id: 'b' })],
+        }),
+      )
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await manager.sync(
+        makeDefaultInput({
+          localEntries: [makeEntry({ id: 'a', updatedAt: 2000 })],
+          lastSyncedAt: 1000,
+          onConflict: vi.fn(async () => 'merge' as const),
+          createBackup,
+          deleteBackup,
+        }),
+      )
+
+      expect(createBackup).toHaveBeenCalledOnce()
+      expect(deleteBackup).toHaveBeenCalledOnce()
+    })
+
+    it('should NOT call createBackup for push', async () => {
+      const createBackup = vi.fn(async () => {})
+      const deleteBackup = vi.fn(async () => {})
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(null)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await manager.sync(
+        makeDefaultInput({
+          localEntries: [makeEntry({ id: 'a' })],
+          createBackup,
+          deleteBackup,
+        }),
+      )
+
+      expect(createBackup).not.toHaveBeenCalled()
+    })
+
+    it('should NOT call deleteBackup when sync fails', async () => {
+      const createBackup = vi.fn(async () => {})
+      const deleteBackup = vi.fn(async () => {})
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(
+        makeCloudData({
+          syncedAt: new Date(2000).toISOString(),
+          entries: [makeEntry({ id: 'b' })],
+        }),
+      )
+      adapter.writeJson.mockRejectedValue({ kind: 'auth', message: '401' })
+      adapter.downloadImage.mockResolvedValue(new Blob(['data']))
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await expect(
+        manager.sync(
+          makeDefaultInput({
+            localEntries: [makeEntry({ id: 'a', updatedAt: 2000 })],
+            lastSyncedAt: 1000,
+            onConflict: vi.fn(async () => 'merge' as const),
+            createBackup,
+            deleteBackup,
+          }),
+        ),
+      ).rejects.toMatchObject({ kind: 'auth' })
+
+      expect(createBackup).toHaveBeenCalledOnce()
+      expect(deleteBackup).not.toHaveBeenCalled()
+    })
+  })
 })

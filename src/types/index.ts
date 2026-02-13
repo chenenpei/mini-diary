@@ -309,6 +309,8 @@ export interface SyncInput {
   lastSyncedAt: number | undefined
   getImageBlobs: (id: string) => Promise<{ blob: Blob; thumbnail: Blob }>
   onConflict: ConflictResolver
+  createBackup?: () => Promise<void>
+  deleteBackup?: () => Promise<void>
 }
 
 export interface SyncResult {

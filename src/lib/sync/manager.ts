@@ -334,6 +334,9 @@ export class SyncManager {
       message: 'Downloading entries...',
     })
 
+    // Create backup before any destructive operations
+    await input.createBackup?.()
+
     // Phase: downloading-images
     const downloadImagesIdx = phases.indexOf('downloading-images')
     const imagesToDownload = cloudData.imageManifest.filter(
@@ -406,6 +409,9 @@ export class SyncManager {
       duration: Date.now() - startTime,
     }
 
+    // Delete backup after successful completion
+    await input.deleteBackup?.()
+
     // Phase: done
     this.reportPhase(operation, phases.length, { phase: 'done', summary })
 
@@ -434,6 +440,9 @@ export class SyncManager {
       phase: 'downloading-entries',
       message: 'Downloading cloud entries...',
     })
+
+    // Create backup before any destructive operations
+    await input.createBackup?.()
 
     // Phase: downloading-images
     const downloadImagesIdx = phases.indexOf('downloading-images')
@@ -596,6 +605,9 @@ export class SyncManager {
       imagesFailed: failedImages.length,
       duration: Date.now() - startTime,
     }
+
+    // Delete backup after successful completion
+    await input.deleteBackup?.()
 
     // Phase: done
     this.reportPhase(operation, phases.length, { phase: 'done', summary })
