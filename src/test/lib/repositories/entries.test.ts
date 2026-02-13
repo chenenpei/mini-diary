@@ -245,4 +245,36 @@ describe('entriesRepository', () => {
       expect(dates).toContain('2024-01-16')
     })
   })
+
+  describe('soft delete', () => {
+    describe('when deleting an entry', () => {
+      it('should set deletedAt instead of physical deletion', async () => {
+        const entry = await entriesRepository.create({
+          content: 'To be deleted',
+          date: '2024-01-15',
+        })
+
+        await entriesRepository.delete(entry.id)
+
+        // Read directly from DB, bypassing repository filtering
+        const raw = await db.entries.get(entry.id)
+        expect(raw).toBeDefined()
+        expect(raw!.deletedAt).toBeGreaterThan(0)
+      })
+
+      it('should update updatedAt timestamp', async () => {
+        const entry = await entriesRepository.create({
+          content: 'To be deleted',
+          date: '2024-01-15',
+        })
+        const originalUpdatedAt = entry.updatedAt
+
+        await new Promise((resolve) => setTimeout(resolve, 5))
+        await entriesRepository.delete(entry.id)
+
+        const raw = await db.entries.get(entry.id)
+        expect(raw!.updatedAt).toBeGreaterThan(originalUpdatedAt)
+      })
+    })
+  })
 })

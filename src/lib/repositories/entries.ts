@@ -5,6 +5,9 @@ import type { CreateEntryInput, DateRangeQuery, DiaryEntry, UpdateEntryInput } f
 const MAX_CONTENT_LENGTH = 10000
 const MAX_IMAGE_IDS = 3
 
+/** Filter out soft-deleted entries */
+const isNotDeleted = (entry: DiaryEntry): boolean => !entry.deletedAt
+
 /**
  * Validate entry content
  */
@@ -154,9 +157,17 @@ export const entriesRepository = {
   },
 
   /**
-   * Delete an entry by ID
+   * Soft delete an entry by ID
    */
   async delete(id: string): Promise<void> {
+    const now = Date.now()
+    await db.entries.update(id, { deletedAt: now, updatedAt: now })
+  },
+
+  /**
+   * Permanently delete an entry (for tombstone cleanup)
+   */
+  async hardDelete(id: string): Promise<void> {
     await db.entries.delete(id)
   },
 
