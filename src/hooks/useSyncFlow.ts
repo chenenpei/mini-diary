@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { backupsRepository } from '@/lib/repositories/backups'
 import { settingsRepository } from '@/lib/repositories/settings'
+import type { RecoveryInfo } from '@/lib/sync/recovery'
 import type { ConflictInfo, SyncError, SyncProgress, SyncSummary } from '@/types'
 
 // ─── State Types ───
@@ -13,6 +14,7 @@ export type SyncFlowState =
   | { status: 'conflict'; info: ConflictInfo }
   | { status: 'complete'; summary: SyncSummary }
   | { status: 'error'; error: SyncError }
+  | { status: 'recovery'; info: RecoveryInfo }
 
 function isSyncError(error: unknown): error is SyncError {
   return typeof error === 'object' && error !== null && 'kind' in error && 'message' in error
@@ -28,6 +30,13 @@ export function useSyncFlow() {
   >(null)
 
   const checkConnection = useCallback(async () => {
+    const { checkPendingRecovery } = await import('@/lib/sync/recovery')
+    const recoveryInfo = await checkPendingRecovery()
+    if (recoveryInfo) {
+      setState({ status: 'recovery', info: recoveryInfo })
+      return
+    }
+
     const provider = await settingsRepository.getCloudProvider()
     if (provider) {
       const lastSyncedAt = await settingsRepository.getLastSyncedAt()
@@ -188,5 +197,26 @@ export function useSyncFlow() {
     checkConnection()
   }, [checkConnection])
 
-  return { state, connect, sync, resolveConflict, cancel, disconnect, dismiss }
+  const restoreBackup = useCallback(async () => {
+    const { restoreFromBackup } = await import('@/lib/sync/recovery')
+    await restoreFromBackup()
+    await checkConnection()
+  }, [checkConnection])
+
+  const dismissRecovery = useCallback(async () => {
+    await backupsRepository.deleteBackup()
+    await checkConnection()
+  }, [checkConnection])
+
+  return {
+    state,
+    connect,
+    sync,
+    resolveConflict,
+    cancel,
+    disconnect,
+    dismiss,
+    restoreBackup,
+    dismissRecovery,
+  }
 }

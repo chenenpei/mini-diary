@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConflictDialog } from '@/components/sync/ConflictDialog'
+import { RecoveryBanner } from '@/components/sync/RecoveryBanner'
 import { SyncCompleteView } from '@/components/sync/SyncComplete'
 import { SyncErrorView } from '@/components/sync/SyncError'
 import { SyncProgressView } from '@/components/sync/SyncProgress'
@@ -18,7 +19,17 @@ function SyncPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('sync')
   const { t: tCommon } = useTranslation('common')
-  const { state, connect, sync, resolveConflict, cancel, disconnect, dismiss } = useSyncFlow()
+  const {
+    state,
+    connect,
+    sync,
+    resolveConflict,
+    cancel,
+    disconnect,
+    dismiss,
+    restoreBackup,
+    dismissRecovery,
+  } = useSyncFlow()
 
   const handleBack = useCallback(() => {
     navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
@@ -38,6 +49,9 @@ function SyncPage() {
         <span className="text-lg font-medium text-foreground">{t('title')}</span>
       </header>
       <main className="flex-1 p-4">
+        {state.status === 'recovery' && (
+          <RecoveryBanner info={state.info} onRestore={restoreBackup} onDismiss={dismissRecovery} />
+        )}
         {state.status === 'idle' && <IdleView onConnect={connect} />}
         {state.status === 'connecting' && <ConnectingView />}
         {state.status === 'connected' && (
