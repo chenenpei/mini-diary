@@ -4,8 +4,6 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SiGoogledrive } from 'react-icons/si'
-import { TbBrandOnedrive } from 'react-icons/tb'
 import { ConflictDialog } from '@/components/sync/ConflictDialog'
 import { RecoveryBanner } from '@/components/sync/RecoveryBanner'
 import { SyncCompleteView } from '@/components/sync/SyncComplete'
@@ -50,7 +48,7 @@ function SyncPage() {
         </button>
         <span className="text-lg font-medium text-foreground">{t('title')}</span>
       </header>
-      <main className="flex flex-1 flex-col p-4">
+      <main className="flex-1 p-4">
         {state.status === 'recovery' && (
           <RecoveryBanner info={state.info} onRestore={restoreBackup} onDismiss={dismissRecovery} />
         )}
@@ -102,25 +100,29 @@ function IdleView({ onConnect }: { onConnect: (provider: 'google-drive') => void
   const { t } = useTranslation('sync')
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6">
+    <div className="flex flex-col items-center gap-6 py-16 text-center">
       <Cloud className="h-16 w-16 text-muted-foreground/50" />
-      <p className="text-sm text-muted-foreground">{t('selectProvider')}</p>
+      <p className="text-lg font-medium text-foreground">{t('selectProvider')}</p>
       <div className="flex w-full flex-col gap-3">
         <button
           type="button"
           onClick={() => onConnect('google-drive')}
           className="flex w-full items-center gap-3 rounded-md border border-border p-4 text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
         >
-          <SiGoogledrive className="h-5 w-5 shrink-0" />
+          <img src="/icons/google-drive.svg" alt="" className="h-5 w-5 shrink-0" />
           {t('googleDrive')}
         </button>
-        <div className="flex w-full items-center gap-3 rounded-md border border-border p-4 opacity-50">
-          <TbBrandOnedrive className="h-5 w-5 shrink-0" />
-          <span className="flex-1 text-sm font-medium text-foreground">{t('oneDrive')}</span>
-          <span className="rounded-full bg-surface px-2 py-0.5 text-xs text-muted-foreground">
+        <button
+          type="button"
+          disabled
+          className="flex w-full items-center gap-3 rounded-md border border-border p-4 text-sm font-medium text-foreground opacity-50"
+        >
+          <img src="/icons/onedrive.svg" alt="" className="h-5 w-5 shrink-0" />
+          <span className="flex-1 text-left">{t('oneDrive')}</span>
+          <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-normal text-muted-foreground">
             {t('comingSoon')}
           </span>
-        </div>
+        </button>
       </div>
     </div>
   )
@@ -132,7 +134,7 @@ function ConnectingView() {
   const { t } = useTranslation('sync')
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center">
+    <div className="flex flex-col items-center py-16 text-center">
       <Loader2 className="h-8 w-8 animate-spin text-foreground" />
       <p className="mt-3 text-sm text-muted-foreground">{t('connecting')}</p>
     </div>

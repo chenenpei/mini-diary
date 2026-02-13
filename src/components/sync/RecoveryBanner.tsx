@@ -14,7 +14,7 @@ export function RecoveryBanner({ info, onRestore, onDismiss }: RecoveryBannerPro
   const { t } = useTranslation('sync')
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6 py-16">
       <AlertTriangle className="h-12 w-12 text-yellow-500" />
 
       <div className="text-center">
