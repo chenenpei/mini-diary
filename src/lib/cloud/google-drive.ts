@@ -10,7 +10,7 @@ function escapeQueryValue(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
 }
 
-const VALID_CONTENT_TYPE = /^[\w.+-]+\/[\w.+-]+$/
+const VALID_CONTENT_TYPE = /^[a-zA-Z][a-zA-Z0-9.+-]*\/[a-zA-Z0-9][a-zA-Z0-9.+-]*$/
 
 export function sanitizeContentType(contentType: string): string {
   if (VALID_CONTENT_TYPE.test(contentType)) return contentType

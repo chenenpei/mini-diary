@@ -409,4 +409,20 @@ describe('sanitizeContentType', () => {
   it('should reject content types without slash', () => {
     expect(sanitizeContentType('imagejpeg')).toBe('application/octet-stream')
   })
+
+  it('should reject content types starting with underscore', () => {
+    expect(sanitizeContentType('_invalid/type')).toBe('application/octet-stream')
+  })
+
+  it('should reject content types starting with dot', () => {
+    expect(sanitizeContentType('.invalid/type')).toBe('application/octet-stream')
+  })
+
+  it('should reject content types with numeric start in type part', () => {
+    expect(sanitizeContentType('1invalid/type')).toBe('application/octet-stream')
+  })
+
+  it('should accept subtypes starting with a digit', () => {
+    expect(sanitizeContentType('audio/3gpp')).toBe('audio/3gpp')
+  })
 })

@@ -288,5 +288,156 @@ describe('sync', () => {
         expect(result.data).toEqual(data)
       }
     })
+
+    it('should warn about entries with wrong field types', () => {
+      const data = makeCloudData({
+        entries: [
+          {
+            id: 123,
+            content: true,
+            date: 456,
+            createdAt: 'not-a-number',
+            updatedAt: 'not-a-number',
+            imageIds: 'not-an-array',
+          },
+        ],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'id' should be string, got number"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'content' should be string, got boolean"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'date' should be string, got number"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'createdAt' should be number, got string"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'updatedAt' should be number, got string"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'imageIds' should be array, got string"),
+      )
+    })
+
+    it('should warn about imageIds array with non-string elements', () => {
+      const data = makeCloudData({
+        entries: [
+          {
+            id: 'a',
+            content: 'hello',
+            date: '2024-01-15',
+            createdAt: 1000,
+            updatedAt: 1000,
+            imageIds: ['valid', 123, true],
+          },
+        ],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'imageIds[1]' should be string, got number"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'imageIds[2]' should be string, got boolean"),
+      )
+    })
+
+    it('should warn about imageManifest with wrong field types', () => {
+      const data = makeCloudData({
+        imageManifest: [{ id: 123, entryId: true, createdAt: 'not-a-number' }],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'id' should be string, got number"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'entryId' should be string, got boolean"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'createdAt' should be number, got string"),
+      )
+    })
+
+    it('should warn about optional entry fields with wrong types', () => {
+      const data = makeCloudData({
+        entries: [
+          {
+            id: 'a',
+            content: 'hello',
+            date: '2024-01-15',
+            createdAt: 1000,
+            updatedAt: 1000,
+            imageIds: [],
+            deletedAt: 'not-a-number',
+            modifiedFields: 'not-an-array',
+          },
+        ],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'deletedAt' should be number, got string"),
+      )
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'modifiedFields' should be array, got string"),
+      )
+    })
+
+    it('should warn about modifiedFields array with non-string elements', () => {
+      const data = makeCloudData({
+        entries: [
+          {
+            id: 'a',
+            content: 'hello',
+            date: '2024-01-15',
+            createdAt: 1000,
+            updatedAt: 1000,
+            imageIds: [],
+            modifiedFields: ['content', 42],
+          },
+        ],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings).toContainEqual(
+        expect.stringContaining("field 'modifiedFields[1]' should be string, got number"),
+      )
+    })
+
+    it('should not warn about optional fields when they are absent', () => {
+      const data = makeCloudData({
+        entries: [
+          {
+            id: 'a',
+            content: 'hello',
+            date: '2024-01-15',
+            createdAt: 1000,
+            updatedAt: 1000,
+            imageIds: [],
+          },
+        ],
+      })
+
+      const result = validateCloudData(data)
+
+      expect(result.valid).toBe(true)
+      expect(result.warnings).toEqual([])
+    })
   })
 })

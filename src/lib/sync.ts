@@ -64,6 +64,78 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+function checkFieldType(
+  record: Record<string, unknown>,
+  field: string,
+  expectedType: string,
+  label: string,
+  warnings: string[],
+): void {
+  if (!(field in record)) {
+    warnings.push(`${label}: missing field '${field}'`)
+    return
+  }
+  const value = record[field]
+  if (expectedType === 'array<string>') {
+    if (!Array.isArray(value)) {
+      warnings.push(`${label}: field '${field}' should be array, got ${typeof value}`)
+    } else {
+      for (let j = 0; j < value.length; j++) {
+        if (typeof value[j] !== 'string') {
+          warnings.push(`${label}: field '${field}[${j}]' should be string, got ${typeof value[j]}`)
+        }
+      }
+    }
+  } else if (typeof value !== expectedType) {
+    warnings.push(`${label}: field '${field}' should be ${expectedType}, got ${typeof value}`)
+  }
+}
+
+function validateEntryFields(
+  entry: Record<string, unknown>,
+  index: number,
+  warnings: string[],
+): void {
+  const label = `Entry ${index}`
+  checkFieldType(entry, 'id', 'string', label, warnings)
+  checkFieldType(entry, 'content', 'string', label, warnings)
+  checkFieldType(entry, 'date', 'string', label, warnings)
+  checkFieldType(entry, 'createdAt', 'number', label, warnings)
+  checkFieldType(entry, 'updatedAt', 'number', label, warnings)
+  checkFieldType(entry, 'imageIds', 'array<string>', label, warnings)
+
+  // Optional fields: only validate type if present
+  if ('deletedAt' in entry && typeof entry.deletedAt !== 'number') {
+    warnings.push(`${label}: field 'deletedAt' should be number, got ${typeof entry.deletedAt}`)
+  }
+  if ('modifiedFields' in entry) {
+    if (!Array.isArray(entry.modifiedFields)) {
+      warnings.push(
+        `${label}: field 'modifiedFields' should be array, got ${typeof entry.modifiedFields}`,
+      )
+    } else {
+      for (let j = 0; j < entry.modifiedFields.length; j++) {
+        if (typeof entry.modifiedFields[j] !== 'string') {
+          warnings.push(
+            `${label}: field 'modifiedFields[${j}]' should be string, got ${typeof entry.modifiedFields[j]}`,
+          )
+        }
+      }
+    }
+  }
+}
+
+function validateManifestFields(
+  manifest: Record<string, unknown>,
+  index: number,
+  warnings: string[],
+): void {
+  const label = `ImageManifest ${index}`
+  checkFieldType(manifest, 'id', 'string', label, warnings)
+  checkFieldType(manifest, 'entryId', 'string', label, warnings)
+  checkFieldType(manifest, 'createdAt', 'number', label, warnings)
+}
+
 /**
  * Validate cloud data structure and integrity
  */
@@ -88,14 +160,10 @@ export function validateCloudData(data: unknown): ValidationResult {
   if (!Array.isArray(data.entries)) {
     errors.push('Missing or invalid entries array')
   } else {
-    const requiredEntryFields = ['id', 'content', 'date', 'createdAt', 'updatedAt', 'imageIds']
     for (let i = 0; i < data.entries.length; i++) {
       const entry = data.entries[i]
       if (isRecord(entry)) {
-        const missing = requiredEntryFields.filter((field) => !(field in entry))
-        if (missing.length > 0) {
-          warnings.push(`Entry ${i}: missing fields: ${missing.join(', ')}`)
-        }
+        validateEntryFields(entry, i, warnings)
       } else {
         warnings.push(`Entry ${i}: not an object`)
       }
@@ -105,14 +173,10 @@ export function validateCloudData(data: unknown): ValidationResult {
   if (!Array.isArray(data.imageManifest)) {
     errors.push('Missing or invalid imageManifest array')
   } else {
-    const requiredManifestFields = ['id', 'entryId', 'createdAt']
     for (let i = 0; i < data.imageManifest.length; i++) {
       const manifest = data.imageManifest[i]
       if (isRecord(manifest)) {
-        const missing = requiredManifestFields.filter((field) => !(field in manifest))
-        if (missing.length > 0) {
-          warnings.push(`ImageManifest ${i}: missing fields: ${missing.join(', ')}`)
-        }
+        validateManifestFields(manifest, i, warnings)
       } else {
         warnings.push(`ImageManifest ${i}: not an object`)
       }
