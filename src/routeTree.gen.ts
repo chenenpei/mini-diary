@@ -47,9 +47,9 @@ const TimelineEntryIdRoute = TimelineEntryIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof TimelineIndexRoute
   '/search': typeof SearchRoute
   '/sync': typeof SyncRoute
+  '/': typeof TimelineIndexRoute
   '/entry/$id': typeof TimelineEntryIdRoute
   '/entry/new': typeof TimelineEntryNewRoute
 }
@@ -71,7 +71,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/search' | '/sync' | '/entry/$id' | '/entry/new'
+  fullPaths: '/search' | '/sync' | '/' | '/entry/$id' | '/entry/new'
   fileRoutesByTo: FileRoutesByTo
   to: '/search' | '/sync' | '/' | '/entry/$id' | '/entry/new'
   id:
@@ -109,7 +109,7 @@ declare module '@tanstack/react-router' {
     '/_timeline': {
       id: '/_timeline'
       path: ''
-      fullPath: '/'
+      fullPath: ''
       preLoaderRoute: typeof TimelineRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -161,3 +161,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

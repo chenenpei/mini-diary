@@ -31,7 +31,9 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
       <AlertCircle className="h-12 w-12 text-red-500" />
 
       {/* Error message */}
-      <p className="text-center text-sm text-muted-foreground" role="alert">{t(messageKey)}</p>
+      <p className="text-center text-sm text-muted-foreground" role="alert">
+        {t(messageKey)}
+      </p>
 
       {/* Action button based on error kind */}
       <div className="flex w-full flex-col gap-2">

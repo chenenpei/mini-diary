@@ -161,9 +161,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                   {/* 清理范围选择 */}
                   {isSyncConnected && (
                     <div className="space-y-2 rounded-md border border-border p-3">
-                      <p className="text-xs font-medium text-muted-foreground">
-                        {t('clearScope')}
-                      </p>
+                      <p className="text-xs font-medium text-muted-foreground">{t('clearScope')}</p>
 
                       {/* 本地数据 */}
                       <label className="flex items-center gap-2 text-sm text-foreground">
