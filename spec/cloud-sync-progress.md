@@ -11,7 +11,7 @@
 | Phase 2 | 同步核心逻辑（合并、变更检测、数据验证） | ✅ 已完成 | `docs/plans/2026-02-13-phase2-sync-logic.md` |
 | Phase 3 | 云存储适配层（Google Drive API） | ✅ 已完成 | `docs/plans/2026-02-13-phase3-cloud-adapter.md` |
 | Phase 4 | 同步 UI（设置页、进度展示、冲突弹窗） | ⚪ 未开始 | `docs/plans/2026-02-13-phase4-sync-ui.md` |
-| Phase 5 | 健壮性（重试、备份恢复、启动检查） | ⚪ 未开始 | `docs/plans/2026-02-13-phase5-robustness.md` |
+| Phase 5 | 健壮性（重试、备份恢复、启动检查） | ✅ 已完成 | `docs/plans/2026-02-13-phase5-robustness.md` |
 
 ## Phase 1 详情
 
@@ -78,6 +78,29 @@
 | 4 | Google Drive 适配器（REST API v3 + 安全修复） | ✅ 已完成 |
 | 5 | Auth 模块（GIS token provider + 并发防护） | ✅ 已完成 |
 | 6 | SyncManager（push/pull/merge 编排） | ✅ 已完成 |
+
+## Phase 5 详情
+
+**范围：** 重试机制、备份恢复、启动检查。
+
+**关键决策：**
+- withRetry 指数退避：baseDelay 1s, multiplier 3, maxDelay 10s, maxAttempts 3
+- isRetryable 仅重试 network/server/rate_limit 错误
+- 图片逐个 try/catch，单张失败不阻断其他
+- SyncBackup 用 Dexie 表存储，单例 key `id: 'latest'`
+- 备份生命周期：pull/merge 前创建，成功后删除，push 不备份
+- checkPendingRecovery 启动时检测未清理的备份
+
+**Task 进度：**
+
+| Task | 内容 | 状态 |
+|------|------|------|
+| 1 | withRetry 工具函数（指数退避 + AbortSignal） | ✅ 已完成 |
+| 2 | 重试类型集成（retrying phase + failedImages） | ✅ 已完成 |
+| 3 | SyncManager 重试集成（retryableCall 包装） | ✅ 已完成 |
+| 4 | SyncBackup 存储（Dexie 表 + backupsRepository） | ✅ 已完成 |
+| 5 | 备份生命周期集成（createBackup/deleteBackup 回调） | ✅ 已完成 |
+| 6 | 启动恢复检查（checkPendingRecovery） | ✅ 已完成 |
 
 ## 如何恢复
 
