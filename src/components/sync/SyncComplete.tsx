@@ -25,7 +25,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   if (summary.noChange) {
     return (
       // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
-      <div className="flex flex-1 flex-col items-center gap-6" role="status">
+      <div className="flex flex-col items-center gap-6 py-16" role="status">
         <motion.div
           initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -91,7 +91,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
 
   return (
     // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
-    <div className="flex flex-1 flex-col items-center gap-6" role="status">
+    <div className="flex flex-col items-center gap-6 py-16" role="status">
       {/* Success icon with spring bounce */}
       <motion.div
         initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}

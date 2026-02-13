@@ -78,7 +78,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-6">
+    <div className="flex flex-col gap-6 py-16">
       {/* Phase steps */}
       {/* biome-ignore lint/a11y/useSemanticElements: div needed for flex layout */}
       <div className="flex flex-col gap-3" role="status" aria-live="polite">
