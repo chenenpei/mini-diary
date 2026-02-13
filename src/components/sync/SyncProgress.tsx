@@ -1,10 +1,10 @@
 'use client'
 
-import { CheckCircle, Circle } from 'lucide-react'
+import { CheckCircle, Circle, XCircle } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { SyncProgress } from '@/types'
+import type { SyncPhase, SyncProgress } from '@/types'
 
 type SyncI18nKey =
   | 'preparing'
@@ -85,6 +85,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
         {seenPhases.map((phase, index) => {
           const isActive = index === seenPhases.length - 1
           const isCompleted = !isActive
+          const isRetrying = isActive && progress.currentPhase.phase === 'retrying'
 
           return (
             <motion.div
@@ -95,6 +96,8 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
             >
               {isCompleted ? (
                 <CheckCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
+              ) : isRetrying ? (
+                <XCircle className="h-4 w-4 shrink-0 text-red-500" />
               ) : prefersReducedMotion ? (
                 <Circle className="h-4 w-4 shrink-0 fill-foreground text-foreground" />
               ) : (
@@ -105,7 +108,9 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
                   <Circle className="h-4 w-4 shrink-0 text-foreground" />
                 </motion.div>
               )}
-              <span className={`text-sm ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <span
+                className={`text-sm ${isRetrying ? 'text-red-500' : isActive ? 'text-foreground' : 'text-muted-foreground'}`}
+              >
                 {getPhaseLabel(phase)}
               </span>
             </motion.div>
@@ -114,7 +119,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
 
         {/* Retry indicator */}
         {progress.currentPhase.phase === 'retrying' && (
-          <RetryIndicator nextRetryIn={progress.currentPhase.nextRetryIn} />
+          <RetryIndicator phase={progress.currentPhase} />
         )}
 
         {/* Pending steps */}
@@ -161,25 +166,34 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
 
 // ─── Retry Indicator ───
 
-function RetryIndicator({ nextRetryIn }: { nextRetryIn: number }) {
+type RetryingPhase = Extract<SyncPhase, { phase: 'retrying' }>
+
+function RetryIndicator({ phase }: { phase: RetryingPhase }) {
   const { t } = useTranslation('sync')
-  const [countdown, setCountdown] = useState(Math.ceil(nextRetryIn / 1000))
+  const [countdown, setCountdown] = useState(Math.ceil(phase.nextRetryIn / 1000))
 
   useEffect(() => {
-    setCountdown(Math.ceil(nextRetryIn / 1000))
+    setCountdown(Math.ceil(phase.nextRetryIn / 1000))
     const interval = setInterval(() => {
       setCountdown((prev) => Math.max(0, prev - 1))
     }, 1000)
     return () => clearInterval(interval)
-  }, [nextRetryIn])
+  }, [phase.nextRetryIn])
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="ml-7 text-xs text-muted-foreground"
+      className="ml-7 flex flex-col gap-0.5 text-xs text-muted-foreground"
     >
-      {t('retrying', { seconds: countdown })}
+      <span>{t('retryError')}</span>
+      <span>
+        {t('retryCountdown', {
+          seconds: countdown,
+          attempt: phase.attempt,
+          max: phase.maxAttempts,
+        })}
+      </span>
     </motion.div>
   )
 }

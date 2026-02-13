@@ -29,6 +29,8 @@
   "cleanup": "清理临时数据...",
   "retrying": "网络中断，将在 {{seconds}} 秒后重试...",
   "retryingAttempt": "正在重试 ({{attempt}}/{{max}})...",
+  "retryError": "网络中断",
+  "retryCountdown": "将在 {{seconds}} 秒后重试 ({{attempt}}/{{max}})",
   "syncComplete": "同步完成",
   "entriesSynced": "同步了 {{count}} 条日记",
   "imagesUploaded": "上传 {{count}} 张",

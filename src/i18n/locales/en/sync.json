@@ -29,6 +29,8 @@
   "cleanup": "Cleaning up...",
   "retrying": "Connection lost, retrying in {{seconds}}s...",
   "retryingAttempt": "Retrying ({{attempt}}/{{max}})...",
+  "retryError": "Connection lost",
+  "retryCountdown": "Retrying in {{seconds}}s ({{attempt}}/{{max}})",
   "syncComplete": "Sync Complete",
   "entriesSynced": "Synced {{count}} entries",
   "imagesUploaded": "{{count}} uploaded",
