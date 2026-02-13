@@ -14,6 +14,15 @@ export type SyncFlowState =
   | { status: 'complete'; summary: SyncSummary }
   | { status: 'error'; error: SyncError }
 
+function isSyncError(error: unknown): error is SyncError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'kind' in error &&
+    'message' in error
+  )
+}
+
 // ─── Hook ───
 
 export function useSyncFlow() {
@@ -26,6 +35,9 @@ export function useSyncFlow() {
   // Check connection on mount
   useEffect(() => {
     checkConnection()
+    return () => {
+      abortRef.current?.abort()
+    }
   }, [])
 
   async function checkConnection() {
@@ -53,7 +65,14 @@ export function useSyncFlow() {
       await settingsRepository.setCloudProvider(provider)
       setState({ status: 'connected', provider })
     } catch (error) {
-      setState({ status: 'error', error: error as SyncError })
+      if (isSyncError(error)) {
+        setState({ status: 'error', error })
+      } else {
+        setState({
+          status: 'error',
+          error: { kind: 'network', message: String(error) },
+        })
+      }
     }
   }, [])
 
@@ -140,11 +159,17 @@ export function useSyncFlow() {
       await settingsRepository.setLastSyncedAt(result.lastSyncedAt)
       setState({ status: 'complete', summary: result.summary })
     } catch (error) {
-      const syncError = error as SyncError
-      if (syncError.kind === 'cancelled') {
-        await checkConnection()
+      if (isSyncError(error)) {
+        if (error.kind === 'cancelled') {
+          await checkConnection()
+        } else {
+          setState({ status: 'error', error })
+        }
       } else {
-        setState({ status: 'error', error: syncError })
+        setState({
+          status: 'error',
+          error: { kind: 'network', message: String(error) },
+        })
       }
     } finally {
       abortRef.current = null
@@ -161,6 +186,10 @@ export function useSyncFlow() {
 
   const cancel = useCallback(() => {
     abortRef.current?.abort()
+    if (conflictResolverRef.current) {
+      conflictResolverRef.current('cancel')
+      conflictResolverRef.current = null
+    }
   }, [])
 
   const disconnect = useCallback(async () => {
