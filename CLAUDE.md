@@ -116,6 +116,8 @@ interface ImageRecord {
 11. **动画性能**：仅对合成器属性 (`transform`, `opacity`) 进行动画，禁止对布局属性 (`width`, `height`, `margin`, `padding`) 进行动画
 12. **编辑器覆盖层模式**：编辑器使用 Layout Route + Outlet 覆盖层模式实现，时间线始终保持挂载以保留滚动位置；编辑器打开时使用 `inert` 属性禁用时间线交互
 13. **提交前检查**：每次提交 commit 前，先确认是否需要更新 `spec/` 目录下的文档和 `CLAUDE.md`
+14. **页面垂直间距**：所有非滚动内容页面使用 `py-16` 统一垂直间距（与时间线 EmptyState 对齐），页面内边距使用 PageLayout 规范：`px-5 pt-5 pb-24 sm:px-6 lg:px-8`
+15. **品牌图标**：云服务 logo 使用官方多色 SVG 文件（`public/icons/`），不使用图标库的单色版本
 
 ## 移动端适配
 
