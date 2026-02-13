@@ -10,6 +10,7 @@ import enImage from './locales/en/image.json'
 import enPrompts from './locales/en/prompts.json'
 import enSearch from './locales/en/search.json'
 import enSettings from './locales/en/settings.json'
+import enSync from './locales/en/sync.json'
 import enTimeline from './locales/en/timeline.json'
 // 中文翻译
 import zhCommon from './locales/zh-CN/common.json'
@@ -21,6 +22,7 @@ import zhImage from './locales/zh-CN/image.json'
 import zhPrompts from './locales/zh-CN/prompts.json'
 import zhSearch from './locales/zh-CN/search.json'
 import zhSettings from './locales/zh-CN/settings.json'
+import zhSync from './locales/zh-CN/sync.json'
 import zhTimeline from './locales/zh-CN/timeline.json'
 
 const LOCALE_STORAGE_KEY = 'mini-diary-locale'
@@ -45,6 +47,7 @@ const resources = {
     editor: zhEditor,
     settings: zhSettings,
     search: zhSearch,
+    sync: zhSync,
     data: zhData,
     date: zhDate,
     image: zhImage,
@@ -57,6 +60,7 @@ const resources = {
     editor: enEditor,
     settings: enSettings,
     search: enSearch,
+    sync: enSync,
     data: enData,
     date: enDate,
     image: enImage,
@@ -76,6 +80,7 @@ i18n.use(initReactI18next).init({
     'editor',
     'settings',
     'search',
+    'sync',
     'data',
     'date',
     'image',

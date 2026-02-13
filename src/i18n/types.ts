@@ -8,6 +8,7 @@ import type zhImage from './locales/zh-CN/image.json'
 import type zhPrompts from './locales/zh-CN/prompts.json'
 import type zhSearch from './locales/zh-CN/search.json'
 import type zhSettings from './locales/zh-CN/settings.json'
+import type zhSync from './locales/zh-CN/sync.json'
 import type zhTimeline from './locales/zh-CN/timeline.json'
 
 declare module 'i18next' {
@@ -19,6 +20,7 @@ declare module 'i18next' {
       editor: typeof zhEditor
       settings: typeof zhSettings
       search: typeof zhSearch
+      sync: typeof zhSync
       data: typeof zhData
       date: typeof zhDate
       image: typeof zhImage

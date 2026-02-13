@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SyncRouteImport } from './routes/sync'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as TimelineRouteImport } from './routes/_timeline'
 import { Route as TimelineIndexRouteImport } from './routes/_timeline/index'
 import { Route as TimelineEntryNewRouteImport } from './routes/_timeline/entry/new'
 import { Route as TimelineEntryIdRouteImport } from './routes/_timeline/entry/$id'
 
+const SyncRoute = SyncRouteImport.update({
+  id: '/sync',
+  path: '/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -41,13 +47,15 @@ const TimelineEntryIdRoute = TimelineEntryIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/search': typeof SearchRoute
   '/': typeof TimelineIndexRoute
+  '/search': typeof SearchRoute
+  '/sync': typeof SyncRoute
   '/entry/$id': typeof TimelineEntryIdRoute
   '/entry/new': typeof TimelineEntryNewRoute
 }
 export interface FileRoutesByTo {
   '/search': typeof SearchRoute
+  '/sync': typeof SyncRoute
   '/': typeof TimelineIndexRoute
   '/entry/$id': typeof TimelineEntryIdRoute
   '/entry/new': typeof TimelineEntryNewRoute
@@ -56,19 +64,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_timeline': typeof TimelineRouteWithChildren
   '/search': typeof SearchRoute
+  '/sync': typeof SyncRoute
   '/_timeline/': typeof TimelineIndexRoute
   '/_timeline/entry/$id': typeof TimelineEntryIdRoute
   '/_timeline/entry/new': typeof TimelineEntryNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/search' | '/' | '/entry/$id' | '/entry/new'
+  fullPaths: '/' | '/search' | '/sync' | '/entry/$id' | '/entry/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/search' | '/' | '/entry/$id' | '/entry/new'
+  to: '/search' | '/sync' | '/' | '/entry/$id' | '/entry/new'
   id:
     | '__root__'
     | '/_timeline'
     | '/search'
+    | '/sync'
     | '/_timeline/'
     | '/_timeline/entry/$id'
     | '/_timeline/entry/new'
@@ -77,10 +87,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   TimelineRoute: typeof TimelineRouteWithChildren
   SearchRoute: typeof SearchRoute
+  SyncRoute: typeof SyncRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sync': {
+      id: '/sync'
+      path: '/sync'
+      fullPath: '/sync'
+      preLoaderRoute: typeof SyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -91,7 +109,7 @@ declare module '@tanstack/react-router' {
     '/_timeline': {
       id: '/_timeline'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof TimelineRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -138,16 +156,8 @@ const TimelineRouteWithChildren = TimelineRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   TimelineRoute: TimelineRouteWithChildren,
   SearchRoute: SearchRoute,
+  SyncRoute: SyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

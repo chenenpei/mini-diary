@@ -1,6 +1,8 @@
 'use client'
 
+import { useNavigate } from '@tanstack/react-router'
 import {
+  Cloud,
   Download,
   HardDrive,
   Info,
@@ -86,9 +88,11 @@ export function Drawer({
   isExporting = false,
   isImporting = false,
 }: DrawerProps) {
+  const navigate = useNavigate()
   const { t } = useTranslation('settings')
   const { t: tCommon } = useTranslation('common')
   const { t: tData } = useTranslation('data')
+  const { t: tSync } = useTranslation('sync')
   const { locale, setLocale } = useLocale()
   const [showStorageInfo, setShowStorageInfo] = useState(false)
 
@@ -235,6 +239,28 @@ export function Drawer({
                     </button>
                   ))}
                 </div>
+              </section>
+
+              {/* 云同步 */}
+              <section>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose()
+                    navigate({ to: '/sync' })
+                  }}
+                  className="flex w-full items-center gap-3 rounded-md border border-border p-3 text-left transition-colors hover:bg-surface"
+                >
+                  <Cloud className="h-5 w-5 text-foreground" />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-foreground">
+                      {tSync('title')}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {tSync('description')}
+                    </div>
+                  </div>
+                </button>
               </section>
 
               {/* 数据管理 */}
