@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
@@ -14,6 +14,7 @@ interface ConflictDialogProps {
 
 export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps) {
   const { t } = useTranslation('sync')
+  const prefersReducedMotion = useReducedMotion()
 
   const handleCancel = useCallback(() => {
     onResolve('cancel')
@@ -66,9 +67,9 @@ export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps)
           <motion.div
             ref={dialogRef}
             className="w-full max-w-sm rounded-lg bg-card p-6 shadow-xl"
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.95 }}
             onClick={(e) => e.stopPropagation()}
             role="alertdialog"
             aria-modal="true"

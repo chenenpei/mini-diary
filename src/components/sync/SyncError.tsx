@@ -31,7 +31,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
       <AlertCircle className="h-12 w-12 text-red-500" />
 
       {/* Error message */}
-      <p className="text-center text-sm text-muted-foreground">{t(messageKey)}</p>
+      <p className="text-center text-sm text-muted-foreground" role="alert">{t(messageKey)}</p>
 
       {/* Action button based on error kind */}
       <div className="flex w-full flex-col gap-2">
@@ -39,6 +39,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={onReauth}
+            autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('reauth')}
@@ -49,6 +50,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={onRetry}
+            autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('retry')}
@@ -59,6 +61,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={onRetry}
+            autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('overwriteCloud')}
@@ -69,6 +72,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           <button
             type="button"
             onClick={() => window.open('https://drive.google.com/settings/storage', '_blank')}
+            autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('manageStorage')}

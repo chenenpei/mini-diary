@@ -1,7 +1,7 @@
 'use client'
 
 import { CheckCircle } from 'lucide-react'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SyncSummary } from '@/types'
@@ -14,6 +14,7 @@ interface SyncCompleteProps {
 
 export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncCompleteProps) {
   const { t } = useTranslation('sync')
+  const prefersReducedMotion = useReducedMotion()
 
   // Auto-return after 3s when no image failures
   useEffect(() => {
@@ -25,12 +26,16 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   const hasImageStats = summary.imagesUploaded > 0 || summary.imagesDownloaded > 0
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-6">
+    <div className="flex flex-1 flex-col items-center gap-6" role="status">
       {/* Success icon with spring bounce */}
       <motion.div
-        initial={{ scale: 0, opacity: 0 }}
+        initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', duration: 0.5, bounce: 0.5 }}
+        transition={
+          prefersReducedMotion
+            ? { duration: 0.2 }
+            : { type: 'spring', duration: 0.5, bounce: 0.5 }
+        }
       >
         <CheckCircle className="h-12 w-12 text-foreground" />
       </motion.div>
@@ -38,9 +43,9 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       {/* Title */}
       <motion.h2
         className="text-lg font-semibold text-foreground"
-        initial={{ opacity: 0 }}
+        initial={prefersReducedMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2 }}
       >
         {t('syncComplete')}
       </motion.h2>
@@ -49,9 +54,9 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       <div className="flex flex-col items-center gap-1">
         <motion.p
           className="text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3 }}
         >
           {t('entriesSynced', { count: summary.entriesSynced })}
         </motion.p>
@@ -59,9 +64,9 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
         {hasImageStats && (
           <motion.p
             className="text-sm text-muted-foreground"
-            initial={{ opacity: 0 }}
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.35 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.35 }}
           >
             {`↑ ${summary.imagesUploaded} · ↓ ${summary.imagesDownloaded}`}
           </motion.p>
@@ -69,9 +74,9 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
 
         <motion.p
           className="text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: hasImageStats ? 0.4 : 0.35 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: hasImageStats ? 0.4 : 0.35 }}
         >
           {t('duration', { seconds: Math.round(summary.duration / 1000) })}
         </motion.p>
@@ -81,9 +86,9 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       {summary.imagesFailed > 0 && (
         <motion.div
           className="w-full rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-900 dark:bg-yellow-950"
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
         >
           <p className="text-sm font-medium text-foreground">
             {t('imagesFailed', { count: summary.imagesFailed })}
@@ -93,6 +98,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             <button
               type="button"
               onClick={onRetryFailed}
+              autoFocus
               className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
             >
               {t('retryFailed')}
@@ -112,13 +118,14 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       {summary.imagesFailed === 0 && (
         <motion.div
           className="w-full"
-          initial={{ opacity: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
         >
           <button
             type="button"
             onClick={onDismiss}
+            autoFocus
             className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('done')}
