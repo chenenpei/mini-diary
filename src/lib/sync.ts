@@ -1,4 +1,4 @@
-import type { DiaryEntry, ImageManifest, ImageMergeResult } from '@/types'
+import type { ChangeState, DiaryEntry, ImageManifest, ImageMergeResult } from '@/types'
 
 /**
  * Merge local and cloud entries by keeping the newer version (by updatedAt)
@@ -34,4 +34,21 @@ export function mergeImages(
     toUpload: localManifest.filter((i) => !cloudIds.has(i.id)).map((i) => i.id),
     toDownload: cloudManifest.filter((i) => !localIds.has(i.id)).map((i) => i.id),
   }
+}
+
+/**
+ * Detect what changed since last sync
+ */
+export function detectChanges(
+  localUpdatedAt: number,
+  cloudSyncedAt: number,
+  lastSyncedAt: number,
+): ChangeState {
+  const localChanged = localUpdatedAt > lastSyncedAt
+  const cloudChanged = cloudSyncedAt > lastSyncedAt
+
+  if (localChanged && cloudChanged) return 'both-changed'
+  if (localChanged) return 'local-only'
+  if (cloudChanged) return 'cloud-only'
+  return 'no-change'
 }

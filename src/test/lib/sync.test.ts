@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { DiaryEntry, ImageManifest } from '@/types'
-import { mergeEntries, mergeImages } from '@/lib/sync'
+import { mergeEntries, mergeImages, detectChanges } from '@/lib/sync'
 
 function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry {
   return {
@@ -134,6 +134,35 @@ describe('sync', () => {
 
       expect(result.toUpload).toEqual([])
       expect(result.toDownload).toEqual([])
+    })
+  })
+
+  describe('detectChanges', () => {
+    const LAST_SYNCED = 1000
+
+    it('should return no-change when nothing changed', () => {
+      const result = detectChanges(LAST_SYNCED, LAST_SYNCED, LAST_SYNCED)
+      expect(result).toBe('no-change')
+    })
+
+    it('should return local-only when only local changed', () => {
+      const result = detectChanges(2000, LAST_SYNCED, LAST_SYNCED)
+      expect(result).toBe('local-only')
+    })
+
+    it('should return cloud-only when only cloud changed', () => {
+      const result = detectChanges(LAST_SYNCED, 2000, LAST_SYNCED)
+      expect(result).toBe('cloud-only')
+    })
+
+    it('should return both-changed when both changed', () => {
+      const result = detectChanges(2000, 3000, LAST_SYNCED)
+      expect(result).toBe('both-changed')
+    })
+
+    it('should return no-change when timestamps equal lastSyncedAt', () => {
+      const result = detectChanges(1000, 1000, 1000)
+      expect(result).toBe('no-change')
     })
   })
 })
