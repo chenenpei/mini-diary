@@ -219,6 +219,8 @@ function mergeImages(
 }
 ```
 
+> **重要**：`mergeImages` 同时用于 Merge 和 Push 流程。Push 时通过对比云端已有的 `imageManifest`，只上传本地新增的图片，避免重复上传已存在于云端的图片。当云端为空（首次同步）时，`cloudManifest` 为空数组，所有本地图片都会被上传。
+
 ---
 
 ## 6. UI 设计与页面状态
@@ -547,9 +549,9 @@ type SyncPhase =
 
 | 操作 | 阶段序列 |
 |------|----------|
-| Push | preparing → checking → uploading-entries → uploading-images → verifying → cleanup → done |
-| Pull | preparing → checking → downloading-entries → downloading-images → verifying → cleanup → done |
-| Merge | preparing → checking → downloading-entries → downloading-images → merging → uploading-entries → uploading-images → verifying → cleanup → done |
+| Push | preparing → checking → uploading-entries → uploading-images（增量） → cleanup → done |
+| Pull | preparing → checking → downloading-entries → downloading-images → verifying → done |
+| Merge | preparing → checking → downloading-entries → downloading-images → merging → uploading-entries → uploading-images → cleanup → done |
 
 > 可重试的阶段失败时，会插入 `retrying` 阶段并展示倒计时，重试成功后继续原阶段序列。
 

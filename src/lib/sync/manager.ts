@@ -170,7 +170,7 @@ export class SyncManager {
         }
         return this.buildNoChangeResult(input, startTime)
       case 'local-only':
-        return this.executePush(input, startTime, signal)
+        return this.executePush(input, startTime, signal, validCloudData.imageManifest)
       case 'cloud-only':
         return this.executePull(validCloudData, input, startTime, signal)
       case 'both-changed': {
@@ -210,7 +210,7 @@ export class SyncManager {
       case 'merge':
         return this.executeMerge(cloudData, input, startTime, signal)
       case 'push':
-        return this.executePush(input, startTime, signal)
+        return this.executePush(input, startTime, signal, cloudData.imageManifest)
       case 'pull':
         return this.executePull(cloudData, input, startTime, signal)
       case 'cancel':
@@ -222,6 +222,7 @@ export class SyncManager {
     input: SyncInput,
     startTime: number,
     signal?: AbortSignal,
+    cloudImageManifest?: ImageManifest[],
   ): Promise<SyncResult> {
     const operation: SyncOperation = 'push'
     const phases = getOperationPhases(operation)
@@ -248,13 +249,13 @@ export class SyncManager {
     )
     checkAborted(signal)
 
-    // Phase: uploading-images
+    // Phase: uploading-images — only upload images not already on cloud
     const uploadImagesIdx = phases.indexOf('uploading-images')
     let imagesUploaded = 0
     const failedImages: string[] = []
-    const totalImages = input.localImageManifest.length
+    const imagesToUpload = mergeImages(input.localImageManifest, cloudImageManifest ?? []).toUpload
 
-    for (const [i, manifest] of input.localImageManifest.entries()) {
+    for (const [i, imageId] of imagesToUpload.entries()) {
       checkAborted(signal)
       this.reportPhaseWithProgress(
         operation,
@@ -262,38 +263,38 @@ export class SyncManager {
         {
           phase: 'uploading-images',
           current: i + 1,
-          total: totalImages,
+          total: imagesToUpload.length,
         },
-        totalImages > 0 ? i / totalImages : 0,
+        imagesToUpload.length > 0 ? i / imagesToUpload.length : 0,
       )
 
       try {
-        const { blob, thumbnail } = await input.getImageBlobs(manifest.id)
+        const { blob, thumbnail } = await input.getImageBlobs(imageId)
         await this.retryableCall(
-          () => this.adapter.uploadImage(imagePath(manifest.id), blob),
+          () => this.adapter.uploadImage(imagePath(imageId), blob),
           'uploading-images',
           signal,
         )
         await this.retryableCall(
-          () => this.adapter.uploadImage(thumbnailPath(manifest.id), thumbnail),
+          () => this.adapter.uploadImage(thumbnailPath(imageId), thumbnail),
           'uploading-images',
           signal,
         )
         imagesUploaded++
       } catch {
-        failedImages.push(manifest.id)
+        failedImages.push(imageId)
       }
     }
 
     // Report uploading-images complete
-    if (totalImages > 0) {
+    if (imagesToUpload.length > 0) {
       this.reportPhaseWithProgress(
         operation,
         uploadImagesIdx,
         {
           phase: 'uploading-images',
-          current: totalImages,
-          total: totalImages,
+          current: imagesToUpload.length,
+          total: imagesToUpload.length,
         },
         1,
       )

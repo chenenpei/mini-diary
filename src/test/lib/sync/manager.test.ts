@@ -520,6 +520,106 @@ describe('SyncManager', () => {
   })
 
   // ============================================
+  // Push flow — skip existing cloud images
+  // ============================================
+
+  describe('push flow (skip existing cloud images)', () => {
+    it('should only upload images not already on cloud when local-only changes', async () => {
+      // Scenario: pull downloaded 2 images, then user adds entry (no new images), syncs again
+      const cloudManifest = [
+        makeManifest({ id: 'img-1', entryId: 'a' }),
+        makeManifest({ id: 'img-2', entryId: 'a' }),
+      ]
+      const cloudData = makeCloudData({
+        syncedAt: new Date(1000).toISOString(),
+        entries: [makeEntry({ id: 'a', updatedAt: 1000, imageIds: ['img-1', 'img-2'] })],
+        imageManifest: cloudManifest,
+      })
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(cloudData)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.uploadImage.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([
+        'images/img-1.jpg',
+        'images/img-1_thumb.jpg',
+        'images/img-2.jpg',
+        'images/img-2_thumb.jpg',
+      ])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      // Local has the same 2 images (downloaded earlier) + a new entry without images
+      const input = makeDefaultInput({
+        localEntries: [
+          makeEntry({ id: 'a', updatedAt: 1000, imageIds: ['img-1', 'img-2'] }),
+          makeEntry({ id: 'b', updatedAt: 2000, content: 'new entry' }),
+        ],
+        localImageManifest: cloudManifest, // same images as cloud
+        lastSyncedAt: 1000,
+      })
+
+      const result = await manager.sync(input)
+
+      expect(result.summary.direction).toBe('push')
+      // Should NOT upload any images since they all already exist on cloud
+      expect(adapter.uploadImage).not.toHaveBeenCalled()
+      expect(result.summary.imagesUploaded).toBe(0)
+    })
+
+    it('should only upload new images when push has mix of existing and new', async () => {
+      const cloudManifest = [makeManifest({ id: 'img-existing', entryId: 'a' })]
+      const cloudData = makeCloudData({
+        syncedAt: new Date(1000).toISOString(),
+        entries: [makeEntry({ id: 'a', updatedAt: 1000, imageIds: ['img-existing'] })],
+        imageManifest: cloudManifest,
+      })
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(cloudData)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.uploadImage.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([
+        'images/img-existing.jpg',
+        'images/img-existing_thumb.jpg',
+        'images/img-new.jpg',
+        'images/img-new_thumb.jpg',
+      ])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const localBlob = new Blob(['new-img'], { type: 'image/jpeg' })
+      const localThumb = new Blob(['new-thumb'], { type: 'image/jpeg' })
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      const input = makeDefaultInput({
+        localEntries: [
+          makeEntry({ id: 'a', updatedAt: 1000, imageIds: ['img-existing'] }),
+          makeEntry({ id: 'b', updatedAt: 2000, imageIds: ['img-new'] }),
+        ],
+        localImageManifest: [
+          makeManifest({ id: 'img-existing', entryId: 'a' }),
+          makeManifest({ id: 'img-new', entryId: 'b' }),
+        ],
+        lastSyncedAt: 1000,
+        getImageBlobs: vi.fn().mockResolvedValue({ blob: localBlob, thumbnail: localThumb }),
+      })
+
+      const result = await manager.sync(input)
+
+      expect(result.summary.direction).toBe('push')
+      // Should only upload the new image, not the existing one
+      expect(adapter.uploadImage).toHaveBeenCalledTimes(2) // blob + thumbnail
+      expect(adapter.uploadImage).toHaveBeenCalledWith('images/img-new.jpg', localBlob)
+      expect(adapter.uploadImage).toHaveBeenCalledWith('images/img-new_thumb.jpg', localThumb)
+      expect(result.summary.imagesUploaded).toBe(1)
+    })
+  })
+
+  // ============================================
   // Cancellation
   // ============================================
 
