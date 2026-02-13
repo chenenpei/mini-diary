@@ -492,7 +492,7 @@ describe('SyncManager', () => {
       const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
 
       // Temporarily mock mergeImages to inject a phantom image ID
-      const syncModule = await import('@/lib/sync')
+      const syncModule = await import('@/lib/sync/merge')
       const mergeImagesSpy = vi.spyOn(syncModule, 'mergeImages').mockReturnValue({
         toUpload: [],
         toDownload: ['img-phantom'], // This ID does NOT exist in cloudData.imageManifest

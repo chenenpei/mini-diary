@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { detectChanges, mergeEntries, mergeImages, validateCloudData } from '@/lib/sync'
+import { detectChanges, mergeEntries, mergeImages, validateCloudData } from '@/lib/sync/merge'
 import type { DiaryEntry, ImageManifest } from '@/types'
 
 function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry {

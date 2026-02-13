@@ -1,5 +1,5 @@
 import type { CloudAdapter, TokenProvider } from '@/lib/cloud/types'
-import { validateCloudData } from '@/lib/sync'
+import { validateCloudData } from '@/lib/sync/merge'
 import type { CloudData, SyncError } from '@/types'
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3/files'

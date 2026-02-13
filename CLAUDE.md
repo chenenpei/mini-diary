@@ -56,6 +56,7 @@ src/
 │   │   ├── settings.ts # 应用设置（同步配置等）
 │   │   └── backups.ts  # 同步备份管理
 │   ├── sync/           # 同步核心逻辑
+│   │   ├── merge.ts    # 纯函数（合并、变更检测、验证）
 │   │   ├── manager.ts  # SyncManager 编排器
 │   │   ├── progress.ts # 进度计算（阶段权重）
 │   │   ├── retry.ts    # 重试机制（指数退避）
@@ -64,7 +65,6 @@ src/
 │   │   ├── types.ts    # CloudAdapter 接口
 │   │   ├── google-drive.ts  # Google Drive 适配器
 │   │   └── auth.ts     # GIS OAuth 认证
-│   ├── sync.ts         # 同步纯函数（合并、变更检测、验证）
 │   ├── contentEditable.ts  # Markdown ↔ HTML 转换
 │   └── utils.ts        # 工具函数 (cn)
 ├── hooks/              # React Hooks
