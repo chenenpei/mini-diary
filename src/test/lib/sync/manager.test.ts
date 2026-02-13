@@ -459,6 +459,64 @@ describe('SyncManager', () => {
       expect(result.summary.imagesUploaded).toBe(1)
       expect(result.summary.imagesDownloaded).toBe(1)
     })
+
+    it('should throw data_corrupt when image is in download list but missing from cloud manifest', async () => {
+      // Cloud manifest has img-cloud, but we'll make mergeImages return an ID
+      // that doesn't exist in the manifest by having the cloud data with a
+      // manifest that references a different image than what's in entries.
+      // We achieve this by constructing cloud data where imageManifest is empty
+      // but entries reference images — the mergeImages function filters by ID,
+      // so we need toDownload to contain an ID not in imageManifest.
+      //
+      // Simplest approach: mock mergeImages to return an extra phantom ID.
+      // But since mergeImages is imported directly, we'll instead construct
+      // a scenario where the manifest find fails by mutating cloud data
+      // after mergeImages runs. Since that's not possible with the current
+      // architecture, we use vi.mock.
+
+      const cloudManifest = [makeManifest({ id: 'img-real', entryId: 'b' })]
+      const cloudData = makeCloudData({
+        syncedAt: new Date(1500).toISOString(),
+        entries: [makeEntry({ id: 'b', updatedAt: 1500 })],
+        imageManifest: cloudManifest,
+      })
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(cloudData)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+      adapter.downloadImage.mockResolvedValue(new Blob(['data'], { type: 'image/jpeg' }))
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress)
+
+      // Temporarily mock mergeImages to inject a phantom image ID
+      const syncModule = await import('@/lib/sync')
+      const mergeImagesSpy = vi.spyOn(syncModule, 'mergeImages').mockReturnValue({
+        toUpload: [],
+        toDownload: ['img-phantom'], // This ID does NOT exist in cloudData.imageManifest
+      })
+
+      const input = makeDefaultInput({
+        localEntries: [makeEntry({ id: 'a', updatedAt: 2000 })],
+        localImageManifest: [],
+        lastSyncedAt: 1000,
+        onConflict: vi.fn().mockResolvedValue('merge'),
+      })
+
+      try {
+        await manager.sync(input)
+        expect.unreachable('should have thrown')
+      } catch (error) {
+        const syncError = error as SyncError
+        expect(syncError.kind).toBe('data_corrupt')
+        expect(syncError.message).toContain('img-phantom')
+        expect(syncError.message).toContain('not found in cloud manifest')
+      } finally {
+        mergeImagesSpy.mockRestore()
+      }
+    })
   })
 
   // ============================================

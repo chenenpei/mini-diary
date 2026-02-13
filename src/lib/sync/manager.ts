@@ -428,11 +428,18 @@ export class SyncManager {
         imageMerge.toDownload.length > 0 ? i / imageMerge.toDownload.length : 0,
       )
 
+      if (!cloudManifestEntry) {
+        throw {
+          kind: 'data_corrupt',
+          message: `Image ${imageId} in download list but not found in cloud manifest`,
+        } satisfies SyncError
+      }
+
       const blob = await this.adapter.downloadImage(imagePath(imageId))
       const thumbnail = await this.adapter.downloadImage(thumbnailPath(imageId))
       downloadedImages.push({
         id: imageId,
-        entryId: cloudManifestEntry?.entryId ?? '',
+        entryId: cloudManifestEntry.entryId,
         blob,
         thumbnail,
       })
