@@ -17,8 +17,15 @@ vi.mock('@/lib/repositories/settings', () => ({
 vi.mock('@/lib/repositories/backups', () => ({
   backupsRepository: {
     createBackup: vi.fn(async () => {}),
+    getBackup: vi.fn(async () => null),
     deleteBackup: vi.fn(async () => {}),
     hasBackup: vi.fn(async () => false),
+  },
+}))
+
+vi.mock('@/lib/repositories/entries', () => ({
+  entriesRepository: {
+    count: vi.fn(async () => 0),
   },
 }))
 
@@ -58,6 +65,7 @@ describe('useSyncFlow', () => {
       expect(result.current.state).toEqual({
         status: 'connected',
         provider: 'google-drive',
+        localCount: 0,
         lastSyncedAt: 1000,
       })
     })
