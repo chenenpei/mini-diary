@@ -164,6 +164,10 @@ export class SyncManager {
 
     switch (changeState) {
       case 'no-change':
+        // If local is empty but cloud has entries, pull (e.g. after "clear all data")
+        if (input.localEntries.length === 0 && validCloudData.entries.length > 0) {
+          return this.executePull(validCloudData, input, startTime, signal)
+        }
         return this.buildNoChangeResult(input, startTime)
       case 'local-only':
         return this.executePush(input, startTime, signal)
