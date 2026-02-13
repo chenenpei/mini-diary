@@ -4,6 +4,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SiGoogledrive } from 'react-icons/si'
+import { TbBrandOnedrive } from 'react-icons/tb'
 import { ConflictDialog } from '@/components/sync/ConflictDialog'
 import { RecoveryBanner } from '@/components/sync/RecoveryBanner'
 import { SyncCompleteView } from '@/components/sync/SyncComplete'
@@ -48,7 +50,7 @@ function SyncPage() {
         </button>
         <span className="text-lg font-medium text-foreground">{t('title')}</span>
       </header>
-      <main className="flex-1 p-4">
+      <main className="flex flex-1 flex-col p-4">
         {state.status === 'recovery' && (
           <RecoveryBanner info={state.info} onRestore={restoreBackup} onDismiss={dismissRecovery} />
         )}
@@ -107,12 +109,14 @@ function IdleView({ onConnect }: { onConnect: (provider: 'google-drive') => void
         <button
           type="button"
           onClick={() => onConnect('google-drive')}
-          className="w-full rounded-md border border-border p-4 text-left text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+          className="flex w-full items-center gap-3 rounded-md border border-border p-4 text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
         >
+          <SiGoogledrive className="h-5 w-5 shrink-0" />
           {t('googleDrive')}
         </button>
-        <div className="flex w-full items-center justify-between rounded-md border border-border p-4 opacity-50">
-          <span className="text-sm font-medium text-foreground">{t('oneDrive')}</span>
+        <div className="flex w-full items-center gap-3 rounded-md border border-border p-4 opacity-50">
+          <TbBrandOnedrive className="h-5 w-5 shrink-0" />
+          <span className="flex-1 text-sm font-medium text-foreground">{t('oneDrive')}</span>
           <span className="rounded-full bg-surface px-2 py-0.5 text-xs text-muted-foreground">
             {t('comingSoon')}
           </span>
