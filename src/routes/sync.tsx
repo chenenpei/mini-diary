@@ -4,6 +4,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ConflictDialog } from '@/components/sync/ConflictDialog'
+import { SyncCompleteView } from '@/components/sync/SyncComplete'
+import { SyncErrorView } from '@/components/sync/SyncError'
 import { SyncProgressView } from '@/components/sync/SyncProgress'
 import { useSyncFlow } from '@/hooks/useSyncFlow'
 
@@ -15,7 +18,7 @@ function SyncPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('sync')
   const { t: tCommon } = useTranslation('common')
-  const { state, connect, sync, cancel, disconnect } = useSyncFlow()
+  const { state, connect, sync, resolveConflict, cancel, disconnect, dismiss } = useSyncFlow()
 
   const handleBack = useCallback(() => {
     navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
@@ -48,14 +51,28 @@ function SyncPage() {
         {state.status === 'syncing' && (
           <SyncProgressView progress={state.progress} onCancel={cancel} />
         )}
-        {state.status === 'conflict' && (
-          <p className="text-sm text-muted-foreground">{t('conflictTitle')}</p>
-        )}
+        <ConflictDialog
+          isOpen={state.status === 'conflict'}
+          info={
+            state.status === 'conflict'
+              ? state.info
+              : {
+                  localChanges: { added: 0, modified: 0, deleted: 0 },
+                  cloudChanges: { added: 0, modified: 0, deleted: 0 },
+                }
+          }
+          onResolve={resolveConflict}
+        />
         {state.status === 'complete' && (
-          <p className="text-sm text-muted-foreground">{t('syncComplete')}</p>
+          <SyncCompleteView summary={state.summary} onDismiss={dismiss} />
         )}
         {state.status === 'error' && (
-          <p className="text-sm text-muted-foreground">{state.error.message}</p>
+          <SyncErrorView
+            error={state.error}
+            onRetry={sync}
+            onReauth={() => connect('google-drive')}
+            onDismiss={dismiss}
+          />
         )}
       </main>
     </div>
