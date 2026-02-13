@@ -276,6 +276,7 @@ export interface SyncSummary {
   imagesDownloaded: number
   imagesFailed: number
   duration: number
+  noChange?: boolean
 }
 
 export interface SyncError {

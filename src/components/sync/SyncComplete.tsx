@@ -16,12 +16,76 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   const { t } = useTranslation('sync')
   const prefersReducedMotion = useReducedMotion()
 
-  // Auto-return after 3s when no image failures
   useEffect(() => {
     if (summary.imagesFailed > 0) return
-    const timer = setTimeout(onDismiss, 3000)
+    const timer = setTimeout(onDismiss, summary.noChange ? 2000 : 3000)
     return () => clearTimeout(timer)
-  }, [summary.imagesFailed, onDismiss])
+  }, [summary.imagesFailed, summary.noChange, onDismiss])
+
+  if (summary.noChange) {
+    return (
+      // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
+      <div className="flex flex-1 flex-col items-center gap-6" role="status">
+        <motion.div
+          initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={
+            prefersReducedMotion
+              ? { duration: 0.2 }
+              : { type: 'spring', duration: 0.5, bounce: 0.5 }
+          }
+        >
+          <CheckCircle className="h-12 w-12 text-foreground" />
+        </motion.div>
+
+        <motion.h2
+          className="text-lg font-semibold text-foreground"
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2 }}
+        >
+          {t('alreadyUpToDate')}
+        </motion.h2>
+
+        <div className="flex flex-col items-center gap-1">
+          <motion.p
+            className="text-sm text-muted-foreground"
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3 }}
+          >
+            {t('noSyncNeeded')}
+          </motion.p>
+
+          <motion.p
+            className="text-sm text-muted-foreground"
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.35 }}
+          >
+            {t('duration', { seconds: Math.round(summary.duration / 1000) })}
+          </motion.p>
+        </div>
+
+        <motion.div
+          className="w-full"
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
+        >
+          <button
+            type="button"
+            onClick={onDismiss}
+            // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
+            autoFocus
+            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+          >
+            {t('done')}
+          </button>
+        </motion.div>
+      </div>
+    )
+  }
 
   const hasImageStats = summary.imagesUploaded > 0 || summary.imagesDownloaded > 0
 
@@ -33,9 +97,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
         initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={
-          prefersReducedMotion
-            ? { duration: 0.2 }
-            : { type: 'spring', duration: 0.5, bounce: 0.5 }
+          prefersReducedMotion ? { duration: 0.2 } : { type: 'spring', duration: 0.5, bounce: 0.5 }
         }
       >
         <CheckCircle className="h-12 w-12 text-foreground" />
@@ -77,7 +139,9 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           className="text-sm text-muted-foreground"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: hasImageStats ? 0.4 : 0.35 }}
+          transition={
+            prefersReducedMotion ? { duration: 0 } : { delay: hasImageStats ? 0.4 : 0.35 }
+          }
         >
           {t('duration', { seconds: Math.round(summary.duration / 1000) })}
         </motion.p>

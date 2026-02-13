@@ -704,12 +704,13 @@ export class SyncManager {
 
   private buildNoChangeResult(input: SyncInput, startTime: number): SyncResult {
     const summary: SyncSummary = {
-      direction: 'push', // arbitrary, no actual operation
+      direction: 'push',
       entriesSynced: 0,
       imagesUploaded: 0,
       imagesDownloaded: 0,
       imagesFailed: 0,
       duration: Date.now() - startTime,
+      noChange: true,
     }
 
     // Report done immediately

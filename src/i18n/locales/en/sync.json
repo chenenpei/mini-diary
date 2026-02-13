@@ -31,6 +31,8 @@
   "retryingAttempt": "Retrying ({{attempt}}/{{max}})...",
   "retryError": "Connection lost",
   "retryCountdown": "Retrying in {{seconds}}s ({{attempt}}/{{max}})",
+  "alreadyUpToDate": "Already up to date",
+  "noSyncNeeded": "Local and cloud data are in sync",
   "syncComplete": "Sync Complete",
   "entriesSynced": "Synced {{count}} entries",
   "imagesUploaded": "{{count}} uploaded",
