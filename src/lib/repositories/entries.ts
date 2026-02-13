@@ -210,4 +210,30 @@ export const entriesRepository = {
   async getDeleted(): Promise<DiaryEntry[]> {
     return db.entries.filter((e) => e.deletedAt !== undefined).toArray()
   },
+
+  /**
+   * Clean up tombstones older than the specified duration and their associated images
+   * @param olderThan Duration in milliseconds (e.g., 30 * 24 * 60 * 60 * 1000 for 30 days)
+   * @returns Number of cleaned up entries
+   */
+  async cleanupTombstones(olderThan: number): Promise<number> {
+    const threshold = Date.now() - olderThan
+    const tombstones = await db.entries
+      .filter((e) => e.deletedAt !== undefined && e.deletedAt < threshold)
+      .toArray()
+
+    if (tombstones.length === 0) return 0
+
+    const imageIds = tombstones.flatMap((e) => e.imageIds)
+    const entryIds = tombstones.map((e) => e.id)
+
+    await db.transaction('rw', [db.entries, db.images], async () => {
+      await db.entries.bulkDelete(entryIds)
+      if (imageIds.length > 0) {
+        await db.images.where('id').anyOf(imageIds).delete()
+      }
+    })
+
+    return tombstones.length
+  },
 }

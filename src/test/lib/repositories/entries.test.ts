@@ -12,6 +12,7 @@ describe('entriesRepository', () => {
   afterEach(async () => {
     // Clean up after each test
     await db.entries.clear()
+    await db.images.clear()
   })
 
   describe('create', () => {
@@ -369,6 +370,81 @@ describe('entriesRepository', () => {
         expect(deletedEntries).toHaveLength(1)
         expect(deletedEntries[0]!.id).toBe(deleted.id)
         expect(deletedEntries[0]!.deletedAt).toBeGreaterThan(0)
+      })
+    })
+
+    describe('tombstone cleanup', () => {
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000
+
+      it('should clean up entries deleted longer than specified duration', async () => {
+        const entry = await entriesRepository.create({
+          content: 'Old deleted',
+          date: '2024-01-15',
+        })
+        // Manually set deletedAt to 31 days ago
+        const oldDeletedAt = Date.now() - THIRTY_DAYS - 1000
+        await db.entries.update(entry.id, { deletedAt: oldDeletedAt })
+
+        const cleaned = await entriesRepository.cleanupTombstones(THIRTY_DAYS)
+
+        expect(cleaned).toBe(1)
+        const raw = await db.entries.get(entry.id)
+        expect(raw).toBeUndefined()
+      })
+
+      it('should not clean up recently deleted entries', async () => {
+        const entry = await entriesRepository.create({
+          content: 'Just deleted',
+          date: '2024-01-15',
+        })
+        await entriesRepository.delete(entry.id)
+
+        const cleaned = await entriesRepository.cleanupTombstones(THIRTY_DAYS)
+
+        expect(cleaned).toBe(0)
+        const raw = await db.entries.get(entry.id)
+        expect(raw).toBeDefined()
+      })
+
+      it('should delete associated images when cleaning up', async () => {
+        const entry = await entriesRepository.create({
+          content: 'Entry with images',
+          date: '2024-01-15',
+          imageIds: ['img-1', 'img-2'],
+        })
+        await db.images.bulkAdd([
+          { id: 'img-1', entryId: entry.id, blob: new Blob(), thumbnail: new Blob(), createdAt: Date.now() },
+          { id: 'img-2', entryId: entry.id, blob: new Blob(), thumbnail: new Blob(), createdAt: Date.now() },
+        ])
+
+        const oldDeletedAt = Date.now() - THIRTY_DAYS - 1000
+        await db.entries.update(entry.id, { deletedAt: oldDeletedAt })
+
+        await entriesRepository.cleanupTombstones(THIRTY_DAYS)
+
+        const img1 = await db.images.get('img-1')
+        const img2 = await db.images.get('img-2')
+        expect(img1).toBeUndefined()
+        expect(img2).toBeUndefined()
+      })
+
+      it('should not affect active entries', async () => {
+        const active = await entriesRepository.create({
+          content: 'Active entry',
+          date: '2024-01-15',
+        })
+        const deleted = await entriesRepository.create({
+          content: 'Old deleted',
+          date: '2024-01-16',
+        })
+        const oldDeletedAt = Date.now() - THIRTY_DAYS - 1000
+        await db.entries.update(deleted.id, { deletedAt: oldDeletedAt })
+
+        await entriesRepository.cleanupTombstones(THIRTY_DAYS)
+
+        const activeStillExists = await db.entries.get(active.id)
+        expect(activeStillExists).toBeDefined()
+        expect(activeStillExists!.deletedAt).toBeUndefined()
       })
     })
   })
