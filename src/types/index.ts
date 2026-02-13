@@ -221,6 +221,16 @@ export interface ImageMergeResult {
 }
 
 /**
+ * Write-ahead backup before pull/merge operations
+ */
+export interface SyncBackup {
+  id: 'latest'
+  entries: DiaryEntry[]
+  imageManifest: ImageManifest[]
+  createdAt: number
+}
+
+/**
  * Change detection state
  */
 export type ChangeState = 'no-change' | 'local-only' | 'cloud-only' | 'both-changed'
