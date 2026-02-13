@@ -1,12 +1,20 @@
 import { db } from '@/lib/db'
 import { generateId } from '@/lib/utils'
-import type { CreateImageInput, ImageRecord } from '@/types'
+import type { CreateImageInput, ImageManifest, ImageRecord } from '@/types'
 
 /**
  * Images Repository
  * Handles all image record CRUD operations
  */
 export const imagesRepository = {
+  /**
+   * Get image manifest (metadata without blob data) for all images
+   */
+  async getManifest(): Promise<ImageManifest[]> {
+    const images = await db.images.toArray()
+    return images.map(({ id, entryId, createdAt }) => ({ id, entryId, createdAt }))
+  },
+
   /**
    * Get a single image by ID
    */
