@@ -23,6 +23,8 @@ export interface DiaryEntry {
   updatedAt: number
   /** Associated image IDs, max 3 */
   imageIds: string[]
+  /** Soft delete timestamp, undefined means not deleted */
+  deletedAt?: number
 }
 
 /**
@@ -53,6 +55,8 @@ export interface AppSettings {
   version: string
   /** Last backup timestamp */
   lastBackupAt?: number
+  /** Last successful sync timestamp */
+  lastSyncedAt?: number
 }
 
 // ============================================
