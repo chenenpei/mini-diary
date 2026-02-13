@@ -45,6 +45,7 @@ declare const google: {
  */
 export function createGoogleTokenProvider(clientId: string): TokenProvider {
   let tokenClient: TokenClient | null = null
+  let inflightRequest: Promise<string> | null = null
 
   return async (): Promise<string> => {
     // 1. Check stored token
@@ -53,8 +54,13 @@ export function createGoogleTokenProvider(clientId: string): TokenProvider {
       return stored.token
     }
 
-    // 2. Request new token via GIS
-    return new Promise<string>((resolve, reject) => {
+    // 2. If a token request is already in-flight, share it
+    if (inflightRequest) {
+      return inflightRequest
+    }
+
+    // 3. Request new token via GIS
+    inflightRequest = new Promise<string>((resolve, reject) => {
       if (!tokenClient) {
         tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: clientId,
@@ -65,6 +71,7 @@ export function createGoogleTokenProvider(clientId: string): TokenProvider {
 
       tokenClient.callback = async (response: TokenResponse) => {
         if (response.error) {
+          await settingsRepository.setAccessToken('', 0)
           reject({
             kind: 'auth',
             message: `OAuth failed: ${response.error}`,
@@ -79,6 +86,10 @@ export function createGoogleTokenProvider(clientId: string): TokenProvider {
 
       // prompt: '' means try silent refresh first, GIS will show popup if needed
       tokenClient.requestAccessToken({ prompt: '' })
+    }).finally(() => {
+      inflightRequest = null
     })
+
+    return inflightRequest
   }
 }
