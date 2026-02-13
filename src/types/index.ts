@@ -175,3 +175,48 @@ export interface SyncMessage {
   id: string
   timestamp: number
 }
+
+// ============================================
+// Cloud Sync Types
+// ============================================
+
+/**
+ * Cloud storage JSON format
+ */
+export interface CloudData {
+  version: 1
+  syncedAt: string // ISO 8601
+  entries: DiaryEntry[]
+  imageManifest: ImageManifest[]
+}
+
+/**
+ * Image manifest entry (without blob data)
+ */
+export interface ImageManifest {
+  id: string
+  entryId: string
+  createdAt: number
+}
+
+/**
+ * Result of cloud data validation
+ */
+export interface ValidationResult {
+  valid: boolean
+  errors: string[]
+  warnings: string[]
+}
+
+/**
+ * Result of image merge operation
+ */
+export interface ImageMergeResult {
+  toUpload: string[]
+  toDownload: string[]
+}
+
+/**
+ * Change detection state
+ */
+export type ChangeState = 'no-change' | 'local-only' | 'cloud-only' | 'both-changed'
