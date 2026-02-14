@@ -886,6 +886,33 @@ describe('SyncManager', () => {
       expect(result.summary.direction).toBe('push')
     })
 
+    it('should return no-change when lastSyncedAt is undefined but data is identical', async () => {
+      const entries = [makeEntry({ id: 'a', updatedAt: 1000 })]
+      const cloudData = makeCloudData({
+        entries,
+        imageManifest: [],
+      })
+
+      const adapter = createMockAdapter()
+      adapter.readJson.mockResolvedValue(cloudData)
+
+      const onConflict = vi.fn()
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      const input = makeDefaultInput({
+        localEntries: entries,
+        lastSyncedAt: undefined,
+        onConflict,
+      })
+
+      const result = await manager.sync(input)
+
+      // Should NOT show conflict dialog
+      expect(onConflict).not.toHaveBeenCalled()
+      expect(result.summary.noChange).toBe(true)
+    })
+
     it('should pull from cloud when cloud exists but lastSyncedAt is undefined', async () => {
       const cloudEntries = [makeEntry({ id: 'a', content: 'cloud' })]
       const cloudData = makeCloudData({

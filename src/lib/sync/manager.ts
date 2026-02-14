@@ -1,5 +1,11 @@
 import type { CloudAdapter } from '@/lib/cloud/types'
-import { detectChanges, mergeEntries, mergeImages, validateCloudData } from '@/lib/sync/merge'
+import {
+  areEntriesIdentical,
+  detectChanges,
+  mergeEntries,
+  mergeImages,
+  validateCloudData,
+} from '@/lib/sync/merge'
 import { calculateProgress, getOperationPhases } from '@/lib/sync/progress'
 import { type RetryOptions, withRetry } from '@/lib/sync/retry'
 import type {
@@ -146,6 +152,10 @@ export class SyncManager {
       // Treat as both-changed if local has entries
       if (input.localEntries.length === 0) {
         return this.executePull(validCloudData, input, startTime, signal)
+      }
+      // Check if data is actually identical (e.g. disconnect/reconnect scenario)
+      if (areEntriesIdentical(input.localEntries, validCloudData.entries)) {
+        return this.buildNoChangeResult(input, startTime)
       }
       // Both sides have data, need conflict resolution
       const conflictInfo = computeConflictInfo(
