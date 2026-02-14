@@ -60,6 +60,16 @@ export function detectChanges(
   return 'no-change'
 }
 
+/**
+ * Check if local and cloud entries are identical (same IDs with same updatedAt).
+ * Used to skip conflict dialog when data hasn't actually changed (e.g. disconnect/reconnect).
+ */
+export function areEntriesIdentical(local: DiaryEntry[], cloud: DiaryEntry[]): boolean {
+  if (local.length !== cloud.length) return false
+  const cloudMap = new Map(cloud.map((e) => [e.id, e.updatedAt]))
+  return local.every((e) => cloudMap.get(e.id) === e.updatedAt)
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }

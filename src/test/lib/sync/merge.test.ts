@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { detectChanges, mergeEntries, mergeImages, validateCloudData } from '@/lib/sync/merge'
+import {
+  areEntriesIdentical,
+  detectChanges,
+  mergeEntries,
+  mergeImages,
+  validateCloudData,
+} from '@/lib/sync/merge'
 import type { DiaryEntry, ImageManifest } from '@/types'
 
 function makeEntry(overrides: Partial<DiaryEntry> & { id: string }): DiaryEntry {
@@ -438,6 +444,41 @@ describe('sync', () => {
 
       expect(result.valid).toBe(true)
       expect(result.warnings).toEqual([])
+    })
+  })
+
+  describe('areEntriesIdentical', () => {
+    it('should return true when entries are identical', () => {
+      const entries = [
+        makeEntry({ id: 'a', updatedAt: 1000 }),
+        makeEntry({ id: 'b', updatedAt: 2000 }),
+      ]
+      expect(areEntriesIdentical(entries, [...entries])).toBe(true)
+    })
+
+    it('should return false when counts differ', () => {
+      const local = [makeEntry({ id: 'a', updatedAt: 1000 })]
+      const cloud = [
+        makeEntry({ id: 'a', updatedAt: 1000 }),
+        makeEntry({ id: 'b', updatedAt: 2000 }),
+      ]
+      expect(areEntriesIdentical(local, cloud)).toBe(false)
+    })
+
+    it('should return false when same id has different updatedAt', () => {
+      const local = [makeEntry({ id: 'a', updatedAt: 2000 })]
+      const cloud = [makeEntry({ id: 'a', updatedAt: 1000 })]
+      expect(areEntriesIdentical(local, cloud)).toBe(false)
+    })
+
+    it('should return false when ids differ', () => {
+      const local = [makeEntry({ id: 'a', updatedAt: 1000 })]
+      const cloud = [makeEntry({ id: 'b', updatedAt: 1000 })]
+      expect(areEntriesIdentical(local, cloud)).toBe(false)
+    })
+
+    it('should return true when both empty', () => {
+      expect(areEntriesIdentical([], [])).toBe(true)
     })
   })
 })
