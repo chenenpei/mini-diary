@@ -193,7 +193,16 @@ export function useSyncFlow() {
     }
   }, [])
 
-  const disconnect = useCallback(async () => {
+  const disconnect = useCallback(async (deleteCloudData = false) => {
+    if (deleteCloudData) {
+      const { GoogleDriveAdapter } = await import('@/lib/cloud/google-drive')
+      const { createGoogleTokenProvider } = await import('@/lib/cloud/auth')
+      const { SyncManager } = await import('@/lib/sync/manager')
+      const tokenProvider = createGoogleTokenProvider(import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '')
+      const adapter = new GoogleDriveAdapter(tokenProvider)
+      const manager = new SyncManager(adapter, () => {})
+      await manager.disconnect(true)
+    }
     await settingsRepository.clearSyncSettings()
     setState({ status: 'idle' })
   }, [])

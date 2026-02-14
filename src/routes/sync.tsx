@@ -2,7 +2,8 @@
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
-import { useCallback } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConflictDialog } from '@/components/sync/ConflictDialog'
 import { RecoveryBanner } from '@/components/sync/RecoveryBanner'
@@ -154,10 +155,25 @@ function ConnectedView({
   lastSyncedAt?: number | undefined
   localCount: number
   onSync: () => void
-  onDisconnect: () => void
+  onDisconnect: (deleteCloudData: boolean) => void
 }) {
   const { t, i18n } = useTranslation('sync')
+  const { t: tCommon } = useTranslation('common')
   const providerLabel = provider === 'google-drive' ? t('googleDrive') : provider
+
+  const [showDisconnect, setShowDisconnect] = useState(false)
+  const [deleteCloud, setDeleteCloud] = useState(false)
+
+  function handleCancel(): void {
+    setShowDisconnect(false)
+    setDeleteCloud(false)
+  }
+
+  function handleConfirm(): void {
+    setShowDisconnect(false)
+    onDisconnect(deleteCloud)
+    setDeleteCloud(false)
+  }
 
   return (
     <div className="flex flex-col gap-4 py-16">
@@ -187,11 +203,63 @@ function ConnectedView({
       </button>
       <button
         type="button"
-        onClick={onDisconnect}
+        onClick={() => setShowDisconnect(true)}
         className="w-full rounded-md border border-border p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
       >
         {t('disconnect')}
       </button>
+
+      <AnimatePresence>
+        {showDisconnect && (
+          <motion.div
+            className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCancel}
+          >
+            <motion.div
+              className="w-full max-w-sm rounded-lg bg-card p-6 shadow-xl"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              role="alertdialog"
+              aria-modal="true"
+            >
+              <h2 className="text-lg font-semibold text-foreground">{t('disconnect')}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{t('disconnectConfirm')}</p>
+
+              <label className="mt-4 flex items-center gap-2 text-sm text-foreground">
+                <input
+                  type="checkbox"
+                  checked={deleteCloud}
+                  onChange={(e) => setDeleteCloud(e.target.checked)}
+                  className="h-4 w-4 accent-foreground"
+                />
+                {t('deleteCloudData')}
+              </label>
+
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="rounded-md px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted active:opacity-80"
+                >
+                  {t('cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirm}
+                  className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 active:opacity-80"
+                >
+                  {tCommon('confirm')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
