@@ -147,6 +147,18 @@ const localChanged = localLastModified > lastSyncedAt  // 本地记录的上次�
 const cloudChanged = cloudSyncedAt > lastSyncedAt
 ```
 
+### 首次同步的数据一致性检测
+
+当 `lastSyncedAt` 为 `undefined`（如断开后重连）且双方都有数据时，先检测数据是否实际一致，避免弹出虚假冲突弹窗：
+
+```typescript
+if (areEntriesIdentical(localEntries, cloudEntries)) {
+  return noChange  // 跳过冲突弹窗
+}
+```
+
+> `areEntriesIdentical` 通过比较每条日记的 `id` + `updatedAt` 判断一致性，O(N) 时间复杂度，不涉及内容比较。
+
 ### 新增本地字段
 
 需要在本地存储上次同步时间：
@@ -191,6 +203,18 @@ function mergeEntries(local: DiaryEntry[], cloud: DiaryEntry[]): DiaryEntry[] {
 | B | 2000 | 1000 | 取本地 |
 | C | 1500 | (无) | 保留本地 |
 | D | (无) | 1200 | 保留云端 |
+
+### 数据一致性检测
+
+```typescript
+function areEntriesIdentical(local: DiaryEntry[], cloud: DiaryEntry[]): boolean {
+  if (local.length !== cloud.length) return false
+  const cloudMap = new Map(cloud.map(e => [e.id, e.updatedAt]))
+  return local.every(e => cloudMap.get(e.id) === e.updatedAt)
+}
+```
+
+> 仅比较 `id` + `updatedAt`，不比较 `content`，O(N) 时间复杂度。用于断开重连场景：`lastSyncedAt` 被清除后，避免将实际一致的数据误判为冲突。
 
 ### 软删除的传播
 
@@ -509,6 +533,27 @@ function mergeImages(
 │            [取消]               │
 └─────────────────────────────────┘
 ```
+
+### 断开连接确认弹窗
+
+```
+┌─────────────────────────────────┐
+│  断开连接                        │
+│                                 │
+│  断开连接后，云端数据不会被       │
+│  删除。你可以随时重新连接。       │
+│                                 │
+│  ☐ 同时删除云端数据              │
+│                                 │
+│         [取消]  [确认]           │
+└─────────────────────────────────┘
+```
+
+**交互说明：**
+- 点击「断开连接」按钮后弹出确认弹窗，防止误触
+- 默认不勾选「同时删除云端数据」
+- 确认按钮使用 destructive 样式（红色）
+- 勾选删除云端数据后确认，会通过 `SyncManager.disconnect(true)` 清理云端所有文件
 
 ---
 
