@@ -61,20 +61,13 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
     const key = PHASE_I18N_KEYS[phase]
     if (!key) return phase
 
-    if (phase === 'downloading-images' && progress.currentPhase.phase === 'downloading-images') {
-      return t('downloadingImages', {
-        current: progress.currentPhase.current,
-        total: progress.currentPhase.total,
-      })
-    }
-    if (phase === 'uploading-images' && progress.currentPhase.phase === 'uploading-images') {
-      return t('uploadingImages', {
-        current: progress.currentPhase.current,
-        total: progress.currentPhase.total,
-      })
+    const label = t(key)
+
+    if (phase === progress.currentPhase.phase && 'current' in progress.currentPhase && 'total' in progress.currentPhase) {
+      return `${label} (${progress.currentPhase.current}/${progress.currentPhase.total})`
     }
 
-    return t(key)
+    return label
   }
 
   return (
