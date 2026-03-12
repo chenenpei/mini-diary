@@ -295,7 +295,7 @@ export const DiaryEditor = forwardRef<DiaryEditorRef, DiaryEditorProps>(function
         {/* Placeholder */}
         {isEmpty && !isComposing && (
           <div
-            className="pointer-events-none absolute left-0 top-0 text-base leading-relaxed text-muted-foreground"
+            className="pointer-events-none absolute left-0 top-0 text-sm leading-relaxed text-muted-foreground"
             aria-hidden="true"
           >
             {placeholderText}

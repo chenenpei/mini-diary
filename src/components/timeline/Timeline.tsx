@@ -345,7 +345,11 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
         )}
       </PageLayout>
 
-      <FAB icon={<Plus className="h-6 w-6" aria-hidden="true" />} onClick={handleCreateEntry} />
+      <FAB
+        icon={<Plus className="h-6 w-6" aria-hidden="true" />}
+        onClick={handleCreateEntry}
+        pulse={!isLoading && (!entries || entries.length === 0)}
+      />
 
       <ConfirmDialog
         isOpen={deleteTarget !== null}

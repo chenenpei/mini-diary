@@ -37,7 +37,7 @@ export function EditorHeader({
       <button
         type="button"
         onClick={onBack}
-        className="text-sm text-foreground transition-colors hover:text-foreground/70 active:opacity-60"
+        className="touch-target flex items-center justify-center text-sm text-foreground transition-colors hover:text-foreground/70 active:opacity-60"
       >
         {t('cancel')}
       </button>
@@ -50,7 +50,7 @@ export function EditorHeader({
             {t('unsavedChanges')}
           </output>
         )}
-        {isDirty && <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />}
+        {isDirty && <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />}
       </div>
 
       {/* Save button */}
@@ -59,10 +59,10 @@ export function EditorHeader({
         onClick={onSave}
         disabled={saveDisabled || isSaving}
         className={cn(
-          'rounded-md bg-primary px-3 py-1 text-sm font-medium text-primary-foreground transition-colors',
+          'rounded-md bg-foreground px-3 py-1 text-sm font-medium text-background transition-all duration-200',
           saveDisabled || isSaving
             ? 'cursor-not-allowed opacity-50'
-            : 'hover:bg-primary/90 active:opacity-80',
+            : 'hover:bg-foreground/90 active:opacity-80',
         )}
       >
         {isSaving ? t('saving') : t('save')}

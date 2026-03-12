@@ -79,7 +79,7 @@ function HighlightText({ text, keyword }: { text: string; keyword: string }) {
       const key = `${acc.pos}-${part.slice(0, 10)}`
       const element =
         part.toLowerCase() === keyword.toLowerCase() ? (
-          <mark key={key} className="bg-foreground/20 text-foreground rounded-sm px-0.5">
+          <mark key={key} className="bg-foreground/15 font-medium text-foreground rounded-sm px-0.5">
             {part}
           </mark>
         ) : (
@@ -187,7 +187,7 @@ function SearchHistoryItem({
           e.stopPropagation()
           onRemove()
         }}
-        className="p-1 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="touch-target flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         aria-label={removeLabel}
       >
         <X className="h-4 w-4" />
@@ -279,7 +279,7 @@ function SearchPage() {
             autoFocus
             className={cn(
               'w-full rounded-sm border border-border bg-surface py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground',
-              'focus:outline-none',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               'transition-colors',
             )}
           />
@@ -306,7 +306,7 @@ function SearchPage() {
         {showResults ? (
           // 搜索结果
           hasResults ? (
-            <div>
+            <div className="mx-auto max-w-[600px]">
               {results.map((entry) => (
                 <SearchResultItem
                   key={entry.id}
@@ -328,7 +328,7 @@ function SearchPage() {
           ) : null
         ) : (
           // 初始状态：显示搜索历史
-          <div>
+          <div className="mx-auto max-w-[600px]">
             {hasHistory ? (
               <>
                 <div className="px-4 py-2 text-xs text-muted-foreground">{t('history')}</div>

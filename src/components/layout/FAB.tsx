@@ -14,6 +14,8 @@ interface FABProps {
   className?: string
   /** Accessible label */
   'aria-label'?: string
+  /** Play a subtle one-time pulse animation to draw attention */
+  pulse?: boolean
 }
 
 /**
@@ -26,7 +28,7 @@ interface FABProps {
  * - 阴影: md
  * - Hover: scale(1.05) + 阴影增强
  */
-export function FAB({ icon, onClick, className, 'aria-label': ariaLabel }: FABProps) {
+export function FAB({ icon, onClick, className, 'aria-label': ariaLabel, pulse }: FABProps) {
   const { t } = useTranslation('entry')
   const label = ariaLabel ?? t('create')
 
@@ -35,9 +37,10 @@ export function FAB({ icon, onClick, className, 'aria-label': ariaLabel }: FABPr
       type="button"
       onClick={onClick}
       className={cn(
-        'fixed bottom-6 left-1/2 z-50 flex h-14 w-14 -translate-x-1/2 touch-manipulation items-center justify-center rounded-sm bg-primary text-primary-foreground shadow-md transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+        'fixed bottom-6 left-1/2 z-50 flex h-14 w-14 -translate-x-1/2 touch-manipulation items-center justify-center rounded-sm bg-foreground text-background shadow-md transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
         className,
       )}
+      {...(pulse ? { animate: { scale: [1, 1.08, 1] }, transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] as const, delay: 0.6 } } : {})}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onTapStart={() => triggerHaptic(10)}

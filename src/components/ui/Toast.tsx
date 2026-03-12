@@ -66,11 +66,11 @@ const easing = {
 const ToastIcon = ({ type }: { type: ToastType }) => {
   switch (type) {
     case 'success':
-      return <CheckCircle className="h-5 w-5 text-green-500" />
+      return <CheckCircle className="h-5 w-5 text-foreground" />
     case 'error':
-      return <AlertCircle className="h-5 w-5 text-red-500" />
+      return <AlertCircle className="h-5 w-5 text-destructive" />
     default:
-      return <Info className="h-5 w-5 text-blue-500" />
+      return <Info className="h-5 w-5 text-muted-foreground" />
   }
 }
 

@@ -90,7 +90,7 @@ export function ConfirmDialog({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 px-4"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 px-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -136,7 +136,7 @@ export function ConfirmDialog({
                   'rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
                   destructive
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:opacity-80'
-                    : 'bg-primary text-primary-foreground hover:bg-primary/90 active:opacity-80',
+                    : 'bg-foreground text-background hover:bg-foreground/90 active:opacity-80',
                 )}
               >
                 {isLoading ? t('processing') : displayConfirmText}

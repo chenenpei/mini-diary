@@ -204,7 +204,7 @@ function ToolbarButton({ icon, label, onClick, disabled }: ToolbarButtonProps) {
       disabled={disabled}
       className={cn(
         'flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-md px-2.5 text-foreground transition-colors',
-        disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-muted active:opacity-70',
+        disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-muted active:opacity-60',
       )}
     >
       {icon}

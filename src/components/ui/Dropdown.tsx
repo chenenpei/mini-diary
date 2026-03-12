@@ -88,7 +88,7 @@ export function Dropdown({ items, trigger, triggerClassName, menuClassName }: Dr
         type="button"
         onClick={handleToggle}
         className={cn(
-          'flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
+          'touch-target flex items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
           triggerClassName,
         )}
         aria-label={t('moreActions')}

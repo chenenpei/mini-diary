@@ -28,7 +28,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
   return (
     <div className="flex flex-col items-center gap-6 py-16">
       {/* Error icon */}
-      <AlertCircle className="h-12 w-12 text-red-500" />
+      <AlertCircle className="h-12 w-12 text-destructive" />
 
       {/* Error message */}
       <p className="text-center text-sm text-muted-foreground" role="alert">

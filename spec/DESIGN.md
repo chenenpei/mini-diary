@@ -21,7 +21,7 @@
 | Secondary | `#111827` | 次要文字 |
 | Tertiary | `#6B7280` | 辅助文字、占位符 |
 | Background | `#FFFFFF` | 主背景 |
-| Surface | `#FFFFFF` | 卡片背景 |
+| Surface | `#F9FAFB` | 卡片背景 |
 | Border | `#E5E7EB` | 分割线、边框 |
 
 ### 暗色模式
@@ -33,15 +33,16 @@
 | Background | `#09090B` | 主背景 |
 | Surface | `#18181B` | 卡片背景 |
 | Border | `#27272A` | 分割线、边框 |
-| Button Primary | `#27272A` | 按钮背景（FAB、主要按钮） |
+| Button Primary | `#F4F4F5` | 按钮背景（FAB、主要按钮），使用 Foreground 色以确保高对比 |
 
 ### 交互状态
 | 状态 | 样式 |
 |------|------|
-| Hover | `opacity: 0.8` |
-| Active | `opacity: 0.6` |
-| Focus | 2px 黑色/白色边框 |
-| Disabled | `opacity: 0.4` |
+| Hover | `opacity: 0.9`（bg-foreground/90） |
+| Active (图标按钮) | `opacity: 0.6` |
+| Active (操作按钮) | `opacity: 0.8` |
+| Focus | 2px outline, offset 2px |
+| Disabled | `opacity: 0.5` |
 
 ---
 
@@ -156,8 +157,8 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
 
 ### FAB 按钮
 - 尺寸：56×56px
-- 背景：Primary（亮色模式：黑色，暗色模式：深灰色 `#27272A`）
-- 图标：背景反色（亮色模式：白色，暗色模式：白色）
+- 背景：Foreground（亮色模式：黑色，暗色模式：浅灰 `#F4F4F5`）
+- 图标：Background 反色（亮色模式：白色，暗色模式：近黑 `#09090B`）
 - 阴影：md
 - Hover：scale(1.05) + 阴影增强
 

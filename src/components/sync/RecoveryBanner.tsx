@@ -15,7 +15,7 @@ export function RecoveryBanner({ info, onRestore, onDismiss }: RecoveryBannerPro
 
   return (
     <div className="flex flex-col items-center gap-6 py-16">
-      <AlertTriangle className="h-12 w-12 text-yellow-500" />
+      <AlertTriangle className="h-12 w-12 text-destructive" />
 
       <div className="text-center">
         <h2 className="text-lg font-semibold text-foreground">{t('recoveryTitle')}</h2>

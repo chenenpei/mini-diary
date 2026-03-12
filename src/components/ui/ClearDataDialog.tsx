@@ -96,14 +96,14 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
           {/* 背景遮罩 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: easing.smooth }}
-            className="absolute inset-0 bg-black/80"
+            className="absolute inset-0 bg-black/50"
             onClick={() => !isLoading && onCancel()}
             aria-hidden="true"
           />
@@ -124,7 +124,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
               type="button"
               onClick={onCancel}
               disabled={isLoading}
-              className="absolute right-4 top-4 rounded-sm text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+              className="absolute right-4 top-4 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50"
               aria-label={tCommon('close')}
             >
               <X className="h-5 w-5" />
@@ -226,7 +226,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={confirmText}
-                    className="w-full rounded-sm border border-border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+                    className="w-full rounded-sm border border-border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     autoComplete="off"
                   />
                   <div className="flex gap-3">

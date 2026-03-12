@@ -82,7 +82,7 @@ export function DiaryCard({
   return (
     <motion.article
       className={cn(
-        'relative cursor-pointer rounded-lg bg-card px-4 pb-4 pt-3 shadow-sm ring-1 ring-black/5 dark:border dark:border-border sm:px-5 sm:pb-5 sm:pt-3.5',
+        'relative cursor-pointer rounded-md border border-border bg-card px-4 pb-4 pt-3 shadow-sm sm:px-5 sm:pb-5 sm:pt-3.5',
         className,
       )}
       onDoubleClick={() => onEdit?.(entry)}

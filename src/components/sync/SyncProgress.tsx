@@ -90,7 +90,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
               {isCompleted ? (
                 <CheckCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
               ) : isRetrying ? (
-                <XCircle className="h-4 w-4 shrink-0 text-red-500" />
+                <XCircle className="h-4 w-4 shrink-0 text-destructive" />
               ) : prefersReducedMotion ? (
                 <Circle className="h-4 w-4 shrink-0 fill-foreground text-foreground" />
               ) : (
@@ -102,7 +102,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
                 </motion.div>
               )}
               <span
-                className={`text-sm ${isRetrying ? 'text-red-500' : isActive ? 'text-foreground' : 'text-muted-foreground'}`}
+                className={`text-sm ${isRetrying ? 'text-destructive' : isActive ? 'text-foreground' : 'text-muted-foreground'}`}
               >
                 {getPhaseLabel(phase)}
               </span>

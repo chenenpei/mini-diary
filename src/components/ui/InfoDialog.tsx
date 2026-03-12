@@ -57,7 +57,7 @@ export function InfoDialog({ isOpen, title, items, closeText, onClose }: InfoDia
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 px-4"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 px-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -88,7 +88,7 @@ export function InfoDialog({ isOpen, title, items, closeText, onClose }: InfoDia
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 active:opacity-80"
+                className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 active:opacity-80"
               >
                 {closeText}
               </button>
