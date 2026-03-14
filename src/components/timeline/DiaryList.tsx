@@ -109,12 +109,9 @@ export function DiaryList({
             />
           </motion.div>
         ))}
-        {showSparseHint && (
-          <div className="py-3.5">
-            <SparseHint className="py-0 text-left" />
-          </div>
-        )}
       </motion.div>
+
+      {showSparseHint && <SparseHint className="pt-6" />}
 
       <Lightbox
         images={lightboxImages}
