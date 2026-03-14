@@ -3,6 +3,7 @@
 import { CheckCircle, Circle, XCircle } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 import type { SyncPhase, SyncProgress } from '@/types'
 
@@ -106,7 +107,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
                 </motion.div>
               )}
               <span
-                className={`text-sm ${isRetrying ? 'text-destructive' : isActive ? 'text-foreground' : 'text-muted-foreground'}`}
+                className={cn('text-sm', isRetrying ? 'text-destructive' : isActive ? 'text-foreground' : 'text-muted-foreground')}
               >
                 {getPhaseLabel(phase)}
               </span>

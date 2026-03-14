@@ -19,13 +19,13 @@ export function registerServiceWorker(): void {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // 新版本已安装，可以提示用户刷新
-              console.log('[SW] New content available, please refresh.')
+              console.debug('[SW] New content available, please refresh.')
             }
           })
         }
       })
 
-      console.log('[SW] Service Worker registered successfully')
+      console.debug('[SW] Service Worker registered successfully')
     } catch (error) {
       console.error('[SW] Service Worker registration failed:', error)
     }

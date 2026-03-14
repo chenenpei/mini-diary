@@ -1,11 +1,10 @@
 'use client'
 
 import { useNavigate } from '@tanstack/react-router'
-import { Cloud, Download, Info, Monitor, Moon, Sun, Trash2, Upload, X } from 'lucide-react'
+import { Cloud, Download, Monitor, Moon, Sun, Trash2, Upload, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { InfoDialog } from '@/components/ui/InfoDialog'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import type { Locale } from '@/i18n'
 import { useLocale } from '@/i18n/useLocale'
@@ -78,11 +77,10 @@ export function Drawer({
   const { t: tData } = useTranslation('data')
   const { t: tSync } = useTranslation('sync')
   const { locale, setLocale } = useLocale()
-  const [showStorageInfo, setShowStorageInfo] = useState(false)
 
   // Focus trap
   const drawerRef = useFocusTrap<HTMLElement>({
-    isActive: isOpen && !showStorageInfo, // Disable when info dialog is open
+    isActive: isOpen,
     autoFocus: true,
     restoreFocus: true,
   })
@@ -163,7 +161,7 @@ export function Drawer({
 
             {/* 内容 */}
             <div className="flex flex-col overflow-y-auto p-4 pb-16">
-              {/* 主题切换 */}
+              {/* 偏好设置 */}
               <section>
                 <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">{t('theme')}</h3>
                 <div className="flex gap-2">
@@ -184,11 +182,8 @@ export function Drawer({
                     </button>
                   ))}
                 </div>
-              </section>
 
-              {/* 语言切换 */}
-              <section className="mt-5">
-                <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">{t('language')}</h3>
+                <h3 className="mb-3 mt-6 text-xs font-medium uppercase tracking-widest text-muted-foreground">{t('language')}</h3>
                 <div className="flex gap-2">
                   {languageOptions.map((option) => (
                     <button
@@ -210,7 +205,7 @@ export function Drawer({
               </section>
 
               {/* 云同步 */}
-              <section className="mt-8">
+              <section className="mt-6">
                 <button
                   type="button"
                   onClick={() => {
@@ -228,20 +223,11 @@ export function Drawer({
               </section>
 
               {/* 数据管理 */}
-              <section className="mt-8">
-                <h3 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              <section className="mt-6">
+                <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
                   {t('dataManagement')}
-                  <button
-                    type="button"
-                    onClick={() => setShowStorageInfo(true)}
-                    className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                    aria-label={tData('storageInfoTitle')}
-                  >
-                    <Info className="h-4 w-4" />
-                  </button>
                 </h3>
-                <div className="flex flex-col gap-2">
-                  {/* 导出 */}
+                <div className="flex flex-col gap-1">
                   <button
                     type="button"
                     onClick={onExport}
@@ -254,7 +240,6 @@ export function Drawer({
                     </span>
                   </button>
 
-                  {/* 导入 */}
                   <button
                     type="button"
                     onClick={onImport}
@@ -266,19 +251,16 @@ export function Drawer({
                       {isImporting ? tData('importing') : tData('import')}
                     </span>
                   </button>
-                </div>
-              </section>
 
-              {/* 清空数据（独立分组，与日常操作分离） */}
-              <section className="mt-6">
-                <button
-                  type="button"
-                  onClick={onClearData}
-                  className="flex w-full items-center gap-3 rounded-sm border border-destructive/30 p-3 text-left transition-colors hover:bg-destructive/5"
-                >
-                  <Trash2 className="h-5 w-5 text-destructive" />
-                  <span className="text-sm font-medium text-destructive">{tData('clearAll')}</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={onClearData}
+                    className="flex items-center gap-3 rounded-sm p-3 text-left transition-colors hover:bg-destructive/5"
+                  >
+                    <Trash2 className="h-5 w-5 text-destructive" />
+                    <span className="text-sm font-medium text-destructive">{tData('clearAll')}</span>
+                  </button>
+                </div>
               </section>
             </div>
 
@@ -293,19 +275,6 @@ export function Drawer({
             </div>
           </motion.aside>
 
-          {/* 数据存储说明弹窗 */}
-          <InfoDialog
-            isOpen={showStorageInfo}
-            title={tData('storageInfoTitle')}
-            items={[
-              tData('storageInfoItem1'),
-              tData('storageInfoItem2'),
-              tData('storageInfoItem3'),
-              tData('storageInfoItem4'),
-            ]}
-            closeText={tData('gotIt')}
-            onClose={() => setShowStorageInfo(false)}
-          />
         </div>
       )}
     </AnimatePresence>

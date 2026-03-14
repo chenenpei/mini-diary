@@ -32,7 +32,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           transition={
             prefersReducedMotion
               ? { duration: 0.2 }
-              : { type: 'spring', duration: 0.5, bounce: 0.5 }
+              : { type: 'spring', duration: 0.5, bounce: 0 }
           }
         >
           <CheckCircle className="h-12 w-12 text-foreground" />
@@ -92,12 +92,12 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   return (
     // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
     <div className="flex flex-col items-center gap-6 py-16" role="status">
-      {/* Success icon with spring bounce */}
+      {/* Success icon with spring animation */}
       <motion.div
         initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={
-          prefersReducedMotion ? { duration: 0.2 } : { type: 'spring', duration: 0.5, bounce: 0.5 }
+          prefersReducedMotion ? { duration: 0.2 } : { type: 'spring', duration: 0.5, bounce: 0 }
         }
       >
         <CheckCircle className="h-12 w-12 text-foreground" />

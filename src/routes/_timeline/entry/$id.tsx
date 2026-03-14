@@ -55,15 +55,34 @@ function EditEntryPage() {
   const { data: existingImagesData } = useImagesByIds(entry?.imageIds ?? [])
 
   // Build existing images with URLs (excluding removed ones)
+  // Track created URLs for cleanup to prevent memory leaks
+  const existingImageUrlsRef = useRef<string[]>([])
+
   const existingImages = useMemo(() => {
+    // Revoke previous URLs
+    for (const url of existingImageUrlsRef.current) {
+      URL.revokeObjectURL(url)
+    }
+    existingImageUrlsRef.current = []
+
     if (!existingImagesData) return []
     return existingImagesData
       .filter((img) => !removedImageIds.includes(img.id))
-      .map((img) => ({
-        id: img.id,
-        url: URL.createObjectURL(img.thumbnail),
-      }))
+      .map((img) => {
+        const url = URL.createObjectURL(img.thumbnail)
+        existingImageUrlsRef.current.push(url)
+        return { id: img.id, url }
+      })
   }, [existingImagesData, removedImageIds])
+
+  // Cleanup all URLs on unmount
+  useEffect(() => {
+    return () => {
+      for (const url of existingImageUrlsRef.current) {
+        URL.revokeObjectURL(url)
+      }
+    }
+  }, [])
 
   // Sync content when entry loads
   useEffect(() => {

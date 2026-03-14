@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSwipeable } from 'react-swipeable'
 import { Drawer, FAB, PageLayout, TopBar } from '@/components/layout'
@@ -83,7 +83,16 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
   const { data: images } = useImagesByIds(allImageIds)
 
   // Build image URLs maps (thumbnails for display, full for lightbox)
+  // Track created URLs for cleanup to prevent memory leaks
+  const imageUrlsRef = useRef<string[]>([])
+
   const { thumbnailUrlsMap, fullImageUrlsMap } = useMemo(() => {
+    // Revoke previous URLs
+    for (const url of imageUrlsRef.current) {
+      URL.revokeObjectURL(url)
+    }
+    imageUrlsRef.current = []
+
     const thumbnailMap = new Map<string, string[]>()
     const fullMap = new Map<string, string[]>()
     if (!entries || !images) return { thumbnailUrlsMap: thumbnailMap, fullImageUrlsMap: fullMap }
@@ -91,18 +100,24 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
     for (const entry of entries) {
       const entryImages = images.filter((img) => entry.imageIds.includes(img.id))
       if (entryImages.length > 0) {
-        thumbnailMap.set(
-          entry.id,
-          entryImages.map((img) => URL.createObjectURL(img.thumbnail)),
-        )
-        fullMap.set(
-          entry.id,
-          entryImages.map((img) => URL.createObjectURL(img.blob)),
-        )
+        const thumbUrls = entryImages.map((img) => URL.createObjectURL(img.thumbnail))
+        const fullUrls = entryImages.map((img) => URL.createObjectURL(img.blob))
+        thumbnailMap.set(entry.id, thumbUrls)
+        fullMap.set(entry.id, fullUrls)
+        imageUrlsRef.current.push(...thumbUrls, ...fullUrls)
       }
     }
     return { thumbnailUrlsMap: thumbnailMap, fullImageUrlsMap: fullMap }
   }, [entries, images])
+
+  // Cleanup all URLs on unmount
+  useEffect(() => {
+    return () => {
+      for (const url of imageUrlsRef.current) {
+        URL.revokeObjectURL(url)
+      }
+    }
+  }, [])
 
   const handlePreviousDay = useCallback(() => {
     const prevDate = dateUtils.getPreviousDay(currentDate)
