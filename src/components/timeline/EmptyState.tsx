@@ -84,6 +84,8 @@ export function SparseHint({ text, className }: SparseHintProps) {
   const displayText = text ?? t('sparseHint')
 
   return (
-    <p className={cn('py-4 text-center text-sm text-muted-foreground', className)}>{displayText}</p>
+    <div className={cn('flex flex-1 items-center justify-center', className)}>
+      <p className="text-sm text-muted-foreground">{displayText}</p>
+    </div>
   )
 }

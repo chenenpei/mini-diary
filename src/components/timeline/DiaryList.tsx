@@ -6,7 +6,6 @@ import { Lightbox } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import type { DiaryEntry } from '@/types'
 import { cardListVariants, DiaryCard } from './DiaryCard'
-import { SparseHint } from './EmptyState'
 
 interface DiaryListProps {
   /** List of diary entries */
@@ -25,8 +24,6 @@ interface DiaryListProps {
   scrollToId?: string | undefined
   /** Callback when scroll completes */
   onScrollComplete?: () => void
-  /** Show sparse hint when entries < 3 */
-  showSparseHint?: boolean
   /** Additional CSS classes */
   className?: string
 }
@@ -47,7 +44,6 @@ export function DiaryList({
   fullImageUrlsMap = new Map(),
   scrollToId,
   onScrollComplete,
-  showSparseHint = false,
   className,
 }: DiaryListProps) {
   const entryRefs = useRef<Map<string, HTMLDivElement>>(new Map())
@@ -85,7 +81,7 @@ export function DiaryList({
   return (
     <>
       <motion.div
-        className={cn('flex flex-col divide-y divide-border/40', className)}
+        className={cn('flex flex-col divide-y divide-border', className)}
         variants={cardListVariants}
         initial={false}
         animate="show"
@@ -110,8 +106,6 @@ export function DiaryList({
           </motion.div>
         ))}
       </motion.div>
-
-      {showSparseHint && <SparseHint className="pt-12" />}
 
       <Lightbox
         images={lightboxImages}

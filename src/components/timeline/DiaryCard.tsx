@@ -81,17 +81,22 @@ export function DiaryCard({
 
   return (
     <motion.article
-      className={cn('cursor-pointer py-3.5', className)}
+      className={cn(
+        'relative cursor-pointer py-5',
+        className,
+      )}
       onDoubleClick={() => onEdit?.(entry)}
       onClick={handleTap}
     >
-      {/* Time + Dropdown */}
-      <div className="flex items-center justify-between">
-        <time className="text-xs font-medium tracking-wide text-muted-foreground" dateTime={entry.date}>
-          {formattedTime}
-        </time>
+      {/* Dropdown menu */}
+      <div className="absolute right-0 top-0">
         <Dropdown items={dropdownItems} />
       </div>
+
+      {/* Time */}
+      <time className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground" dateTime={entry.date}>
+        {formattedTime}
+      </time>
 
       {/* Full Content */}
       <div className="mt-2 text-sm leading-relaxed text-foreground sm:text-base">
