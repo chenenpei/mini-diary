@@ -91,7 +91,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
       exit={{ y: -100, opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.25, ease: easing.smooth }}
       className={cn(
-        'flex items-center gap-3 rounded-md border border-border bg-background px-4 py-3 shadow-md',
+        'flex items-center gap-3 rounded-sm border border-border bg-background px-4 py-3 shadow-md',
         'min-w-[280px] max-w-[400px]',
       )}
       role="alert"

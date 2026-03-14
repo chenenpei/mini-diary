@@ -102,7 +102,7 @@ export function Dropdown({ items, trigger, triggerClassName, menuClassName }: Dr
         {isOpen && (
           <motion.div
             className={cn(
-              'absolute right-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-md bg-background py-1 shadow-lg border border-border',
+              'absolute right-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-sm bg-background py-1 shadow-lg border border-border',
               menuClassName,
             )}
             initial={{ opacity: 0, scale: 0.95, y: -4 }}

@@ -242,7 +242,7 @@ export function DatePicker({
               <button
                 type="button"
                 onClick={handlePrevMonth}
-                className="flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="flex h-11 w-11 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label={t('prevMonth')}
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -250,7 +250,7 @@ export function DatePicker({
               <button
                 type="button"
                 onClick={() => setShowYearSelector(!showYearSelector)}
-                className="rounded-md px-2 py-1 font-medium text-foreground transition-colors hover:bg-muted"
+                className="rounded-sm px-2 py-1 font-semibold tracking-tight text-foreground transition-colors hover:bg-muted"
               >
                 {monthYearDisplay}
               </button>
@@ -259,7 +259,7 @@ export function DatePicker({
                 onClick={handleNextMonth}
                 disabled={nextMonthDisabled}
                 className={cn(
-                  'flex h-11 w-11 items-center justify-center rounded-md transition-colors',
+                  'flex h-11 w-11 items-center justify-center rounded-sm transition-colors',
                   nextMonthDisabled
                     ? 'cursor-not-allowed text-muted-foreground/40'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -283,7 +283,7 @@ export function DatePicker({
                         type="button"
                         onClick={() => handleYearSelect(year)}
                         className={cn(
-                          'rounded-md py-2 text-sm transition-colors',
+                          'rounded-sm py-2 text-sm transition-colors',
                           isCurrentYear
                             ? 'bg-foreground text-background'
                             : 'text-foreground hover:bg-muted',
@@ -323,7 +323,7 @@ export function DatePicker({
                         onClick={() => handleDateSelect(date)}
                         disabled={isDisabled}
                         className={cn(
-                          'relative flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors',
+                          'relative flex h-9 w-9 items-center justify-center rounded-sm text-sm transition-colors',
                           !isCurrentMonth && 'text-muted-foreground/50',
                           isCurrentMonth &&
                             !isSelected &&
@@ -355,7 +355,7 @@ export function DatePicker({
                   <button
                     type="button"
                     onClick={() => handleDateSelect(toDateString(new Date()))}
-                    className="w-full rounded-md py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    className="w-full rounded-sm py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                   >
                     {t('today')}
                   </button>
