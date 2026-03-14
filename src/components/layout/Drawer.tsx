@@ -1,17 +1,7 @@
 'use client'
 
 import { useNavigate } from '@tanstack/react-router'
-import {
-  Cloud,
-  Download,
-  Info,
-  Monitor,
-  Moon,
-  Sun,
-  Trash2,
-  Upload,
-  X,
-} from 'lucide-react'
+import { Cloud, Download, Info, Monitor, Moon, Sun, Trash2, Upload, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -19,12 +9,8 @@ import { InfoDialog } from '@/components/ui/InfoDialog'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import type { Locale } from '@/i18n'
 import { useLocale } from '@/i18n/useLocale'
+import { easing } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-
-// 动画缓动函数
-const easing = {
-  smooth: [0.4, 0, 0.2, 1] as const,
-}
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -202,9 +188,7 @@ export function Drawer({
 
               {/* 语言切换 */}
               <section className="mt-5">
-                <h3 className="mb-2 text-sm font-medium text-foreground">
-                  {t('language')}
-                </h3>
+                <h3 className="mb-2 text-sm font-medium text-foreground">{t('language')}</h3>
                 <div className="flex gap-2">
                   {languageOptions.map((option) => (
                     <button
@@ -303,7 +287,9 @@ export function Drawer({
               <div className="text-center text-xs text-muted-foreground">
                 {t('storageUsed', { size: formatStorageSize(storageUsed) })}
               </div>
-              <div className="mt-0.5 text-center text-xs text-muted-foreground/60">MiniDiary v1.0.0</div>
+              <div className="mt-0.5 text-center text-xs text-muted-foreground/60">
+                MiniDiary v1.0.0
+              </div>
             </div>
           </motion.aside>
 

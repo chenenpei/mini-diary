@@ -63,7 +63,11 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
 
     const label = t(key)
 
-    if (phase === progress.currentPhase.phase && 'current' in progress.currentPhase && 'total' in progress.currentPhase) {
+    if (
+      phase === progress.currentPhase.phase &&
+      'current' in progress.currentPhase &&
+      'total' in progress.currentPhase
+    ) {
       return `${label} (${progress.currentPhase.current}/${progress.currentPhase.total})`
     }
 

@@ -147,7 +147,10 @@ export function Lightbox({ images, currentIndex, isOpen, onClose, onIndexChange 
 
           {/* Image counter */}
           {hasMultiple && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+            <div
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white"
+              aria-hidden="true"
+            >
               {currentIndex + 1} / {images.length}
             </div>
           )}

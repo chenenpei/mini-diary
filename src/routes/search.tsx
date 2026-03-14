@@ -79,7 +79,10 @@ function HighlightText({ text, keyword }: { text: string; keyword: string }) {
       const key = `${acc.pos}-${part.slice(0, 10)}`
       const element =
         part.toLowerCase() === keyword.toLowerCase() ? (
-          <mark key={key} className="bg-foreground/15 font-medium text-foreground rounded-sm px-0.5">
+          <mark
+            key={key}
+            className="bg-foreground/15 font-medium text-foreground rounded-sm px-0.5"
+          >
             {part}
           </mark>
         ) : (

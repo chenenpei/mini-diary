@@ -4,17 +4,13 @@ import { AlertTriangle, Loader2, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { easing } from '@/lib/motion'
 import { settingsRepository } from '@/lib/repositories/settings'
 
 interface ClearDataDialogProps {
   isOpen: boolean
   onConfirm: (options: { clearLocal: boolean; clearCloud: boolean }) => Promise<void>
   onCancel: () => void
-}
-
-// 动画缓动函数
-const easing = {
-  smooth: [0.4, 0, 0.2, 1] as const,
 }
 
 /**
@@ -226,6 +222,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={confirmText}
+                    aria-label={t('confirmInputLabel')}
                     className="w-full rounded-sm border border-border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     autoComplete="off"
                   />

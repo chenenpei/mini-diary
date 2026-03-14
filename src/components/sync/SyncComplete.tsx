@@ -150,7 +150,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       {/* Partial failure warning */}
       {summary.imagesFailed > 0 && onRetryFailed && (
         <motion.div
-          className="w-full rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-900 dark:bg-yellow-950"
+          className="w-full rounded-md border border-destructive/30 bg-destructive/5 p-3"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}

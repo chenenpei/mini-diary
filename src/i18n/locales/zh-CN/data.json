@@ -28,5 +28,6 @@
   "clearCloudOption": "云端数据（Google Drive）",
   "invalidBackupFormat": "无效的备份文件格式",
   "invalidJsonFile": "无效的 JSON 文件",
-  "fileReadFailed": "文件读取失败"
+  "fileReadFailed": "文件读取失败",
+  "confirmInputLabel": "输入确认文字"
 }

@@ -123,7 +123,12 @@ function ImageThumbnail({ src, isProcessing, error, onClick, onRemove }: ImageTh
   return (
     <div className="relative h-20 w-20 overflow-hidden rounded-sm bg-muted">
       {onClick ? (
-        <button type="button" onClick={onClick} className="h-full w-full">
+        <button
+          type="button"
+          onClick={onClick}
+          className="h-full w-full"
+          aria-label={t('viewImage')}
+        >
           <img
             src={src}
             alt=""

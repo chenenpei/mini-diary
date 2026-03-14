@@ -28,5 +28,6 @@
   "clearCloudOption": "Cloud data (Google Drive)",
   "invalidBackupFormat": "Invalid backup file format",
   "invalidJsonFile": "Invalid JSON file",
-  "fileReadFailed": "Failed to read file"
+  "fileReadFailed": "Failed to read file",
+  "confirmInputLabel": "Type confirmation text"
 }

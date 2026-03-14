@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { easing } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 interface PageLayoutProps extends ComponentPropsWithoutRef<'main'> {
@@ -9,12 +10,6 @@ interface PageLayoutProps extends ComponentPropsWithoutRef<'main'> {
   children: ReactNode
   /** Enable page enter/exit animation */
   animate?: boolean
-}
-
-// Animation easing functions from DESIGN.md
-const easing = {
-  smooth: [0.4, 0, 0.2, 1] as const,
-  exit: [0.4, 0, 1, 1] as const,
 }
 
 /**

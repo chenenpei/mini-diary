@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle, Info, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { easing } from '@/lib/motion'
 import { cn, generateId } from '@/lib/utils'
 
 type ToastType = 'success' | 'error' | 'info'
@@ -55,11 +56,6 @@ export function useToast() {
     throw new Error('useToast must be used within a ToastProvider')
   }
   return context
-}
-
-// 动画缓动函数
-const easing = {
-  smooth: [0.4, 0, 0.2, 1] as const,
 }
 
 // Toast 图标
