@@ -9,75 +9,75 @@
    ======================================== */
 
 :root {
-  /* === Color System (Light Mode) === */
-  --color-primary: #000000;
-  --color-secondary: #111827;
-  --color-tertiary: #6b7280;
-  --background: #ffffff;
-  --surface: #f9fafb;
-  --border: #e5e7eb;
+  /* === Color System (Light Mode) — Stone Palette === */
+  --color-primary: #1c1917;
+  --color-secondary: #292524;
+  --color-tertiary: #78716c;
+  --background: #fafaf9;
+  --surface: #f5f5f4;
+  --border: #d6d3d1;
 
   /* === shadcn/ui Variables === */
-  --foreground: #000000;
-  --card: #ffffff;
-  --card-foreground: #000000;
-  --popover: #ffffff;
-  --popover-foreground: #000000;
-  --primary: #000000;
-  --primary-foreground: #ffffff;
-  --secondary: #f9fafb;
-  --secondary-foreground: #111827;
-  --muted: #f9fafb;
-  --muted-foreground: #6b7280;
-  --accent: #f9fafb;
-  --accent-foreground: #111827;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --input: #e5e7eb;
-  --ring: #000000;
+  --foreground: #1c1917;
+  --card: #fafaf9;
+  --card-foreground: #1c1917;
+  --popover: #fafaf9;
+  --popover-foreground: #1c1917;
+  --primary: #1c1917;
+  --primary-foreground: #fafaf9;
+  --secondary: #f5f5f4;
+  --secondary-foreground: #292524;
+  --muted: #f5f5f4;
+  --muted-foreground: #78716c;
+  --accent: #f5f5f4;
+  --accent-foreground: #292524;
+  --destructive: #dc2626;
+  --destructive-foreground: #fafaf9;
+  --input: #d6d3d1;
+  --ring: #1c1917;
 
-  /* === Radius (Geometric Minimalism) === */
+  /* === Radius (Geometric Minimalism — unchanged) === */
   --radius: 4px;
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
 
-  /* === Shadows (Light Mode - Restrained) === */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.16);
+  /* === Shadows (tinted warm) === */
+  --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.08);
+  --shadow-md: 0 2px 8px rgba(28, 25, 23, 0.1);
+  --shadow-lg: 0 4px 16px rgba(28, 25, 23, 0.14);
 }
 
 .dark {
-  /* === Color System (Dark Mode) - Zinc Palette (Refined) === */
-  --color-primary: #f4f4f5;
-  --color-secondary: #a1a1aa;
-  --color-tertiary: #71717a;
-  --background: #09090b;
-  --surface: #18181b;
-  --border: #27272a;
+  /* === Color System (Dark Mode) — Stone Palette === */
+  --color-primary: #fafaf9;
+  --color-secondary: #a8a29e;
+  --color-tertiary: #78716c;
+  --background: #0c0a09;
+  --surface: #1c1917;
+  --border: #292524;
 
   /* === shadcn/ui Variables === */
-  --foreground: #f4f4f5;
-  --card: #18181b;
-  --card-foreground: #f4f4f5;
-  --popover: #18181b;
-  --popover-foreground: #f4f4f5;
-  --primary: #27272a;
-  --primary-foreground: #ffffff;
-  --secondary: #18181b;
-  --secondary-foreground: #a1a1aa;
-  --muted: #18181b;
-  --muted-foreground: #71717a;
-  --accent: #18181b;
-  --accent-foreground: #a1a1aa;
+  --foreground: #fafaf9;
+  --card: #1c1917;
+  --card-foreground: #fafaf9;
+  --popover: #1c1917;
+  --popover-foreground: #fafaf9;
+  --primary: #292524;
+  --primary-foreground: #fafaf9;
+  --secondary: #1c1917;
+  --secondary-foreground: #a8a29e;
+  --muted: #1c1917;
+  --muted-foreground: #78716c;
+  --accent: #1c1917;
+  --accent-foreground: #a8a29e;
   --destructive: #b91c1c;
-  --destructive-foreground: #ffffff;
-  --input: #27272a;
-  --ring: #f4f4f5;
+  --destructive-foreground: #fafaf9;
+  --input: #292524;
+  --ring: #fafaf9;
 
-  /* === Shadows (Dark Mode - deeper black for natural "lift" effect) === */
+  /* === Shadows === */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -131,8 +131,8 @@
     overflow: hidden;
     overscroll-behavior: none;
     font-family:
-      -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC",
-      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
