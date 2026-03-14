@@ -25,7 +25,7 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
   const content = (
     <main
       className={cn(
-        'flex-1 bg-surface dark:bg-background px-5 pb-24 pt-5 sm:px-6 lg:px-8',
+        'flex-1 bg-background px-5 pb-24 pt-5 sm:px-6 lg:px-8',
         'mx-auto max-w-[600px]',
         className,
       )}
@@ -36,12 +36,12 @@ export function PageLayout({ children, animate = true, className, ...props }: Pa
   )
 
   if (!animate) {
-    return <div className="flex-1 bg-surface dark:bg-background">{content}</div>
+    return <div className="flex-1 bg-background">{content}</div>
   }
 
   return (
     <motion.div
-      className="flex-1 bg-surface dark:bg-background"
+      className="flex-1 bg-background"
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
