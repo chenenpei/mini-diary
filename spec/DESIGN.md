@@ -10,6 +10,14 @@
 - **微妙层次**：通过灰度、透明度构建视觉层级
 - **克制动效**：动画存在但不喧宾夺主
 
+**美学方向：瑞士国际主义（Swiss International Style）**
+
+- **Space Grotesk 字体**：几何无衬线，致敬 Akzidenz-Grotesk 传统
+- **Stone 暖灰色系**：微妙暖棕底色，纸质温度而非屏幕冷感
+- **强排版层级**：5 级层次（Display / Title / Body / Caption / Small）
+- **无边框卡片**：内容即层级，用分割线而非容器
+- **几何圆角**：2px (按钮/输入) / 8px (Dialog)，保持锐利
+
 ---
 
 ## 2. 色彩系统
@@ -17,23 +25,23 @@
 ### 亮色模式
 | Token | 色值 | 用途 |
 |-------|------|------|
-| Primary | `#000000` | 主要文字、强调元素 |
-| Secondary | `#111827` | 次要文字 |
-| Tertiary | `#6B7280` | 辅助文字、占位符 |
-| Background | `#FFFFFF` | 主背景 |
-| Surface | `#F9FAFB` | 卡片背景 |
-| Border | `#E5E7EB` | 分割线、边框 |
+| Primary | `#1C1917` | 主要文字、强调元素 |
+| Secondary | `#292524` | 次要文字 |
+| Tertiary | `#78716C` | 辅助文字、占位符 |
+| Background | `#FAFAF9` | 主背景 |
+| Surface | `#F5F5F4` | 组件背景 |
+| Border | `#D6D3D1` | 分割线、边框 |
 
 ### 暗色模式
 | Token | 色值 | 用途 |
 |-------|------|------|
-| Primary | `#F4F4F5` | 主要文字 |
-| Secondary | `#A1A1AA` | 次要文字 |
-| Tertiary | `#52525B` | 辅助文字、占位符 |
-| Background | `#09090B` | 主背景 |
-| Surface | `#18181B` | 卡片背景 |
-| Border | `#27272A` | 分割线、边框 |
-| Button Primary | `#F4F4F5` | 按钮背景（FAB、主要按钮），使用 Foreground 色以确保高对比 |
+| Primary | `#FAFAF9` | 主要文字 |
+| Secondary | `#A8A29E` | 次要文字 |
+| Tertiary | `#78716C` | 辅助文字、占位符 |
+| Background | `#0C0A09` | 主背景 |
+| Surface | `#1C1917` | 组件背景 |
+| Border | `#292524` | 分割线、边框 |
+| Button Primary | `#FAFAF9` | 按钮背景（FAB、主要按钮），使用 Foreground 色以确保高对比 |
 
 ### 交互状态
 | 状态 | 样式 |
@@ -50,9 +58,11 @@
 
 ### 字体栈
 ```css
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
-  "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 ```
+
+> **字体选择：Space Grotesk** — 几何无衬线体，致敬瑞士排版传统。仅覆盖 Latin 字符，CJK 内容自动 fallback 到系统中文字体。通过 Google Fonts 加载（约 30KB woff2）。
 
 ### 字号规范
 | 级别 | 移动端 | 桌面端 | 用途 |
@@ -113,12 +123,11 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
 
 | Token | 值 | 用途 |
 |-------|-----|------|
-| none | 0px | 分割线 |
-| sm | 2px | 按钮、输入框 |
-| md | 4px | 卡片 |
-| lg | 8px | Modal、Dialog |
+| sm | 2px | 按钮、输入框、卡片、菜单 |
+| md | 4px | — |
+| lg | 8px | Dialog 容器 |
 
-**原则**：避免过大圆角，保持硬朗几何感。
+**原则**：按钮和功能元素统一使用 `rounded-sm` (2px)，仅 Dialog 容器使用 `rounded-lg` (8px)。圆形元素（图标按钮、进度条）使用 `rounded-full`。
 
 ---
 
@@ -163,10 +172,10 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
 - Hover：scale(1.05) + 阴影增强
 
 ### 日记卡片
-- 背景：Surface
-- 边框：1px Border（可选）
-- 内边距：16px（移动）/ 20px（桌面）
-- 时间文字：Tertiary，小字号
+- 背景：无（继承页面背景）
+- 边框：无（通过列表分割线 `divide-y` 分隔）
+- 垂直留白：20px（`py-5`）
+- 时间文字：11px，大写，宽字距（Caption 级排版）
 - 正文：Primary，标准字号
 - 图片：圆角 sm
 
