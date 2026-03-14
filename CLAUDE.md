@@ -6,7 +6,7 @@
 
 **MiniDiary** 是一个极简主义 PWA 日记应用，数据存储在本地 IndexedDB。
 
-**设计哲学**：黑白灰极简主义，大量留白，微妙动效。
+**设计哲学**：瑞士国际主义风格（Swiss International Style）—— Stone 暖灰色系、Space Grotesk 字体、强排版层级、无边框卡片、大量留白。
 
 **详细文档**：
 - [PRD.md](spec/PRD.md) - 产品需求
