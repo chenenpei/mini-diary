@@ -136,7 +136,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
             {/* 标题 */}
             <h2
               id="clear-dialog-title"
-              className="mb-2 text-center text-lg font-medium text-foreground"
+              className="mb-2 text-center text-lg font-semibold tracking-tight text-foreground"
             >
               {t('clearAllTitle')}
             </h2>
@@ -156,7 +156,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
 
                   {/* 清理范围选择 */}
                   {isSyncConnected && (
-                    <div className="space-y-2 rounded-md border border-border p-3">
+                    <div className="space-y-2 rounded-sm border border-border p-3">
                       <p className="text-xs font-medium text-muted-foreground">{t('clearScope')}</p>
 
                       {/* 本地数据 */}

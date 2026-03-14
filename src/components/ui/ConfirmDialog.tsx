@@ -109,7 +109,7 @@ export function ConfirmDialog({
             aria-describedby="confirm-dialog-message"
           >
             {/* Title */}
-            <h2 id="confirm-dialog-title" className="text-lg font-semibold text-foreground">
+            <h2 id="confirm-dialog-title" className="text-lg font-semibold tracking-tight text-foreground">
               {title}
             </h2>
 
@@ -124,7 +124,7 @@ export function ConfirmDialog({
                 type="button"
                 onClick={onCancel}
                 disabled={isLoading}
-                className="rounded-md px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted active:opacity-80 disabled:opacity-50"
+                className="rounded-sm px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted active:opacity-80 disabled:opacity-50"
               >
                 {displayCancelText}
               </button>
@@ -133,7 +133,7 @@ export function ConfirmDialog({
                 onClick={onConfirm}
                 disabled={isLoading}
                 className={cn(
-                  'rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
+                  'rounded-sm px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50',
                   destructive
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:opacity-80'
                     : 'bg-foreground text-background hover:bg-foreground/90 active:opacity-80',

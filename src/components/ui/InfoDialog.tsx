@@ -71,7 +71,7 @@ export function InfoDialog({ isOpen, title, items, closeText, onClose }: InfoDia
             onClick={(e) => e.stopPropagation()}
           >
             {/* 标题 */}
-            <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">{title}</h2>
 
             {/* 内容列表 */}
             <ul className="mt-4 space-y-2">
@@ -88,7 +88,7 @@ export function InfoDialog({ isOpen, title, items, closeText, onClose }: InfoDia
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 active:opacity-80"
+                className="rounded-sm bg-foreground px-4 py-2 text-sm font-medium text-background transition-colors hover:bg-foreground/90 active:opacity-80"
               >
                 {closeText}
               </button>
