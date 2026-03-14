@@ -13,7 +13,6 @@ import {
   DiaryListSkeleton,
   dateUtils,
   EmptyState,
-  SparseHint,
 } from '@/components/timeline'
 import { ClearDataDialog, ConfirmDialog, DatePicker, useToast } from '@/components/ui'
 import { useStorageEstimate, useTheme } from '@/hooks'
@@ -330,18 +329,16 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
         ) : !entries || entries.length === 0 ? (
           <EmptyState />
         ) : (
-          <>
-            <DiaryList
-              entries={entries}
-              onEdit={handleEditEntry}
-              onDelete={handleDeleteClick}
-              thumbnailUrlsMap={thumbnailUrlsMap}
-              fullImageUrlsMap={fullImageUrlsMap}
-              scrollToId={scrollToId}
-              onScrollComplete={handleScrollComplete}
-            />
-            {entries.length < 3 && <SparseHint />}
-          </>
+          <DiaryList
+            entries={entries}
+            onEdit={handleEditEntry}
+            onDelete={handleDeleteClick}
+            thumbnailUrlsMap={thumbnailUrlsMap}
+            fullImageUrlsMap={fullImageUrlsMap}
+            scrollToId={scrollToId}
+            onScrollComplete={handleScrollComplete}
+            showSparseHint={entries.length < 3}
+          />
         )}
       </PageLayout>
 
