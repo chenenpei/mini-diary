@@ -47,7 +47,7 @@ function SyncPage() {
         >
           <ArrowLeft className="h-6 w-6" />
         </button>
-        <span className="text-lg font-medium text-foreground">{t('title')}</span>
+        <span className="text-lg font-semibold tracking-tight text-foreground">{t('title')}</span>
       </header>
       <main className="flex-1 px-5 pt-5 pb-24 sm:px-6 lg:px-8">
         {state.status === 'recovery' && (
@@ -103,12 +103,12 @@ function IdleView({ onConnect }: { onConnect: (provider: 'google-drive') => void
   return (
     <div className="flex flex-col items-center gap-6 py-16 text-center">
       <Cloud className="h-16 w-16 text-muted-foreground/50" />
-      <p className="text-lg font-medium text-foreground">{t('selectProvider')}</p>
+      <p className="text-lg font-semibold tracking-tight text-foreground">{t('selectProvider')}</p>
       <div className="flex w-full flex-col gap-3">
         <button
           type="button"
           onClick={() => onConnect('google-drive')}
-          className="flex w-full items-center gap-3 rounded-md border border-border p-4 text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+          className="flex w-full items-center gap-3 rounded-sm border border-border p-4 text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
         >
           <img src="/icons/google-drive.svg" alt="" className="h-5 w-5 shrink-0" />
           {t('googleDrive')}
@@ -116,7 +116,7 @@ function IdleView({ onConnect }: { onConnect: (provider: 'google-drive') => void
         <button
           type="button"
           disabled
-          className="flex w-full items-center gap-3 rounded-md border border-border p-4 text-sm font-medium text-foreground opacity-50"
+          className="flex w-full items-center gap-3 rounded-sm border border-border p-4 text-sm font-medium text-foreground opacity-50"
         >
           <img src="/icons/onedrive.svg" alt="" className="h-5 w-5 shrink-0" />
           <span className="flex-1 text-left">{t('oneDrive')}</span>
@@ -197,14 +197,14 @@ function ConnectedView({
       <button
         type="button"
         onClick={onSync}
-        className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+        className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
       >
         {t('syncButton')}
       </button>
       <button
         type="button"
         onClick={() => setShowDisconnect(true)}
-        className="w-full rounded-md border border-border p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+        className="w-full rounded-sm border border-border p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
       >
         {t('disconnect')}
       </button>
@@ -227,7 +227,7 @@ function ConnectedView({
               role="alertdialog"
               aria-modal="true"
             >
-              <h2 className="text-lg font-semibold text-foreground">{t('disconnect')}</h2>
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">{t('disconnect')}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{t('disconnectConfirm')}</p>
 
               <label className="mt-4 flex items-center gap-2 text-sm text-foreground">
@@ -244,14 +244,14 @@ function ConnectedView({
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="rounded-md px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted active:opacity-80"
+                  className="rounded-sm px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted active:opacity-80"
                 >
                   {t('cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirm}
-                  className="rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 active:opacity-80"
+                  className="rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 active:opacity-80"
                 >
                   {tCommon('confirm')}
                 </button>
