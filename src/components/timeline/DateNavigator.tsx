@@ -61,7 +61,7 @@ export function DateNavigator({
       <button
         type="button"
         onClick={onDateClick}
-        className="touch-target min-w-[120px] rounded-sm px-3 py-1 text-center font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="touch-target min-w-[120px] rounded-sm px-3 py-1 text-center text-lg font-semibold tracking-tight text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         aria-label={t('selectDate')}
       >
         {isToday ? t('today') : formattedDate}
