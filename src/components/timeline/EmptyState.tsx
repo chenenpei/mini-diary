@@ -32,30 +32,24 @@ export function EmptyState({ title, description, className }: EmptyStateProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
     >
-      {/* Minimalist illustration - geometric diary icon */}
+      {/* Minimalist illustration - geometric page icon */}
       <svg
-        className="mb-6 h-24 w-24 text-muted-foreground/40"
-        viewBox="0 0 100 100"
+        className="mb-8 h-16 w-16 text-muted-foreground/30"
+        viewBox="0 0 48 48"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
         role="img"
         aria-hidden="true"
       >
-        {/* Book/diary outline */}
-        <rect x="20" y="15" width="60" height="70" rx="2" />
-        {/* Spine */}
-        <line x1="30" y1="15" x2="30" y2="85" />
-        {/* Lines representing text */}
-        <line x1="40" y1="30" x2="70" y2="30" />
-        <line x1="40" y1="42" x2="65" y2="42" />
-        <line x1="40" y1="54" x2="70" y2="54" />
-        {/* Pen */}
-        <line x1="75" y1="65" x2="85" y2="55" />
-        <line x1="85" y1="55" x2="88" y2="58" />
-        <line x1="88" y1="58" x2="78" y2="68" />
+        {/* Page with corner fold */}
+        <path d="M10 4 H32 L38 10 V44 H10 Z" />
+        <path d="M32 4 V10 H38" />
+        {/* Minimal text lines */}
+        <line x1="16" y1="20" x2="32" y2="20" />
+        <line x1="16" y1="26" x2="28" y2="26" />
       </svg>
 
       <h3 className="text-xl font-semibold tracking-tight text-foreground">{displayTitle}</h3>
