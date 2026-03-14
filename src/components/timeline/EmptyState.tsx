@@ -58,7 +58,7 @@ export function EmptyState({ title, description, className }: EmptyStateProps) {
         <line x1="88" y1="58" x2="78" y2="68" />
       </svg>
 
-      <h3 className="text-lg font-medium text-foreground">{displayTitle}</h3>
+      <h3 className="text-xl font-semibold tracking-tight text-foreground">{displayTitle}</h3>
       <p className="mt-2 text-sm text-muted-foreground">{displayDescription}</p>
     </motion.div>
   )
