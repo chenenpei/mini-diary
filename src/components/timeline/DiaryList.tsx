@@ -111,7 +111,7 @@ export function DiaryList({
         ))}
       </motion.div>
 
-      {showSparseHint && <SparseHint className="pt-6" />}
+      {showSparseHint && <SparseHint className="pt-12" />}
 
       <Lightbox
         images={lightboxImages}
