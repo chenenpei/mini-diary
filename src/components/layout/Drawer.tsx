@@ -150,7 +150,7 @@ export function Drawer({
           >
             {/* 头部 */}
             <div className="flex h-14 items-center justify-between border-b border-border px-4">
-              <span className="text-lg font-medium text-foreground">{t('title')}</span>
+              <span className="text-lg font-semibold tracking-tight text-foreground">{t('title')}</span>
               <button
                 type="button"
                 onClick={onClose}
@@ -165,7 +165,7 @@ export function Drawer({
             <div className="flex flex-col overflow-y-auto p-4 pb-16">
               {/* 主题切换 */}
               <section>
-                <h3 className="mb-3 text-sm font-medium text-foreground">{t('theme')}</h3>
+                <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">{t('theme')}</h3>
                 <div className="flex gap-2">
                   {themeOptions.map((option) => (
                     <button
@@ -173,7 +173,7 @@ export function Drawer({
                       type="button"
                       onClick={() => onThemeChange(option.value)}
                       className={cn(
-                        'flex flex-1 flex-col items-center gap-1 rounded-md border p-3 transition-colors',
+                        'flex flex-1 flex-col items-center gap-1 rounded-sm border p-3 transition-colors',
                         themeMode === option.value
                           ? 'border-foreground bg-surface'
                           : 'border-border hover:bg-surface',
@@ -188,7 +188,7 @@ export function Drawer({
 
               {/* 语言切换 */}
               <section className="mt-5">
-                <h3 className="mb-2 text-sm font-medium text-foreground">{t('language')}</h3>
+                <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">{t('language')}</h3>
                 <div className="flex gap-2">
                   {languageOptions.map((option) => (
                     <button
@@ -196,7 +196,7 @@ export function Drawer({
                       type="button"
                       onClick={() => setLocale(option.value)}
                       className={cn(
-                        'flex flex-1 flex-col items-center gap-1 rounded-md border p-3 transition-colors',
+                        'flex flex-1 flex-col items-center gap-1 rounded-sm border p-3 transition-colors',
                         locale === option.value
                           ? 'border-foreground bg-surface'
                           : 'border-border hover:bg-surface',
@@ -217,7 +217,7 @@ export function Drawer({
                     onClose()
                     navigate({ to: '/sync' })
                   }}
-                  className="flex w-full items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-surface"
+                  className="flex w-full items-center gap-3 rounded-sm p-3 text-left transition-colors hover:bg-surface"
                 >
                   <Cloud className="h-5 w-5 text-foreground" />
                   <div className="flex-1">
@@ -229,7 +229,7 @@ export function Drawer({
 
               {/* 数据管理 */}
               <section className="mt-8">
-                <h3 className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                <h3 className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
                   {t('dataManagement')}
                   <button
                     type="button"
@@ -246,7 +246,7 @@ export function Drawer({
                     type="button"
                     onClick={onExport}
                     disabled={isExporting}
-                    className="flex items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-surface disabled:opacity-50"
+                    className="flex items-center gap-3 rounded-sm p-3 text-left transition-colors hover:bg-surface disabled:opacity-50"
                   >
                     <Download className="h-5 w-5 text-foreground" />
                     <span className="text-sm font-medium text-foreground">
@@ -259,7 +259,7 @@ export function Drawer({
                     type="button"
                     onClick={onImport}
                     disabled={isImporting}
-                    className="flex items-center gap-3 rounded-md p-3 text-left transition-colors hover:bg-surface disabled:opacity-50"
+                    className="flex items-center gap-3 rounded-sm p-3 text-left transition-colors hover:bg-surface disabled:opacity-50"
                   >
                     <Upload className="h-5 w-5 text-foreground" />
                     <span className="text-sm font-medium text-foreground">
@@ -274,7 +274,7 @@ export function Drawer({
                 <button
                   type="button"
                   onClick={onClearData}
-                  className="flex w-full items-center gap-3 rounded-md border border-destructive/30 p-3 text-left transition-colors hover:bg-destructive/5"
+                  className="flex w-full items-center gap-3 rounded-sm border border-destructive/30 p-3 text-left transition-colors hover:bg-destructive/5"
                 >
                   <Trash2 className="h-5 w-5 text-destructive" />
                   <span className="text-sm font-medium text-destructive">{tData('clearAll')}</span>
