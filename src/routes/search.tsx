@@ -155,7 +155,7 @@ function SearchResultItem({
       onClick={onClick}
       className="w-full text-left p-4 border-b border-border hover:bg-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <div className="text-xs text-muted-foreground mb-1">{formattedDate}</div>
+      <div className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground mb-1">{formattedDate}</div>
       <div className="text-sm text-foreground line-clamp-2">
         <HighlightText text={excerpt} keyword={keyword} />
       </div>
@@ -334,7 +334,7 @@ function SearchPage() {
           <div className="mx-auto max-w-[600px]">
             {hasHistory ? (
               <>
-                <div className="px-4 py-2 text-xs text-muted-foreground">{t('history')}</div>
+                <div className="px-4 py-2 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{t('history')}</div>
                 {searchHistory.map((historyQuery) => (
                   <SearchHistoryItem
                     key={historyQuery}
