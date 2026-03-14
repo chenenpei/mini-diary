@@ -24,7 +24,7 @@ function Skeleton({ className }: SkeletonProps) {
  */
 export function DiaryCardSkeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn('rounded-md border border-border bg-surface p-4 sm:p-5', className)}>
+    <div className={cn('py-5', className)}>
       {/* Time */}
       <Skeleton className="h-4 w-12" />
 
@@ -54,7 +54,7 @@ interface DiaryListSkeletonProps {
  */
 export function DiaryListSkeleton({ count = 3, className }: DiaryListSkeletonProps) {
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn('flex flex-col divide-y divide-border', className)}>
       {Array.from({ length: count }).map((_, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton list, items never reorder
         <DiaryCardSkeleton key={index} />
