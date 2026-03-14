@@ -43,7 +43,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
             onClick={onReauth}
             // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
-            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+            className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('reauth')}
           </button>
@@ -55,7 +55,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
             onClick={onRetry}
             // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
-            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+            className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('retry')}
           </button>
@@ -67,7 +67,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
             onClick={onRetry}
             // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
-            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+            className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('overwriteCloud')}
           </button>
@@ -79,7 +79,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
             onClick={() => window.open('https://drive.google.com/settings/storage', '_blank')}
             // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
-            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+            className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('manageStorage')}
           </button>
@@ -89,7 +89,7 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
         <button
           type="button"
           onClick={onDismiss}
-          className="w-full rounded-md p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+          className="w-full rounded-sm p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
         >
           {t('done')}
         </button>

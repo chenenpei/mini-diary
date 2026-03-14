@@ -153,7 +153,7 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
         type="button"
         onClick={onCancel}
         aria-label={t('cancel')}
-        className="w-full rounded-md border border-border p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+        className="w-full rounded-sm border border-border p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
       >
         {t('cancel')}
       </button>

@@ -18,7 +18,7 @@ export function RecoveryBanner({ info, onRestore, onDismiss }: RecoveryBannerPro
       <AlertTriangle className="h-12 w-12 text-destructive" />
 
       <div className="text-center">
-        <h2 className="text-lg font-semibold text-foreground">{t('recoveryTitle')}</h2>
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">{t('recoveryTitle')}</h2>
         <p className="mt-2 text-sm text-muted-foreground">{t('recoveryMessage')}</p>
       </div>
 
@@ -28,14 +28,14 @@ export function RecoveryBanner({ info, onRestore, onDismiss }: RecoveryBannerPro
           onClick={onRestore}
           // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
           autoFocus
-          className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+          className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
         >
           {t('recoveryRestore', { count: info.entryCount })}
         </button>
         <button
           type="button"
           onClick={onDismiss}
-          className="w-full rounded-md p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+          className="w-full rounded-sm p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
         >
           {t('recoveryDismiss')}
         </button>

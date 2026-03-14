@@ -39,7 +39,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
         </motion.div>
 
         <motion.h2
-          className="text-lg font-semibold text-foreground"
+          className="text-lg font-semibold tracking-tight text-foreground"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2 }}
@@ -78,7 +78,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             onClick={onDismiss}
             // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
-            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+            className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('done')}
           </button>
@@ -105,7 +105,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
 
       {/* Title */}
       <motion.h2
-        className="text-lg font-semibold text-foreground"
+        className="text-lg font-semibold tracking-tight text-foreground"
         initial={prefersReducedMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2 }}
@@ -150,7 +150,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
       {/* Partial failure warning */}
       {summary.imagesFailed > 0 && onRetryFailed && (
         <motion.div
-          className="w-full rounded-md border border-destructive/30 bg-destructive/5 p-3"
+          className="w-full rounded-sm border border-destructive/30 bg-destructive/5 p-3"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
@@ -165,14 +165,14 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
               onClick={onRetryFailed}
               // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
               autoFocus
-              className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+              className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
             >
               {t('retryFailed')}
             </button>
             <button
               type="button"
               onClick={onDismiss}
-              className="w-full rounded-md p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+              className="w-full rounded-sm p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
             >
               {t('ignoreFailed')}
             </button>
@@ -193,7 +193,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             onClick={onDismiss}
             // biome-ignore lint/a11y/noAutofocus: Focus management for state transition UX
             autoFocus
-            className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+            className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
           >
             {t('done')}
           </button>

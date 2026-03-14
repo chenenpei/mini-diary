@@ -77,7 +77,7 @@ export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps)
             aria-describedby="conflict-dialog-desc"
           >
             {/* Title */}
-            <h2 id="conflict-dialog-title" className="text-lg font-semibold text-foreground">
+            <h2 id="conflict-dialog-title" className="text-lg font-semibold tracking-tight text-foreground">
               {t('conflictTitle')}
             </h2>
 
@@ -104,21 +104,21 @@ export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps)
               <button
                 type="button"
                 onClick={() => onResolve('merge')}
-                className="w-full rounded-md bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+                className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
               >
                 {t('conflictMergeRecommended')}
               </button>
               <button
                 type="button"
                 onClick={() => onResolve('pull')}
-                className="w-full rounded-md border border-border p-3 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+                className="w-full rounded-sm border border-border p-3 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
               >
                 {t('conflictPull')}
               </button>
               <button
                 type="button"
                 onClick={() => onResolve('push')}
-                className="w-full rounded-md border border-border p-3 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+                className="w-full rounded-sm border border-border p-3 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
               >
                 {t('conflictPush')}
               </button>
@@ -128,7 +128,7 @@ export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps)
             <button
               type="button"
               onClick={handleCancel}
-              className="mt-2 w-full rounded-md p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+              className="mt-2 w-full rounded-sm p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
             >
               {t('cancel')}
             </button>
