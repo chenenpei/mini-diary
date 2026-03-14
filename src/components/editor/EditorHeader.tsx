@@ -44,7 +44,7 @@ export function EditorHeader({
 
       {/* Title with dirty indicator */}
       <div className="flex items-center gap-2">
-        <span className="text-base font-medium text-foreground">{title}</span>
+        <span className="text-base font-semibold tracking-tight text-foreground">{title}</span>
         {isDirty && (
           <output className="sr-only" aria-live="polite">
             {t('unsavedChanges')}
@@ -59,7 +59,7 @@ export function EditorHeader({
         onClick={onSave}
         disabled={saveDisabled || isSaving}
         className={cn(
-          'rounded-md bg-foreground px-3 py-1 text-sm font-medium text-background transition-all duration-200',
+          'rounded-sm bg-foreground px-3 py-1 text-sm font-medium text-background transition-all duration-200',
           saveDisabled || isSaving
             ? 'cursor-not-allowed opacity-50'
             : 'hover:bg-foreground/90 active:opacity-80',
