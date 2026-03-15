@@ -153,7 +153,7 @@ function SearchResultItem({
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left p-4 border-b border-border hover:bg-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      className="w-full text-left px-5 py-4 border-b border-border hover:bg-surface transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
       <div className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground mb-1">{formattedDate}</div>
       <div className="text-sm text-foreground line-clamp-2">
@@ -176,7 +176,7 @@ function SearchHistoryItem({
   removeLabel: string
 }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-border hover:bg-surface transition-colors">
+    <div className="flex items-center justify-between px-5 py-3 border-b border-border hover:bg-surface transition-colors">
       <button
         type="button"
         onClick={onClick}
@@ -259,47 +259,49 @@ function SearchPage() {
   return (
     <div className="flex h-dvh flex-col overflow-y-auto bg-background">
       {/* 搜索栏 */}
-      <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-border bg-background px-4 py-2">
-        {/* 返回按钮 */}
-        <button
-          type="button"
-          onClick={handleBack}
-          className="touch-target flex shrink-0 items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-          aria-label={tCommon('back')}
-        >
-          <ArrowLeft className="h-6 w-6" />
-        </button>
+      <header className="sticky top-0 z-40 border-b border-border bg-background">
+        <div className="mx-auto flex max-w-[600px] items-center gap-3 px-5 py-2">
+          {/* 返回按钮 */}
+          <button
+            type="button"
+            onClick={handleBack}
+            className="-ml-3 touch-target flex shrink-0 items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
+            aria-label={tCommon('back')}
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </button>
 
-        {/* 搜索输入框 */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('placeholder')}
-            // biome-ignore lint/a11y/noAutofocus: Search page needs auto-focus for better UX
-            autoFocus
-            className={cn(
-              'w-full rounded-sm border border-border bg-surface py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground',
-              'focus:outline-none focus-visible:ring-1 focus-visible:ring-border',
-              'transition-colors',
-            )}
-          />
-          {/* 清除/加载指示器 */}
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {isSearching ? (
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            ) : query ? (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label={tCommon('clear')}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            ) : null}
+          {/* 搜索输入框 */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('placeholder')}
+              // biome-ignore lint/a11y/noAutofocus: Search page needs auto-focus for better UX
+              autoFocus
+              className={cn(
+                'w-full rounded-sm border border-border bg-surface py-2 pl-9 pr-9 text-sm text-foreground placeholder:text-muted-foreground',
+                'focus:outline-none focus-visible:ring-1 focus-visible:ring-border',
+                'transition-colors',
+              )}
+            />
+            {/* 清除/加载指示器 */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+              {isSearching ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : query ? (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={tCommon('clear')}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>
@@ -334,7 +336,7 @@ function SearchPage() {
           <div className="mx-auto max-w-[600px]">
             {hasHistory ? (
               <>
-                <div className="px-4 py-2 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{t('history')}</div>
+                <div className="px-5 py-2 text-[11px] font-medium uppercase tracking-widest text-muted-foreground">{t('history')}</div>
                 {searchHistory.map((historyQuery) => (
                   <SearchHistoryItem
                     key={historyQuery}

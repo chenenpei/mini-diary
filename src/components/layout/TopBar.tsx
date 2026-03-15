@@ -41,40 +41,42 @@ export function TopBar({
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-4',
+        'sticky top-0 z-40 shrink-0 border-b border-border bg-background',
         className,
       )}
       {...props}
     >
-      {/* Left: Menu Button */}
-      <div className="flex w-12 justify-start">
-        {showMenu && (
-          <button
-            type="button"
-            onClick={onMenuClick}
-            className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-            aria-label={t('openMenu')}
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-        )}
-      </div>
+      <div className="mx-auto flex h-14 max-w-[600px] items-center justify-between px-5">
+        {/* Left: Menu Button */}
+        <div className="-ml-3 flex w-12 justify-start">
+          {showMenu && (
+            <button
+              type="button"
+              onClick={onMenuClick}
+              className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
+              aria-label={t('openMenu')}
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+          )}
+        </div>
 
-      {/* Center: Title/Date */}
-      <div className="flex-1 text-center font-medium text-foreground">{children}</div>
+        {/* Center: Title/Date */}
+        <div className="flex-1 text-center font-medium text-foreground">{children}</div>
 
-      {/* Right: Search Button */}
-      <div className="flex w-12 justify-end">
-        {showSearch && (
-          <button
-            type="button"
-            onClick={onSearchClick}
-            className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-            aria-label={t('search')}
-          >
-            <Search className="h-6 w-6" />
-          </button>
-        )}
+        {/* Right: Search Button */}
+        <div className="-mr-3 flex w-12 justify-end">
+          {showSearch && (
+            <button
+              type="button"
+              onClick={onSearchClick}
+              className="touch-target flex items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
+              aria-label={t('search')}
+            >
+              <Search className="h-6 w-6" />
+            </button>
+          )}
+        </div>
       </div>
     </header>
   )

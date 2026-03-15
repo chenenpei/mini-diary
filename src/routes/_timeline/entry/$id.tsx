@@ -247,7 +247,7 @@ function EditEntryPage() {
     return (
       <div className="flex h-dvh flex-col bg-background">
         <EditorHeader title={t('editTitle')} onBack={handleBack} saveDisabled />
-        <main className="flex-1 overflow-y-auto px-4 pt-4">
+        <main className="mx-auto w-full max-w-[600px] flex-1 overflow-y-auto px-5 pt-5">
           <Skeleton className="h-[300px] w-full sm:h-[400px]" />
         </main>
       </div>
@@ -258,7 +258,7 @@ function EditEntryPage() {
     return (
       <div className="flex h-dvh flex-col bg-background">
         <EditorHeader title={t('editTitle')} onBack={handleBack} saveDisabled />
-        <main className="flex-1 overflow-y-auto px-4 pt-4">
+        <main className="mx-auto w-full max-w-[600px] flex-1 overflow-y-auto px-5 pt-5">
           <div className="py-16 text-center">
             <p className="text-muted-foreground">{t('notFound')}</p>
             <button
@@ -291,7 +291,7 @@ function EditEntryPage() {
       />
 
       <main
-        className="flex min-h-0 flex-1 flex-col overflow-hidden px-5 pt-5"
+        className="mx-auto flex min-h-0 w-full max-w-[600px] flex-1 flex-col overflow-hidden px-5 pt-5"
         style={{ paddingBottom: keyboardHeight + 56 }}
       >
         <DiaryEditor

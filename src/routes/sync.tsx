@@ -48,18 +48,20 @@ function SyncPage() {
 
   return (
     <div className="flex h-dvh flex-col overflow-y-auto bg-background">
-      <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-border bg-background px-4">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="touch-target flex shrink-0 items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
-          aria-label={tCommon('back')}
-        >
-          <ArrowLeft className="h-6 w-6" />
-        </button>
-        <span className="text-lg font-semibold tracking-tight text-foreground">{t('title')}</span>
+      <header className="sticky top-0 z-40 border-b border-border bg-background">
+        <div className="mx-auto flex h-14 max-w-[600px] items-center gap-3 px-5">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="-ml-3 touch-target flex shrink-0 items-center justify-center rounded-sm text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-60"
+            aria-label={tCommon('back')}
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </button>
+          <span className="text-lg font-semibold tracking-tight text-foreground">{t('title')}</span>
+        </div>
       </header>
-      <main className="flex-1 px-5 pt-5 pb-24 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-[600px] flex-1 px-5 pt-5 pb-24 sm:px-6 lg:px-8">
         <AnimatePresence mode="wait" initial={false}>
           {state.status === 'recovery' && (
             <motion.div key="recovery" {...(prefersReducedMotion ? {} : stateTransition)}>

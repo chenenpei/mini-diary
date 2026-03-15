@@ -138,7 +138,7 @@ export function EditorToolbar({
   return (
     <div
       className={cn(
-        'fixed left-0 right-0 z-50 flex h-12 items-center justify-start gap-1 border-t border-border bg-background/95 px-4 backdrop-blur-sm',
+        'fixed left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-sm',
         className,
       )}
       style={{
@@ -146,39 +146,40 @@ export function EditorToolbar({
         paddingBottom: keyboardHeight === 0 ? 'env(safe-area-inset-bottom, 0px)' : 0,
       }}
     >
-      {/* 图片按钮 */}
-      <ToolbarButton
-        icon={<ImagePlus className="h-4 w-4" />}
-        label={t('addImage')}
-        onClick={handleImageClick}
-        disabled={remainingSlots <= 0}
-      />
+      <div className="mx-auto flex h-12 max-w-[600px] items-center justify-start gap-1 px-2.5">
+        <ToolbarButton
+          icon={<ImagePlus className="h-4 w-4" />}
+          label={t('addImage')}
+          onClick={handleImageClick}
+          disabled={remainingSlots <= 0}
+        />
 
-      {/* 分隔线 */}
-      <div className="mx-1 h-5 w-px bg-border" />
+        {/* 分隔线 */}
+        <div className="mx-1 h-5 w-px bg-border" />
 
-      {/* 加粗按钮 */}
-      <ToolbarButton icon={<Bold className="h-4 w-4" />} label={t('bold')} onClick={handleBold} />
+        {/* 加粗按钮 */}
+        <ToolbarButton icon={<Bold className="h-4 w-4" />} label={t('bold')} onClick={handleBold} />
 
-      {/* 无序列表按钮 */}
-      <ToolbarButton icon={<List className="h-4 w-4" />} label={t('list')} onClick={handleList} />
+        {/* 无序列表按钮 */}
+        <ToolbarButton icon={<List className="h-4 w-4" />} label={t('list')} onClick={handleList} />
 
-      {/* 序号列表按钮 */}
-      <ToolbarButton
-        icon={<ListOrdered className="h-4 w-4" />}
-        label={t('orderedList')}
-        onClick={handleOrderedList}
-      />
+        {/* 序号列表按钮 */}
+        <ToolbarButton
+          icon={<ListOrdered className="h-4 w-4" />}
+          label={t('orderedList')}
+          onClick={handleOrderedList}
+        />
 
-      {/* 隐藏的文件 input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        multiple
-        onChange={handleFileSelect}
-        className="hidden"
-      />
+        {/* 隐藏的文件 input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </div>
     </div>
   )
 }

@@ -32,41 +32,43 @@ export function EditorHeader({
   const { t } = useTranslation('editor')
 
   return (
-    <header className="sticky top-0 z-40 flex h-12 items-center justify-between border-b border-border bg-background px-4">
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={onBack}
-        className="touch-target flex items-center justify-center text-sm text-foreground transition-colors hover:text-foreground/70 active:opacity-60"
-      >
-        {t('cancel')}
-      </button>
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
+      <div className="mx-auto flex h-12 max-w-[600px] items-center justify-between px-5">
+        {/* Back button */}
+        <button
+          type="button"
+          onClick={onBack}
+          className="-ml-3 touch-target flex items-center justify-center text-sm text-foreground transition-colors hover:text-foreground/70 active:opacity-60"
+        >
+          {t('cancel')}
+        </button>
 
-      {/* Title with dirty indicator */}
-      <div className="flex items-center gap-2">
-        <span className="text-base font-semibold tracking-tight text-foreground">{title}</span>
-        {isDirty && (
-          <output className="sr-only" aria-live="polite">
-            {t('unsavedChanges')}
-          </output>
-        )}
-        {isDirty && <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />}
+        {/* Title with dirty indicator */}
+        <div className="flex items-center gap-2">
+          <span className="text-base font-semibold tracking-tight text-foreground">{title}</span>
+          {isDirty && (
+            <output className="sr-only" aria-live="polite">
+              {t('unsavedChanges')}
+            </output>
+          )}
+          {isDirty && <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />}
+        </div>
+
+        {/* Save button */}
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={saveDisabled || isSaving}
+          className={cn(
+            'rounded-sm bg-foreground px-3 py-1 text-sm font-medium text-background transition-all duration-200',
+            saveDisabled || isSaving
+              ? 'cursor-not-allowed opacity-50'
+              : 'hover:bg-foreground/90 active:opacity-80',
+          )}
+        >
+          {isSaving ? t('saving') : t('save')}
+        </button>
       </div>
-
-      {/* Save button */}
-      <button
-        type="button"
-        onClick={onSave}
-        disabled={saveDisabled || isSaving}
-        className={cn(
-          'rounded-sm bg-foreground px-3 py-1 text-sm font-medium text-background transition-all duration-200',
-          saveDisabled || isSaving
-            ? 'cursor-not-allowed opacity-50'
-            : 'hover:bg-foreground/90 active:opacity-80',
-        )}
-      >
-        {isSaving ? t('saving') : t('save')}
-      </button>
     </header>
   )
 }
