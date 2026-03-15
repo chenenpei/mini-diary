@@ -56,7 +56,6 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
       })
     }
   }, [progress.currentPhase.phase])
-  const pendingCount = Math.max(0, progress.totalPhases - seenPhases.length)
 
   function getPhaseLabel(phase: string): string {
     const key = PHASE_I18N_KEYS[phase]
@@ -120,19 +119,12 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
           <RetryIndicator phase={progress.currentPhase} />
         )}
 
-        {/* Pending steps */}
-        {Array.from({ length: pendingCount }).map((_, i) => (
-          <div key={`pending-${String(i)}`} className="flex items-center gap-3">
-            <Circle className="h-4 w-4 shrink-0 text-muted-foreground/30" />
-            <span className="text-sm text-muted-foreground/30">...</span>
-          </div>
-        ))}
       </div>
 
-      {/* Progress bar */}
-      <div className="flex flex-col gap-1">
+      {/* Progress bar with phase counter */}
+      <div className="flex flex-col gap-1.5">
         <div
-          className="h-1.5 overflow-hidden rounded-full bg-surface"
+          className="h-2 overflow-hidden rounded-full bg-surface"
           role="progressbar"
           aria-valuenow={progress.percent}
           aria-valuemin={0}
@@ -146,7 +138,15 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
             }}
           />
         </div>
-        <span className="text-right text-xs text-muted-foreground">{progress.percent}%</span>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>
+            {t('phaseProgress', {
+              current: seenPhases.length,
+              total: progress.totalPhases,
+            })}
+          </span>
+          <span>{progress.percent}%</span>
+        </div>
       </div>
 
       {/* Cancel button */}

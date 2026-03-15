@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, HardDrive, KeyRound, WifiOff } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { SyncError, SyncErrorKind } from '@/types'
 
@@ -13,6 +13,30 @@ const ERROR_MESSAGES = {
   quota: 'errorQuota',
   cancelled: 'errorNetwork',
 } as const satisfies Record<SyncErrorKind, string>
+
+/** Visual treatment per error severity */
+function ErrorIcon({ kind }: { kind: SyncErrorKind }) {
+  const iconClass = 'h-12 w-12'
+
+  switch (kind) {
+    // Transient — calm tone, just retry
+    case 'network':
+    case 'server':
+    case 'rate_limit':
+    case 'cancelled':
+      return <WifiOff className={`${iconClass} text-muted-foreground`} />
+
+    // Action needed — routine, not alarming
+    case 'auth':
+      return <KeyRound className={`${iconClass} text-foreground`} />
+    case 'quota':
+      return <HardDrive className={`${iconClass} text-foreground`} />
+
+    // Critical — data at risk
+    case 'data_corrupt':
+      return <AlertCircle className={`${iconClass} text-destructive`} />
+  }
+}
 
 interface SyncErrorProps {
   error: SyncError
@@ -27,15 +51,12 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
 
   return (
     <div className="flex flex-col items-center gap-6 py-16">
-      {/* Error icon */}
-      <AlertCircle className="h-12 w-12 text-destructive" />
+      <ErrorIcon kind={error.kind} />
 
-      {/* Error message */}
       <p className="text-center text-sm text-muted-foreground" role="alert">
         {t(messageKey)}
       </p>
 
-      {/* Action button based on error kind */}
       <div className="flex w-full flex-col gap-2">
         {error.kind === 'auth' && (
           <button
@@ -85,7 +106,6 @@ export function SyncErrorView({ error, onRetry, onReauth, onDismiss }: SyncError
           </button>
         )}
 
-        {/* Dismiss button */}
         <button
           type="button"
           onClick={onDismiss}

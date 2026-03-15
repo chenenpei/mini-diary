@@ -6,6 +6,50 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SyncSummary } from '@/types'
 
+/** Animated checkmark that draws itself — a satisfying "done" moment */
+function AnimatedCheck({ reduced }: { reduced: boolean | null }) {
+  if (reduced) {
+    return <CheckCircle className="h-12 w-12 text-foreground" />
+  }
+
+  return (
+    <motion.svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-12 w-12 text-foreground"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+    >
+      {/* Circle */}
+      <motion.circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      />
+      {/* Checkmark */}
+      <motion.path
+        d="M8 12.5l2.5 2.5 5.5-5.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.3, delay: 0.35, ease: [0.4, 0, 0.2, 1] }}
+      />
+    </motion.svg>
+  )
+}
+
 interface SyncCompleteProps {
   summary: SyncSummary
   onDismiss: () => void
@@ -16,33 +60,24 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   const { t } = useTranslation('sync')
   const prefersReducedMotion = useReducedMotion()
 
+  // Auto-dismiss only for no-change case; when data actually synced, let user read the summary
   useEffect(() => {
-    if (summary.imagesFailed > 0) return
-    const timer = setTimeout(onDismiss, summary.noChange ? 2000 : 3000)
+    if (!summary.noChange) return
+    const timer = setTimeout(onDismiss, 2000)
     return () => clearTimeout(timer)
-  }, [summary.imagesFailed, summary.noChange, onDismiss])
+  }, [summary.noChange, onDismiss])
 
   if (summary.noChange) {
     return (
       // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
       <div className="flex flex-col items-center gap-6 py-16" role="status">
-        <motion.div
-          initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0.2 }
-              : { type: 'spring', duration: 0.5, bounce: 0 }
-          }
-        >
-          <CheckCircle className="h-12 w-12 text-foreground" />
-        </motion.div>
+        <AnimatedCheck reduced={prefersReducedMotion} />
 
         <motion.h2
           className="text-lg font-semibold tracking-tight text-foreground"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
         >
           {t('alreadyUpToDate')}
         </motion.h2>
@@ -52,7 +87,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             className="text-sm text-muted-foreground"
             initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.6 }}
           >
             {t('noSyncNeeded')}
           </motion.p>
@@ -61,7 +96,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             className="text-sm text-muted-foreground"
             initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.35 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.65 }}
           >
             {t('duration', { seconds: Math.round(summary.duration / 1000) })}
           </motion.p>
@@ -71,7 +106,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           className="w-full"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.8 }}
         >
           <button
             type="button"
@@ -92,23 +127,15 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
   return (
     // biome-ignore lint/a11y/useSemanticElements: div needed for flex layout
     <div className="flex flex-col items-center gap-6 py-16" role="status">
-      {/* Success icon with spring animation */}
-      <motion.div
-        initial={{ scale: prefersReducedMotion ? 1 : 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={
-          prefersReducedMotion ? { duration: 0.2 } : { type: 'spring', duration: 0.5, bounce: 0 }
-        }
-      >
-        <CheckCircle className="h-12 w-12 text-foreground" />
-      </motion.div>
+      {/* Success icon with draw animation */}
+      <AnimatedCheck reduced={prefersReducedMotion} />
 
       {/* Title */}
       <motion.h2
         className="text-lg font-semibold tracking-tight text-foreground"
         initial={prefersReducedMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
       >
         {t('syncComplete')}
       </motion.h2>
@@ -119,7 +146,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           className="text-sm text-muted-foreground"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.3 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.6 }}
         >
           {t('entriesSynced', { count: summary.entriesSynced })}
         </motion.p>
@@ -129,7 +156,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
             className="text-sm text-muted-foreground"
             initial={prefersReducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.35 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.65 }}
           >
             {`↑ ${t('imagesUploaded', { count: summary.imagesUploaded })} · ↓ ${t('imagesDownloaded', { count: summary.imagesDownloaded })}`}
           </motion.p>
@@ -140,7 +167,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={
-            prefersReducedMotion ? { duration: 0 } : { delay: hasImageStats ? 0.4 : 0.35 }
+            prefersReducedMotion ? { duration: 0 } : { delay: hasImageStats ? 0.7 : 0.65 }
           }
         >
           {t('duration', { seconds: Math.round(summary.duration / 1000) })}
@@ -153,7 +180,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           className="w-full rounded-sm border border-destructive/30 bg-destructive/5 p-3"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.8 }}
         >
           <p className="text-sm font-medium text-foreground">
             {t('imagesFailed', { count: summary.imagesFailed })}
@@ -186,7 +213,7 @@ export function SyncCompleteView({ summary, onDismiss, onRetryFailed }: SyncComp
           className="w-full"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.5 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.8 }}
         >
           <button
             type="button"

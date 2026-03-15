@@ -3,13 +3,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConflictDialog } from '@/components/sync/ConflictDialog'
 import { RecoveryBanner } from '@/components/sync/RecoveryBanner'
 import { SyncCompleteView } from '@/components/sync/SyncComplete'
 import { SyncErrorView } from '@/components/sync/SyncError'
 import { SyncProgressView } from '@/components/sync/SyncProgress'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { useSyncFlow } from '@/hooks/useSyncFlow'
 
 export const Route = createFileRoute('/sync')({
@@ -164,51 +165,93 @@ function ConnectedView({
   const [showDisconnect, setShowDisconnect] = useState(false)
   const [deleteCloud, setDeleteCloud] = useState(false)
 
-  function handleCancel(): void {
+  const handleCancel = useCallback(() => {
     setShowDisconnect(false)
     setDeleteCloud(false)
-  }
+  }, [])
 
-  function handleConfirm(): void {
+  const handleConfirm = useCallback(() => {
     setShowDisconnect(false)
     onDisconnect(deleteCloud)
     setDeleteCloud(false)
-  }
+  }, [onDisconnect, deleteCloud])
+
+  // Focus trap for disconnect dialog
+  const dialogRef = useFocusTrap<HTMLDivElement>({
+    isActive: showDisconnect,
+    autoFocus: true,
+    restoreFocus: true,
+  })
+
+  // ESC key handler for disconnect dialog
+  useEffect(() => {
+    if (!showDisconnect) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        handleCancel()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
+  }, [showDisconnect, handleCancel])
+
+  // Prevent body scroll when disconnect dialog is open
+  useEffect(() => {
+    if (showDisconnect) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [showDisconnect])
 
   return (
-    <div className="flex flex-col gap-4 py-16">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <CheckCircle className="h-4 w-4" />
-        <span>{providerLabel}</span>
+    <div className="flex flex-col gap-6 py-16">
+      {/* Status section */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 shrink-0 text-foreground" />
+          <span className="text-sm font-medium text-foreground">{providerLabel}</span>
+        </div>
+        {lastSyncedAt !== undefined && (
+          <p className="ml-6 text-sm text-muted-foreground">
+            {t('lastSync')}:{' '}
+            {new Intl.DateTimeFormat(i18n.language, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            }).format(lastSyncedAt)}
+          </p>
+        )}
+        <p className="ml-6 text-sm text-muted-foreground">{t('localCount', { count: localCount })}</p>
       </div>
-      {lastSyncedAt !== undefined && (
-        <p className="text-sm text-muted-foreground">
-          {t('lastSync')}:{' '}
-          {new Intl.DateTimeFormat(i18n.language, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          }).format(lastSyncedAt)}
-        </p>
-      )}
-      <p className="text-sm text-muted-foreground">{t('localCount', { count: localCount })}</p>
-      <button
-        type="button"
-        onClick={onSync}
-        className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
-      >
-        {t('syncButton')}
-      </button>
-      <button
-        type="button"
-        onClick={() => setShowDisconnect(true)}
-        className="w-full rounded-sm border border-border p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
-      >
-        {t('disconnect')}
-      </button>
 
+      {/* Actions */}
+      <div className="flex flex-col gap-2">
+        <button
+          type="button"
+          onClick={onSync}
+          className="w-full rounded-sm bg-foreground p-3 text-center text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+        >
+          {t('syncButton')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowDisconnect(true)}
+          className="w-full rounded-sm p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+        >
+          {t('disconnect')}
+        </button>
+      </div>
+
+      {/* Disconnect confirmation dialog */}
       <AnimatePresence>
         {showDisconnect && (
           <motion.div
@@ -219,6 +262,7 @@ function ConnectedView({
             onClick={handleCancel}
           >
             <motion.div
+              ref={dialogRef}
               className="w-full max-w-sm rounded-lg bg-card p-6 shadow-xl"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -226,9 +270,15 @@ function ConnectedView({
               onClick={(e) => e.stopPropagation()}
               role="alertdialog"
               aria-modal="true"
+              aria-labelledby="disconnect-dialog-title"
+              aria-describedby="disconnect-dialog-desc"
             >
-              <h2 className="text-lg font-semibold tracking-tight text-foreground">{t('disconnect')}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{t('disconnectConfirm')}</p>
+              <h2 id="disconnect-dialog-title" className="text-lg font-semibold tracking-tight text-foreground">
+                {t('disconnect')}
+              </h2>
+              <p id="disconnect-dialog-desc" className="mt-2 text-sm text-muted-foreground">
+                {t('disconnectConfirm')}
+              </p>
 
               <label className="mt-4 flex items-center gap-2 text-sm text-foreground">
                 <input

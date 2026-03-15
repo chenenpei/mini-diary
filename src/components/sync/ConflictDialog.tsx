@@ -99,7 +99,7 @@ export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps)
               </p>
             </div>
 
-            {/* Action buttons (stacked, full-width) */}
+            {/* Action buttons — merge is primary, pull/push are secondary with consequence hints */}
             <div className="mt-6 flex flex-col gap-2">
               <button
                 type="button"
@@ -108,27 +108,31 @@ export function ConflictDialog({ isOpen, info, onResolve }: ConflictDialogProps)
               >
                 {t('conflictMergeRecommended')}
               </button>
-              <button
-                type="button"
-                onClick={() => onResolve('pull')}
-                className="w-full rounded-sm border border-border p-3 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
-              >
-                {t('conflictPull')}
-              </button>
-              <button
-                type="button"
-                onClick={() => onResolve('push')}
-                className="w-full rounded-sm border border-border p-3 text-center text-sm font-medium text-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
-              >
-                {t('conflictPush')}
-              </button>
+              <div className="mt-1 flex flex-col gap-1">
+                <button
+                  type="button"
+                  onClick={() => onResolve('pull')}
+                  className="w-full rounded-sm p-2 text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+                >
+                  <span className="font-medium text-foreground">{t('conflictPull')}</span>
+                  <span className="ml-1.5 text-xs">{t('conflictPullHint')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onResolve('push')}
+                  className="w-full rounded-sm p-2 text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+                >
+                  <span className="font-medium text-foreground">{t('conflictPush')}</span>
+                  <span className="ml-1.5 text-xs">{t('conflictPushHint')}</span>
+                </button>
+              </div>
             </div>
 
             {/* Cancel text button */}
             <button
               type="button"
               onClick={handleCancel}
-              className="mt-2 w-full rounded-sm p-3 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
+              className="mt-1 w-full rounded-sm p-2 text-center text-sm text-muted-foreground transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:opacity-80"
             >
               {t('cancel')}
             </button>
