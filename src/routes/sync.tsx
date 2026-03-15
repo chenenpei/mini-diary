@@ -2,7 +2,7 @@
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, CheckCircle, Cloud, Loader2 } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ConflictDialog } from '@/components/sync/ConflictDialog'
@@ -17,10 +17,19 @@ export const Route = createFileRoute('/sync')({
   component: SyncPage,
 })
 
+/** Fade wrapper for state transitions — quick exit, gentle enter */
+const stateTransition = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.15, ease: [0.4, 0, 0.2, 1] as const },
+}
+
 function SyncPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('sync')
   const { t: tCommon } = useTranslation('common')
+  const prefersReducedMotion = useReducedMotion()
   const {
     state,
     connect,
@@ -51,23 +60,54 @@ function SyncPage() {
         <span className="text-lg font-semibold tracking-tight text-foreground">{t('title')}</span>
       </header>
       <main className="flex-1 px-5 pt-5 pb-24 sm:px-6 lg:px-8">
-        {state.status === 'recovery' && (
-          <RecoveryBanner info={state.info} onRestore={restoreBackup} onDismiss={dismissRecovery} />
-        )}
-        {state.status === 'idle' && <IdleView onConnect={connect} />}
-        {state.status === 'connecting' && <ConnectingView />}
-        {state.status === 'connected' && (
-          <ConnectedView
-            provider={state.provider}
-            lastSyncedAt={state.lastSyncedAt}
-            localCount={state.localCount}
-            onSync={sync}
-            onDisconnect={disconnect}
-          />
-        )}
-        {state.status === 'syncing' && (
-          <SyncProgressView progress={state.progress} onCancel={cancel} />
-        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {state.status === 'recovery' && (
+            <motion.div key="recovery" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <RecoveryBanner info={state.info} onRestore={restoreBackup} onDismiss={dismissRecovery} />
+            </motion.div>
+          )}
+          {state.status === 'idle' && (
+            <motion.div key="idle" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <IdleView onConnect={connect} />
+            </motion.div>
+          )}
+          {state.status === 'connecting' && (
+            <motion.div key="connecting" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <ConnectingView />
+            </motion.div>
+          )}
+          {state.status === 'connected' && (
+            <motion.div key="connected" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <ConnectedView
+                provider={state.provider}
+                lastSyncedAt={state.lastSyncedAt}
+                localCount={state.localCount}
+                onSync={sync}
+                onDisconnect={disconnect}
+              />
+            </motion.div>
+          )}
+          {state.status === 'syncing' && (
+            <motion.div key="syncing" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <SyncProgressView progress={state.progress} onCancel={cancel} />
+            </motion.div>
+          )}
+          {state.status === 'complete' && (
+            <motion.div key="complete" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <SyncCompleteView summary={state.summary} onDismiss={dismiss} onRetryFailed={sync} />
+            </motion.div>
+          )}
+          {state.status === 'error' && (
+            <motion.div key="error" {...(prefersReducedMotion ? {} : stateTransition)}>
+              <SyncErrorView
+                error={state.error}
+                onRetry={sync}
+                onReauth={() => connect('google-drive')}
+                onDismiss={dismiss}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
         <ConflictDialog
           isOpen={state.status === 'conflict'}
           info={
@@ -80,17 +120,6 @@ function SyncPage() {
           }
           onResolve={resolveConflict}
         />
-        {state.status === 'complete' && (
-          <SyncCompleteView summary={state.summary} onDismiss={dismiss} onRetryFailed={sync} />
-        )}
-        {state.status === 'error' && (
-          <SyncErrorView
-            error={state.error}
-            onRetry={sync}
-            onReauth={() => connect('google-drive')}
-            onDismiss={dismiss}
-          />
-        )}
       </main>
     </div>
   )

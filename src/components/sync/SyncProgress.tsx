@@ -99,10 +99,10 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
                 <Circle className="h-4 w-4 shrink-0 fill-foreground text-foreground" />
               ) : (
                 <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5 }}
+                  animate={{ opacity: [1, 0.4, 1] }}
+                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.5, ease: 'easeInOut' }}
                 >
-                  <Circle className="h-4 w-4 shrink-0 text-foreground" />
+                  <Circle className="h-4 w-4 shrink-0 fill-foreground text-foreground" />
                 </motion.div>
               )}
               <span
