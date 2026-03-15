@@ -16,15 +16,14 @@ interface ClearDataDialogProps {
 /**
  * ClearDataDialog - 清空数据确认对话框
  *
- * 三步确认流程:
+ * 两步确认流程:
  * 1. 显示警告信息 + 清理范围选择
- * 2. 输入确认文字
- * 3. 最终确认按钮
+ * 2. 输入确认文字 + 确认删除
  */
 export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialogProps) {
   const { t } = useTranslation('data')
   const { t: tCommon } = useTranslation('common')
-  const [step, setStep] = useState<1 | 2 | 3>(1)
+  const [step, setStep] = useState<1 | 2>(1)
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSyncConnected, setIsSyncConnected] = useState(false)
@@ -74,7 +73,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
   }, [isOpen])
 
   const handleNextStep = useCallback(() => {
-    setStep((prev) => (prev < 3 ? ((prev + 1) as 1 | 2 | 3) : prev))
+    setStep(2)
   }, [])
 
   const handleConfirm = useCallback(async () => {
@@ -223,41 +222,9 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={confirmText}
                     aria-label={t('confirmInputLabel')}
-                    className="w-full rounded-sm border border-border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="w-full rounded-sm border border-border bg-surface px-3 py-2 text-center text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-border"
                     autoComplete="off"
                   />
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={onCancel}
-                      className="flex-1 rounded-sm border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface"
-                    >
-                      {tCommon('cancel')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleNextStep}
-                      disabled={!isInputValid}
-                      className="flex-1 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
-                    >
-                      {tCommon('continue')}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.15 }}
-                  className="space-y-4"
-                >
-                  <p className="text-center text-sm text-muted-foreground">
-                    {t('finalConfirmation')}
-                  </p>
                   <div className="flex gap-3">
                     <button
                       type="button"
@@ -270,7 +237,7 @@ export function ClearDataDialog({ isOpen, onConfirm, onCancel }: ClearDataDialog
                     <button
                       type="button"
                       onClick={handleConfirm}
-                      disabled={isLoading}
+                      disabled={!isInputValid || isLoading}
                       className="flex flex-1 items-center justify-center gap-2 rounded-sm bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
                     >
                       {isLoading ? (

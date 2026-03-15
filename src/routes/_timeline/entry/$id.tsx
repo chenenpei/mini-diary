@@ -266,7 +266,7 @@ function EditEntryPage() {
               onClick={() =>
                 navigate({ to: '/', search: { date: undefined, scrollTo: undefined } })
               }
-              className="mt-4 text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              className="mt-4 rounded-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {tCommon('backToHome')}
             </button>
