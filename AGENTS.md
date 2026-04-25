@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-本文件为 Claude Code 提供代码库工作指南。
+本文件为 AI 编码助手（如 Cursor Agent）提供代码库工作指南。
 
 ## 项目概述
 
@@ -8,11 +8,17 @@
 
 **设计哲学**：瑞士国际主义风格（Swiss International Style）—— Stone 暖灰色系、Space Grotesk 字体、强排版层级、无边框卡片、大量留白。
 
+**策略与视觉（根目录，供工具与 agent 快速读取）**：
+
+- [PRODUCT.md](PRODUCT.md) — 用户、定位、品牌气质、反例、设计原则
+- [DESIGN.md](DESIGN.md) — 与实现同步的设计 token 与组件摘要（Stitch 兼容结构）
+
 **详细文档**：
-- [PRD.md](spec/PRD.md) - 产品需求
-- [TECH.md](spec/TECH.md) - 技术架构
-- [DESIGN.md](spec/DESIGN.md) - 设计规范
-- [cloud-sync-design.md](spec/cloud-sync-design.md) - 云同步设计
+
+- [PRD.md](spec/PRD.md) — 产品需求
+- [TECH.md](spec/TECH.md) — 技术架构
+- [DESIGN.md](spec/DESIGN.md) — 完整设计规范（版式、组件、交互细则）
+- [cloud-sync-design.md](spec/cloud-sync-design.md) — 云同步设计
 
 ## 技术栈
 
@@ -115,7 +121,7 @@ interface ImageRecord {
 10. **小步提交**：每完成一个独立任务立即提交，不要积攒多个任务一起提交
 11. **动画性能**：仅对合成器属性 (`transform`, `opacity`) 进行动画，禁止对布局属性 (`width`, `height`, `margin`, `padding`) 进行动画
 12. **编辑器覆盖层模式**：编辑器使用 Layout Route + Outlet 覆盖层模式实现，时间线始终保持挂载以保留滚动位置；编辑器打开时使用 `inert` 属性禁用时间线交互
-13. **提交前检查**：每次提交 commit 前，先确认是否需要更新 `spec/` 目录下的文档和 `CLAUDE.md`
+13. **提交前检查**：每次提交 commit 前，先确认是否需要更新 `spec/` 目录下的文档与根目录的 `AGENTS.md`、`PRODUCT.md` 或 `DESIGN.md`（若本次改动影响产品说明或视觉 token）
 14. **页面垂直间距**：所有非滚动内容页面使用 `py-16` 统一垂直间距（与时间线 EmptyState 对齐），页面内边距使用 PageLayout 规范：`px-5 pt-5 pb-24 sm:px-6 lg:px-8`
 15. **品牌图标**：云服务 logo 使用官方多色 SVG 文件（`public/icons/`），不使用图标库的单色版本
 

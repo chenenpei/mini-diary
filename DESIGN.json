@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-25T00:00:00.000Z",
+  "title": "Design System: MiniDiary",
+  "extensions": {
+    "colorMeta": {
+      "ink-primary": {
+        "role": "primary",
+        "displayName": "Charcoal Ink",
+        "canonical": "#1c1917",
+        "tonalRamp": [
+          "oklch(0.2 0.005 60)",
+          "oklch(0.25 0.006 60)",
+          "oklch(0.3 0.007 60)",
+          "oklch(0.35 0.008 60)",
+          "oklch(0.4 0.009 60)",
+          "oklch(0.45 0.01 60)",
+          "oklch(0.5 0.01 60)",
+          "oklch(0.55 0.01 60)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "#fafaf9",
+        "tonalRamp": [
+          "oklch(0.2 0.005 60)",
+          "oklch(0.35 0.008 60)",
+          "oklch(0.5 0.01 60)",
+          "oklch(0.6 0.01 60)",
+          "oklch(0.7 0.01 60)",
+          "oklch(0.8 0.01 60)",
+          "oklch(0.9 0.01 60)",
+          "oklch(0.98 0.003 60)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "Body",
+        "purpose": "Entry text, settings copy, and any paragraph-length UI."
+      },
+      "display": {
+        "displayName": "Title / display",
+        "purpose": "Dialog titles and emphasized single-line headers."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-xs",
+        "value": "0 1px 2px rgba(28, 25, 23, 0.04)",
+        "purpose": "Lightest lift; subtle separation in light mode."
+      },
+      {
+        "name": "shadow-sm",
+        "value": "0 1px 3px rgba(28, 25, 23, 0.08)",
+        "purpose": "Default floating panels in light mode."
+      },
+      {
+        "name": "shadow-md",
+        "value": "0 2px 8px rgba(28, 25, 23, 0.1)",
+        "purpose": "FAB and medium elevation."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 4px 16px rgba(28, 25, 23, 0.14)",
+        "purpose": "Stronger lift on hover or large surfaces."
+      }
+    ],
+    "motion": [
+      {
+        "name": "fab-hover",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "One-shot pulse on FAB when enabled."
+      }
+    ],
+    "breakpoints": [
+      { "name": "content", "value": "600px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "FAB (primary action)",
+      "kind": "button",
+      "refersTo": "fab-primary",
+      "description": "Main create entry action; fixed to bottom, transform-only hover.",
+      "html": "<button type=\"button\" class=\"ds-fab\" aria-label=\"Create entry\"><svg class=\"ds-fab-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
+      "css": ".ds-fab { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border: none; border-radius: 2px; background: var(--foreground, #1c1917); color: var(--background, #fafaf9); box-shadow: 0 2px 8px rgba(28, 25, 23, 0.1); cursor: pointer; transition: box-shadow 0.2s ease; } .ds-fab:hover { box-shadow: 0 4px 16px rgba(28, 25, 23, 0.14); } .ds-fab:focus-visible { outline: 2px solid var(--ring, #1c1917); outline-offset: 2px; } .ds-fab-icon { width: 24px; height: 24px; }"
+    },
+    {
+      "name": "Solid button",
+      "kind": "button",
+      "refersTo": "button-solid",
+      "description": "Primary confirm actions in dialogs.",
+      "html": "<button type=\"button\" class=\"ds-btn-solid\">Confirm</button>",
+      "css": ".ds-btn-solid { font-family: inherit; font-size: 14px; font-weight: 500; padding: 8px 16px; border: none; border-radius: 2px; background: var(--foreground, #1c1917); color: var(--background, #fafaf9); cursor: pointer; transition: opacity 0.15s ease; } .ds-btn-solid:hover { opacity: 0.9; } .ds-btn-solid:focus-visible { outline: 2px solid var(--ring, #1c1917); outline-offset: 2px; } .ds-btn-solid:active { opacity: 0.8; }"
+    },
+    {
+      "name": "Ghost button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary actions; muted hover wash.",
+      "html": "<button type=\"button\" class=\"ds-btn-ghost\">Cancel</button>",
+      "css": ".ds-btn-ghost { font-family: inherit; font-size: 14px; font-weight: 500; padding: 8px 16px; border: none; border-radius: 2px; background: transparent; color: var(--foreground, #1c1917); cursor: pointer; transition: background 0.15s ease, opacity 0.15s ease; } .ds-btn-ghost:hover { background: var(--muted, #f5f5f4); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--ring, #1c1917); outline-offset: 2px; } .ds-btn-ghost:active { opacity: 0.8; }"
+    },
+    {
+      "name": "Top bar icon control",
+      "kind": "nav",
+      "refersTo": "fab-primary",
+      "description": "48px touch target for menu or search; no fill until hover.",
+      "html": "<button type=\"button\" class=\"ds-topbar-icon\" aria-label=\"Menu\"><svg class=\"ds-topbar-svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 6h16M4 12h16M4 18h16\"/></svg></button>",
+      "css": ".ds-topbar-icon { display: flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; border: none; border-radius: 2px; background: transparent; color: var(--foreground, #1c1917); cursor: pointer; transition: background 0.15s ease, opacity 0.15s ease; } .ds-topbar-icon:hover { background: var(--surface, #f5f5f4); } .ds-topbar-icon:active { opacity: 0.6; } .ds-topbar-icon:focus-visible { outline: 2px solid var(--ring, #1c1917); outline-offset: 2px; } .ds-topbar-svg { width: 24px; height: 24px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Stone Ledger",
+    "overview": "MiniDiary reads as a quiet desk in morning light: warm paper, ink-near-black type, and almost no chrome. Density stays low; the timeline and editor are the hero. The system rejects dashboard clutter, decorative glass, and color for its own sake. Neutrals carry every screen except destructive actions and user photos.\n\nDepth comes from tonal steps (background, surface, border) and typography, not from thick frames or stacked cards. Motion is limited to opacity and transform on key controls, with prefers-reduced-motion respected globally in CSS.",
+    "keyCharacteristics": [
+      "Restrained palette: stone neutrals, one logical \"ink\" role, destructive red only for real risk",
+      "Geometric corners: 2px on controls, 8px on dialogs, 4px default token",
+      "Space Grotesk for Latin with system CJK fallbacks",
+      "Flat layers: subtle warm-tinted shadows when needed, never heavy drop-shadow UI chrome",
+      "Touch targets: 48px minimum on icon controls in the shell"
+    ],
+    "rules": [
+      {
+        "name": "The One-Voice Ink Rule",
+        "body": "Color never competes with content. The only strong hues are ink neutrals, destructive red, and user imagery. No marketing gradients, no extra accent colors for \"fun.\"",
+        "section": "colors"
+      },
+      {
+        "name": "The Destructive-Only-Red Rule",
+        "body": "Saturated red appears for destructive affordances and errors, not decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Weight-Over-Color Rule",
+        "body": "Step hierarchy with weight and size first; do not add new colors to \"make something pop.\"",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Card-Stack Rule",
+        "body": "Do not add nested cards with competing shadows. One surface, one border or shadow reason.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat-Content Rule",
+        "body": "Day items prefer dividers and spacing over boxed cards; borders are 1px border token, not heavy frames.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep body copy on the default stack and 1.6 line-height for readability in both scripts.",
+      "Do use border-border and bg-background / bg-surface for separation before reaching for shadow.",
+      "Do use focus-visible outlines (2px, 2px offset) for keyboard users.",
+      "Do treat foreground and background as the semantic pair for high-contrast actions (FAB, primary solid buttons)."
+    ],
+    "donts": [
+      "Don't use loud gradient hero aesthetics or \"wellness\" stock illustration clutter (see PRODUCT.md anti-references).",
+      "Don't add gamification streaks, badges, or noisy celebration UI for basic writing.",
+      "Don't use dense dashboard chrome, nested cards, or decorative glass panels that obscure content.",
+      "Don't use surveillance-adjacent dark patterns: forced accounts, ambiguous data copy.",
+      "Don't introduce colored border-left stripes, gradient text, or glassmorphism as a default surface treatment.",
+      "Don't animate width, height, margin, or padding; keep motion to transform and opacity."
+    ]
+  }
+}
