@@ -16,8 +16,7 @@
 |------|------|
 | Tailwind CSS 4 | 原子化 CSS |
 | shadcn/ui | 高质量 React 组件库 |
-| Radix UI | 无头 UI 基础组件 |
-| Heroicons | 图标库 |
+| Lucide React | 图标库 |
 | Motion (motion.dev) | 动画库 |
 
 ### 数据层
@@ -26,7 +25,6 @@
 | TanStack Router | 类型安全路由（内置于 Start） |
 | TanStack Query | 异步状态管理 |
 | Dexie.js | IndexedDB 封装 |
-| Zustand | 轻量级全局状态（可选） |
 
 ### 媒体处理
 | 技术 | 用途 |
@@ -47,12 +45,13 @@
 |------|------|
 | Vitest | 单元/集成测试 |
 | Testing Library | React 组件测试 |
-| Playwright | E2E 测试（可选） |
 | fake-indexeddb | IndexedDB 模拟 |
 
 ---
 
 ## 2. 项目结构
+
+> 说明：以下结构为当前代码目录的简化视图，聚焦核心模块，避免过度展开导致文档快速过时。
 
 ```
 src/
@@ -69,12 +68,12 @@ src/
 │   ├── ui/                 # shadcn/ui 基础组件
 │   ├── timeline/           # 时间线相关组件
 │   │   ├── DiaryCard.tsx
-│   │   ├── DateNav.tsx
+│   │   ├── DateNavigator.tsx
 │   │   └── EmptyState.tsx
 │   ├── editor/             # 编辑器相关组件
-│   │   ├── TextArea.tsx
+│   │   ├── DiaryEditor.tsx
 │   │   ├── ImageUploader.tsx
-│   │   └── Toolbar.tsx
+│   │   └── EditorToolbar.tsx
 │   └── layout/             # 布局组件
 │       ├── TopBar.tsx
 │       ├── Drawer.tsx
@@ -98,9 +97,6 @@ src/
 │   ├── useImages.ts
 │   ├── useKeyboardHeight.ts  # 键盘高度监听（移动端适配）
 │   └── useTheme.ts
-├── utils/                  # 纯工具函数
-│   ├── date.ts
-│   └── format.ts
 └── types/                  # TypeScript 类型
     └── index.ts
 ```
@@ -137,9 +133,14 @@ interface ImageRecord {
 ### AppSettings
 ```typescript
 interface AppSettings {
+  key: string;
   theme: 'light' | 'dark' | 'system';
   version: string;
   lastBackupAt?: number;
+  lastSyncedAt?: number;
+  cloudProvider?: 'google-drive';
+  cloudAccessToken?: string;
+  cloudTokenExpiresAt?: number;
 }
 ```
 
@@ -261,7 +262,7 @@ async function compressImage(file: File, config: ImageConfig): Promise<Blob> {
 - 路由级懒加载（TanStack Start 自动处理）
 - 重型库动态导入：
   ```typescript
-  const imageCompression = await import('browser-image-compression');
+  const { GoogleDriveAdapter } = await import('@/lib/cloud/google-drive');
   const ReactMarkdown = await import('react-markdown');
   ```
 
@@ -297,40 +298,45 @@ queryClient.prefetchQuery({
 
 ### Service Worker (Workbox)
 ```javascript
-// 缓存策略
+// 当前实现（vite-plugin-pwa generateSW）
 {
-  // App Shell - CacheFirst
-  urlPattern: /\.(html|css|js)$/,
-  handler: 'CacheFirst',
-
-  // 图片 - CacheFirst with expiration
-  urlPattern: /\.(png|jpg|jpeg|webp)$/,
-  handler: 'CacheFirst',
+  // 导航请求：优先返回缓存，同时后台更新
+  urlPattern: ({ request }) => request.mode === 'navigate',
+  handler: 'StaleWhileRevalidate',
   options: {
-    expiration: { maxEntries: 50, maxAgeSeconds: 30 * 24 * 60 * 60 }
+    cacheName: 'pages',
+    matchOptions: { ignoreSearch: true },
+    cacheableResponse: { statuses: [200] }
   }
 }
 ```
 
+补充配置：
+- `strategies: 'generateSW'`
+- `filename: 'sw.js'`
+- `cleanupOutdatedCaches: true`
+- `clientsClaim: true`
+- `skipWaiting: true`
+- `navigateFallback: null`
+
 ### Manifest
 ```json
 {
-  "name": "MiniDiary - 隐私日记应用",
-  "short_name": "日记",
-  "description": "本地存储的极简日记应用，完全隐私，无需注册",
+  "name": "MiniDiary - 极简日记",
+  "short_name": "MiniDiary",
+  "description": "极简主义日记应用，数据存储在本地",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "theme_color": "#000000",
+  "orientation": "portrait",
+  "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "categories": ["productivity", "lifestyle"],
+  "categories": ["lifestyle", "productivity"],
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ],
-  "screenshots": [
-    { "src": "/screenshot-mobile.png", "sizes": "540x720", "form_factor": "narrow" }
+    { "src": "favicon.ico", "sizes": "64x64 32x32 24x24 16x16", "type": "image/x-icon" },
+    { "src": "logo180.png", "sizes": "180x180", "type": "image/png", "purpose": "any maskable" },
+    { "src": "logo192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "logo512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
 ```
@@ -343,20 +349,17 @@ queryClient.prefetchQuery({
 ```json
 {
   "version": "1.0.0",
-  "exportedAt": 1234567890000,
-  "totalEntries": 100,
-  "totalImages": 50,
+  "exportedAt": "2026-01-01T12:34:56.000Z",
   "entries": [/* DiaryEntry[] */],
-  "images": {
-    "imageId": {
+  "images": [
+    {
+      "id": "img-1",
+      "entryId": "entry-1",
       "blob": "data:image/jpeg;base64,...",
       "thumbnail": "data:image/jpeg;base64,...",
-      "originalName": "photo.jpg",
-      "mimeType": "image/jpeg",
-      "size": 123456,
       "createdAt": 1234567890000
     }
-  }
+  ]
 }
 ```
 
@@ -410,10 +413,10 @@ async function saveWithRetry(entry: DiaryEntry) {
 
 | 类型 | 工具 | 覆盖范围 |
 |------|------|----------|
-| 单元测试 | Vitest | utils、repositories、image 处理 |
+| 单元测试 | Vitest | lib、repositories、image 处理 |
 | 组件测试 | Testing Library | UI 组件 |
 | 集成测试 | Vitest + fake-indexeddb | 完整用户流程 |
-| E2E 测试 | Playwright | 关键路径（PWA 离线测试必需）|
+| E2E 测试 | Playwright（可选） | 关键路径（PWA 离线测试推荐） |
 
 ### 模拟 IndexedDB
 ```typescript

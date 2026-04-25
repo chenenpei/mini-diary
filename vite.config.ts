@@ -55,10 +55,9 @@ const config = defineConfig({
         runtimeCaching: [
           {
             urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'NetworkFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'pages',
-              networkTimeoutSeconds: 3,
               matchOptions: {
                 ignoreSearch: true,
               },

@@ -53,12 +53,16 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
   const handleScrollComplete = useCallback(() => {
     navigate({ to: '/', search: { date: undefined, scrollTo: undefined }, replace: true })
   }, [navigate])
+
+  // Date picker state
+  const [showDatePicker, setShowDatePicker] = useState(false)
+
   const { data: entries, isLoading } = useEntriesByDate(currentDate)
   const prefetchEntries = usePrefetchEntriesByDate()
   const isToday = dateUtils.isToday(currentDate)
 
   // 获取有日记的日期列表
-  const { data: distinctDates } = useDistinctDates()
+  const { data: distinctDates } = useDistinctDates(showDatePicker)
   const datesWithEntriesSet = useMemo(() => new Set(distinctDates ?? []), [distinctDates])
 
   // Theme
@@ -160,9 +164,6 @@ export function Timeline({ initialDate, scrollToId }: TimelineProps) {
   const handleEditEntry = (entry: DiaryEntry) => {
     navigate({ to: '/entry/$id', params: { id: entry.id } })
   }
-
-  // Date picker state
-  const [showDatePicker, setShowDatePicker] = useState(false)
 
   const handleDateClick = useCallback(() => {
     setShowDatePicker(true)

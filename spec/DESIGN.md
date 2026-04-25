@@ -62,7 +62,7 @@ font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI",
   "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 ```
 
-> **字体选择：Space Grotesk** — 几何无衬线体，致敬瑞士排版传统。仅覆盖 Latin 字符，CJK 内容自动 fallback 到系统中文字体。通过 Google Fonts 加载（约 30KB woff2）。
+> **字体选择：Space Grotesk** — 几何无衬线体，致敬瑞士排版传统。仅覆盖 Latin 字符，CJK 内容自动 fallback 到系统中文字体。当前实现使用本地字体栈优先匹配 `Space Grotesk`，未注入 Google Fonts 远程 stylesheet；当设备无该字体时自动回退到系统字体。
 
 ### 字号规范
 | 级别 | 移动端 | 桌面端 | 用途 |
@@ -433,7 +433,7 @@ exit={{ y: -100, opacity: 0 }}
 | 进度环 | Primary 色，stroke 2px |
 | 空状态插画 | 黑白线条，简洁几何形状 |
 | 草稿指示器 | 8px 圆点，Primary 色 |
-| 错误图标 | ExclamationTriangle (Heroicons) |
+| 错误图标 | AlertTriangle (Lucide React) |
 
 #### 文案原则
 
@@ -461,16 +461,16 @@ exit={{ y: -100, opacity: 0 }}
 
 ## 12. 图标规范
 
-使用 Heroicons 图标库（outline 风格为主）：
+使用 Lucide React 图标库（线框风格）：
 
 | 图标 | 用途 | 尺寸 |
 |------|------|------|
-| Bars3 | 汉堡菜单 | 24px |
-| MagnifyingGlass | 搜索入口 | 24px |
+| Menu | 汉堡菜单 | 24px |
+| Search | 搜索入口 | 24px |
 | Plus | FAB 新建 | 24px |
 | ChevronLeft/Right | 日期导航 | 20px |
-| XMark | 关闭/删除 | 20px |
+| X | 关闭/删除 | 20px |
 | Check | 确认 | 20px |
-| Trash | 删除 | 20px |
+| Trash2 | 删除 | 20px |
 
 颜色：继承当前文字颜色（Primary）

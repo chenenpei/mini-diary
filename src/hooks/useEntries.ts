@@ -138,10 +138,11 @@ export function useDeleteEntry() {
 /**
  * Hook to get distinct dates with entries
  */
-export function useDistinctDates() {
+export function useDistinctDates(enabled = true) {
   return useQuery({
     queryKey: [...entriesKeys.all, 'distinctDates'],
     queryFn: () => entriesRepository.getDistinctDates(),
+    enabled,
   })
 }
 
