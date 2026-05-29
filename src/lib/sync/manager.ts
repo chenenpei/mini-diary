@@ -97,6 +97,7 @@ function computeConflictInfo(
 
 export class SyncManager {
   private retryConfig: RetryOptions
+  private lastProgress: SyncProgress | null = null
 
   constructor(
     private adapter: CloudAdapter,
@@ -113,6 +114,7 @@ export class SyncManager {
   }
 
   async sync(input: SyncInput, signal?: AbortSignal): Promise<SyncResult> {
+    this.lastProgress = null
     const startTime = Date.now()
 
     // Phase: preparing
@@ -693,18 +695,7 @@ export class SyncManager {
       ...this.retryConfig,
       ...(signal ? { signal } : {}),
       onRetry: (attempt, delay, _error) => {
-        this.onProgress({
-          currentPhase: {
-            phase: 'retrying',
-            failedPhase: phaseName,
-            attempt,
-            maxAttempts: this.retryConfig.maxAttempts ?? 3,
-            nextRetryIn: delay,
-          },
-          completedPhases: 0,
-          totalPhases: 0,
-          percent: 0,
-        })
+        this.reportRetrying(phaseName, attempt, delay)
       },
     })
   }
@@ -757,6 +748,27 @@ export class SyncManager {
     }
   }
 
+  private reportRetrying(failedPhase: string, attempt: number, nextRetryIn: number): void {
+    const fallback = {
+      completedPhases: 0,
+      totalPhases: getOperationPhases('push').length,
+      percent: 0,
+    }
+    const base = this.lastProgress ?? fallback
+    this.emitProgress({
+      completedPhases: base.completedPhases,
+      totalPhases: base.totalPhases,
+      percent: base.percent,
+      currentPhase: {
+        phase: 'retrying',
+        failedPhase,
+        attempt,
+        maxAttempts: this.retryConfig.maxAttempts ?? 3,
+        nextRetryIn,
+      },
+    })
+  }
+
   private reportPhase(
     operation: SyncOperation,
     completedPhaseCount: number,
@@ -764,7 +776,7 @@ export class SyncManager {
   ): void {
     const phases = getOperationPhases(operation)
     const percent = calculateProgress(operation, completedPhaseCount, 0)
-    this.onProgress({
+    this.emitProgress({
       currentPhase,
       completedPhases: completedPhaseCount,
       totalPhases: phases.length,
@@ -780,11 +792,16 @@ export class SyncManager {
   ): void {
     const phases = getOperationPhases(operation)
     const percent = calculateProgress(operation, phaseIndex, phaseProgress)
-    this.onProgress({
+    this.emitProgress({
       currentPhase,
       completedPhases: phaseIndex,
       totalPhases: phases.length,
       percent,
     })
+  }
+
+  private emitProgress(progress: SyncProgress): void {
+    this.lastProgress = progress
+    this.onProgress(progress)
   }
 }

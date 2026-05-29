@@ -40,22 +40,30 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
   const prefersReducedMotion = useReducedMotion()
   const [seenPhases, setSeenPhases] = useState<string[]>([])
 
-  // Track phases as they appear (skip meta-phases)
+  // Track phases as they appear (skip terminal meta-phases)
   useEffect(() => {
-    const currentPhaseName = progress.currentPhase.phase
-    if (
-      currentPhaseName !== 'retrying' &&
-      currentPhaseName !== 'done' &&
-      currentPhaseName !== 'error'
-    ) {
+    const { currentPhase } = progress
+
+    if (currentPhase.phase === 'retrying') {
       setSeenPhases((prev) => {
-        if (prev.length === 0 || prev[prev.length - 1] !== currentPhaseName) {
-          return [...prev, currentPhaseName]
-        }
-        return prev
+        if (prev.includes(currentPhase.failedPhase)) return prev
+        return [...prev, currentPhase.failedPhase]
       })
+      return
     }
-  }, [progress.currentPhase.phase])
+
+    if (currentPhase.phase === 'done' || currentPhase.phase === 'error') {
+      return
+    }
+
+    const currentPhaseName = currentPhase.phase
+    setSeenPhases((prev) => {
+      if (prev.length === 0 || prev[prev.length - 1] !== currentPhaseName) {
+        return [...prev, currentPhaseName]
+      }
+      return prev
+    })
+  }, [progress.currentPhase])
 
   function getPhaseLabel(phase: string): string {
     const key = PHASE_I18N_KEYS[phase]
@@ -80,9 +88,15 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
       {/* biome-ignore lint/a11y/useSemanticElements: div needed for flex layout */}
       <div className="flex flex-col gap-3" role="status" aria-live="polite">
         {seenPhases.map((phase, index) => {
-          const isActive = index === seenPhases.length - 1
-          const isCompleted = !isActive
-          const isRetrying = isActive && progress.currentPhase.phase === 'retrying'
+          const retryingPhase =
+            progress.currentPhase.phase === 'retrying' ? progress.currentPhase : null
+          const isActive = retryingPhase
+            ? phase === retryingPhase.failedPhase
+            : index === seenPhases.length - 1
+          const isCompleted = retryingPhase
+            ? seenPhases.indexOf(phase) < seenPhases.indexOf(retryingPhase.failedPhase)
+            : index < seenPhases.length - 1
+          const isRetrying = retryingPhase !== null && phase === retryingPhase.failedPhase
 
           return (
             <motion.div
@@ -141,8 +155,11 @@ export function SyncProgressView({ progress, onCancel }: SyncProgressProps) {
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
             {t('phaseProgress', {
-              current: seenPhases.length,
-              total: progress.totalPhases,
+              current:
+                progress.totalPhases > 0
+                  ? Math.min(progress.completedPhases + 1, progress.totalPhases)
+                  : seenPhases.length,
+              total: progress.totalPhases > 0 ? progress.totalPhases : seenPhases.length,
             })}
           </span>
           <span>{progress.percent}%</span>

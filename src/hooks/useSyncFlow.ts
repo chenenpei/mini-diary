@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { backupsRepository } from '@/lib/repositories/backups'
 import { settingsRepository } from '@/lib/repositories/settings'
+import { getOperationPhases } from '@/lib/sync/progress'
 import type { RecoveryInfo } from '@/lib/sync/recovery'
 import type { ConflictInfo, SyncError, SyncProgress, SyncSummary } from '@/types'
 
@@ -109,7 +110,7 @@ export function useSyncFlow() {
         progress: {
           currentPhase: { phase: 'preparing', message: '' },
           completedPhases: 0,
-          totalPhases: 0,
+          totalPhases: getOperationPhases('push').length,
           percent: 0,
         },
       })

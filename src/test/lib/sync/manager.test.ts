@@ -1071,6 +1071,37 @@ describe('SyncManager', () => {
       )
       expect(retryPhases.length).toBeGreaterThan(0)
     })
+
+    it('should preserve progress fields during retry', async () => {
+      const adapter = createMockAdapter()
+      adapter.readJson
+        .mockRejectedValueOnce({ kind: 'network', message: 'fail' })
+        .mockResolvedValueOnce(null)
+      adapter.writeJson.mockResolvedValue(undefined)
+      adapter.listFiles.mockResolvedValue([])
+      adapter.deleteFiles.mockResolvedValue(undefined)
+
+      const onProgress = vi.fn()
+      const manager = new SyncManager(adapter, onProgress, { baseDelay: 0 })
+
+      await manager.sync(makeDefaultInput({ localEntries: [makeEntry({ id: 'a' })] }))
+
+      const checkingProgress = onProgress.mock.calls.find(
+        (call) => (call[0] as SyncProgress).currentPhase.phase === 'checking',
+      )?.[0] as SyncProgress | undefined
+      const retryProgress = onProgress.mock.calls.find(
+        (call) => (call[0] as SyncProgress).currentPhase.phase === 'retrying',
+      )?.[0] as SyncProgress | undefined
+
+      expect(checkingProgress?.totalPhases).toBe(5)
+      expect(retryProgress?.totalPhases).toBe(5)
+      expect(retryProgress?.completedPhases).toBe(checkingProgress?.completedPhases)
+      expect(retryProgress?.percent).toBe(checkingProgress?.percent)
+      expect(retryProgress?.currentPhase).toMatchObject({
+        phase: 'retrying',
+        failedPhase: 'checking',
+      })
+    })
   })
 
   // ============================================
